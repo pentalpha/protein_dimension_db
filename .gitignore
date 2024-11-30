@@ -1,7 +1,11 @@
+goa_uniprot_all.gaf.gz
+
+.snakemake/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+databases/*.tsv.gz
 
 # C extensions
 *.so

@@ -1,0 +1,6 @@
+max_taxons: 256
+go_annotation_raw: data/go/goa_uniprot_all.gaf.gz
+esm_libraries: data/esm_embedding
+esm_processes: 30
+esm_models_to_use: [6, 12, 30, 33]
+parsing_processes: 8

@@ -1,0 +1,10 @@
+ECO,name,go name,code
+ECO:0000250,sequence similarity evidence used in manual assertion,Inferred from Sequence or structural Similarity,ISS
+ECO:0000266,sequence orthology evidence used in manual assertion,Inferred from Sequence Orthology,ISA
+ECO:0000247,sequence alignment evidence used in manual assertion,Inferred from Sequence Alignment,ISA
+ECO:0000255,match to sequence model evidence used in manual assertion,Inferred from Sequence Model,ISM
+ECO:0000317,genomic context evidence used in manual assertion,Inferred from Genomic Context,IGC
+ECO:0000245,computational combinatorial evidence used in manual assertion,Inferred from Reviewed Computational Analysis,RCA
+ECO:0000303,non-traceable author statement used in manual assertion,Non-traceable Author Statement,NAS
+ECO:0000307,no biological data found used in manual assertion,No biological Data available (ND) evidence code,ND
+ECO:0000501,evidence used in automatic assertion,Inferred from Electronic Annotation,IEA
