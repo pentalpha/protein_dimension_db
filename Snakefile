@@ -12,11 +12,13 @@ go_basic = "databases/go-basic.obo"
 release_dir = config['release_dir']
 
 uniprot_fasta = release_dir+"/databases/uniprot_sprot.fasta.gz"
-goa_parsed_frequent = release_dir+"/databases/goa_parsed_frequent.tsv.gz"
+goa_parsed_mf = release_dir+"/databases/goa_parsed_expanded.mf.tsv.gz"
 #proteins_for_learning = "input/proteins.fasta"
 annotation_path = release_dir+'/annotation.tsv'
 taxon_profile_path = release_dir+'/taxa_profile.tsv.gz'
 esm_features_prefix = release_dir+'/esm2_t'
+esm_model_ids = [str(x) for x in config['esm_models_to_use']]
+esm_features_paths = [esm_features_prefix+x+'.npy' for x in esm_model_ids]
 labels_path = release_dir+'/go_labels.tsv'
 ids_path = release_dir+'/ids.txt'
 
@@ -39,30 +41,32 @@ rule create_release_dir:
     output:
         release_dir
 
+rule download_uniprot:
+    output:
+        uniprot_fasta
+    shell:
+        "mkdir -p release_dir && wget -O " 
+            + uniprot_fasta 
+            + " https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/uniprot_sprot.fasta.gz"
+
 rule download_goa:
     input:
         'evi_not_to_use.txt',
-        go_basic
+        go_basic,
+        uniprot_fasta
     output:
-        goa_parsed_frequent
+        goa_parsed_mf
     shell:
         "mkdir -p release_dir && " + conda_run1 + " python src/download_annotation.py"
 
-rule download_uniprot:
-    input:
-        goa_parsed_frequent
-    output:
-        uniprot_fasta
-    shell:
-        "wget -O " + uniprot_fasta + " https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/uniprot_sprot.fasta.gz"
 
 '''rule annotated_protein_list:
     input:
-        goa_parsed_frequent,
+        goa_parsed_mf,
         uniprot_fasta
     output:
         proteins_for_learning,
-        input_annotation_path
+        annotation_path
     shell:
         "conda run --live-stream -n plm python src/create_train_protein_set.py"
 

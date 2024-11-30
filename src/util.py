@@ -9,31 +9,25 @@ import numpy as np
 proj_dir = path.dirname(path.dirname(__file__))
 
 config = yaml.safe_load(open(proj_dir+"/config.yml", "r"))
+
+release_dir = config['release_dir']
+
+uniprot_fasta = release_dir+"/databases/uniprot_sprot.fasta.gz"
 goa_parsed = proj_dir+"/databases/goa_parsed.tsv.gz"
-goa_parsed_expanded = proj_dir+"/databases/goa_parsed_expanded.tsv.gz"
-goa_parsed_frequent = proj_dir+"/databases/goa_parsed_frequent.tsv.gz"
+goa_parsed_expanded_mf = release_dir+"/databases/goa_parsed_expanded.mf.tsv.gz"
+goa_parsed_expanded_bp = release_dir+"/databases/goa_parsed_expanded.bp.tsv.gz"
+goa_parsed_expanded_cc = release_dir+"/databases/goa_parsed_expanded.cc.tsv.gz"
+annotation_path = release_dir+'/annotation.tsv'
+taxon_profile_path = release_dir+'/taxa_profile.tsv.gz'
+esm_features_prefix = release_dir+'/esm2_t'
+esm_features_pattern = release_dir+'/esm2_t*.tsv.gz'
+esm_model_ids = [str(x) for x in config['esm_models_to_use']]
+esm_features_paths = [esm_features_prefix+x+'.tsv.gz' for x in esm_model_ids]
+labels_path = release_dir+'/go_labels.tsv'
+ids_path = release_dir+'/ids.txt'
+
 go_not_use_path = proj_dir+"/databases/gocheck_do_not_annotate.json"
 go_basic_path = proj_dir+"/databases/go-basic.obo"
-
-#quickgo_expanded_path = "input/quickgo_expanded.tsv.gz"
-input_annotation_path = proj_dir+'/input/annotation.tsv'
-input_features_path = proj_dir+'/input/features.npy'
-input_features_ids_path = proj_dir+'/input/ids.txt'
-input_features_ids_traintest_path = proj_dir+'/input/ids_traintest.txt'
-input_features_ids_validation_path = proj_dir+'/input/ids_validation.txt'
-input_labels_path = proj_dir+'/input/labels.tsv'
-taxon_features = proj_dir+'/input/features/taxon_one_hot.tsv.gz'
-taxon_features_ids = proj_dir+'/input/features/taxon_one_hot_ids.txt'
-taxon_profiles = proj_dir+'/input/features/taxon_profiles.tsv.gz'
-taxon_profiles_ids = proj_dir+'/input/features/taxon_profiles_ids.txt'
-fairesm_features = proj_dir+'/input/features/fairesm_*'
-
-features_esm_prefix = 'feature_esm_*.tsv.gz'
-features_taxon_prefix = 'feature_taxa.tsv.gz'
-features_taxon_profile_prefix = 'feature_taxa_profile.tsv.gz'
-features_taxon_path = proj_dir+'/input/'+features_taxon_prefix
-features_taxon_profile_path = proj_dir+'/input/'+features_taxon_profile_prefix
-features_esm_base_path = proj_dir+'/input/'+features_esm_prefix
 
 def run_command(cmd_vec, stdin="", no_output=True):
     '''Executa um comando no shell e retorna a saída (stdout) dele.'''
@@ -65,6 +59,29 @@ def count_lines(input_path: str):
     for line in stream:
         n += 1
     return n
+
+def count_lines_large(input_path: str, chunk_size=500000):
+    stream = open_file(input_path)
+    temp_str = ""
+    
+    to_read = chunk_size
+    for line in stream:
+        temp_str += line
+
+        to_read -= 1
+        if not to_read:
+            break
+
+    temp_path = "file_chunk." + input_path.split('.')[-1]
+    write_file(temp_path).write('\n'.join(temp_str))
+    size_chunk = path.getsize(temp_path)
+    size_full = path.getsize(input_path)
+
+    chunks_in_full = size_full/size_chunk
+    lines_f = chunks_in_full*chunk_size
+    lines = int(lines_f)
+
+    return lines
     
 def write_file(input_path: str):
     if input_path.endswith('.gz'):
@@ -101,7 +118,7 @@ def concat_vecs_np(vecs: list):
 
 def load_label_lists(uniprotids: list):
     label_lists = {}
-    for rawline in open_file(input_labels_path):
+    for rawline in open_file(labels_path):
         uniprotid, taxid, gos = rawline.rstrip('\n').split('\t')
         if uniprotid in uniprotids:
             label_lists[uniprotid] = gos.split(',')
@@ -223,7 +240,7 @@ def filter_features(feature_file_path: str, subset: list, new_feature_file_path:
     return features
 
 def load_labels_from_dir(dirname: str, ids_allowed: list = []):
-    labels_path = dirname+'/labels.tsv'
+    labels_path = dirname+'/go_labels.tsv'
 
     labels = {}
     anns = {}
@@ -252,27 +269,20 @@ def create_labels_matrix(labels: dict, ids_allowed: list, gos_allowed: list):
     
     return np.asarray(label_vecs)
 
-
-def load_dataset_from_dir(dirname: str, subset: list = [], to_load = ['taxa_profile', 'esm']):
+def load_dataset_from_dir(subset: list = [], to_load = ['taxa_profile', 'esm']):
     if len(subset) == 0:
-        ids_path = dirname+'/ids.txt'
         subset = open(ids_path, 'r').read().split('\n')
-    labels, annotations = load_labels_from_dir(dirname, ids_allowed=subset)
+    labels, annotations = load_labels_from_dir(release_dir, ids_allowed=subset)
 
     features = []
 
     if 'taxa_profile' in to_load:
-        taxa_profile_path = dirname+'/'+features_taxon_profile_prefix
+        taxa_profile_path = taxon_profile_path
         taxa_profile_features = load_features(taxa_profile_path, subset, float)
         features.append(('taxa_profile', taxa_profile_features))
-    
-    if 'taxa' in to_load:
-        taxa_path = dirname+'/'+features_taxon_prefix
-        taxa_features = load_features(taxa_path, subset, int)
-        features.append(('taxa', taxa_features))
 
     if 'esm' in to_load:
-        esm_paths = glob(dirname+'/'+features_esm_prefix)
+        esm_paths = glob(esm_features_pattern)
         for esm_path in esm_paths:
             esm_len_str = esm_path.split('.')[-3].split('_')[-1]
             esm_len = int(esm_len_str)

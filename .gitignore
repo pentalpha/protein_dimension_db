@@ -1,5 +1,5 @@
-goa_uniprot_all.gaf.gz
-
+file_chunk.gz
+goa_uniprot_all.gaf.g*
 .snakemake/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
