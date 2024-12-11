@@ -31,63 +31,63 @@ if __name__ == '__main__':
     print('Reading swissprot ids')
     uniprots = set(open(ids_path).read().split('\n'))
     
-    if not path.exists(goa_parsed):
-        print('Counting length of ', go_annotation_raw)
-        count_ann_total_lines = count_lines_large(go_annotation_raw)
-        print(count_ann_total_lines, 'lines of annotation')
-        
-        print('opening', go_annotation_raw)
-        bar = tqdm(total = count_ann_total_lines)
-        goa_gaf = open_file(go_annotation_raw)
-        evi_df = pd.read_csv(evi_not_use_path,sep=',')
-        evi_not_use = set(evi_df['code'].tolist())
+    #if not path.exists(goa_parsed):
+    print('Counting length of ', go_annotation_raw)
+    count_ann_total_lines = count_lines_large(go_annotation_raw)
+    print(count_ann_total_lines, 'lines of annotation')
+    
+    print('opening', go_annotation_raw)
+    bar = tqdm(total = count_ann_total_lines)
+    goa_gaf = open_file(go_annotation_raw)
+    evi_df = pd.read_csv(evi_not_use_path,sep=',')
+    evi_not_use = set(evi_df['code'].tolist())
 
-        parsed = ['prot_id\tgoid\tevi\ttaxonid']
-        droped = 0
-        other_ontos = 0
-        quickgolines = 0
-        other_dbs = 0
-        incorrect_line_number = 0
-        other_dbs_names = set()
-        not_swissprot = 1
-        try:
-            for line in goa_gaf:
-                quickgolines += 1
-                if line.startswith('UniProtKB'):
-                    cells = line.rstrip('\n').split('\t')
-                    if len(cells) >= 13:
-                        if cells[1] in uniprots:
-                            protid = cells[1]
-                            goid = cells[4]
-                            evi = cells[6]
-                            taxid = cells[12]
-                            if len(evi) < 2 or len(evi) > 3:
-                                print('strange evidence:', evi)
-                            else:
-                                if not evi in evi_not_use:
-                                    parsed.append('\t'.join([protid,goid,evi,taxid,cells[8]]))
-                                else:
-                                    droped += 1
+    parsed = ['prot_id\tgoid\tevi\ttaxonid']
+    droped = 0
+    other_ontos = 0
+    quickgolines = 0
+    other_dbs = 0
+    incorrect_line_number = 0
+    other_dbs_names = set()
+    not_swissprot = 1
+    try:
+        for line in goa_gaf:
+            quickgolines += 1
+            if line.startswith('UniProtKB'):
+                cells = line.rstrip('\n').split('\t')
+                if len(cells) >= 13:
+                    if cells[1] in uniprots:
+                        protid = cells[1]
+                        goid = cells[4]
+                        evi = cells[6]
+                        taxid = cells[12]
+                        if len(evi) < 2 or len(evi) > 3:
+                            print('strange evidence:', evi)
                         else:
-                            not_swissprot += 1
+                            if not evi in evi_not_use:
+                                parsed.append('\t'.join([protid,goid,evi,taxid,cells[8]]))
+                            else:
+                                droped += 1
                     else:
-                        incorrect_line_number += 1
+                        not_swissprot += 1
                 else:
-                    other_dbs += 1
-                bar.update(1)
-        except EOFError as err:
-            print('GAF file download incomplete')
-            print(err)
-        bar.close()
-        print(quickgolines, 'lines in goa_uniprot_all original')
-        print(other_dbs, 'from other dbs:', other_dbs_names)
-        print(other_ontos, 'from other ontologies')
-        print(droped, 'with evi codes we cant use')
-        print(not_swissprot, 'not swissprot')
-        print(incorrect_line_number, 'incorrect_line_number')
-        print(quickgolines - other_dbs - other_ontos - droped - incorrect_line_number, len(parsed))
-        output_path = goa_parsed
-        write_file(output_path).write('\n'.join(parsed))
+                    incorrect_line_number += 1
+            else:
+                other_dbs += 1
+            bar.update(1)
+    except EOFError as err:
+        print('GAF file download incomplete')
+        print(err)
+    bar.close()
+    print(quickgolines, 'lines in goa_uniprot_all original')
+    print(other_dbs, 'from other dbs:', other_dbs_names)
+    print(other_ontos, 'from other ontologies')
+    print(droped, 'with evi codes we cant use')
+    print(not_swissprot, 'not swissprot')
+    print(incorrect_line_number, 'incorrect_line_number')
+    print(quickgolines - other_dbs - other_ontos - droped - incorrect_line_number, len(parsed))
+    output_path = goa_parsed
+    write_file(output_path).write('\n'.join(parsed))
 
     parsed = open_file(goa_parsed).read().split('\n')
 

@@ -7,6 +7,8 @@ __pycache__/
 *$py.class
 databases/*.tsv.gz
 databases/uniprot_sprot.fasta.gz
+databases/per-protein.h5
+databases/goa_uniprot_all.12-2023.gaf.gz
 work/*
 .nextflow/*
 .nextflow.lo*
