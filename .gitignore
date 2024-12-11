@@ -6,13 +6,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 databases/*.tsv.gz
+databases/uniprot_sprot.fasta.gz
 work/*
 .nextflow/*
 .nextflow.lo*
 # C extensions
 *.so
 libs/*
-
+.fuse_hid*
 # Distribution / packaging
 .Python
 build/
