@@ -25,7 +25,7 @@ process download_gocheck_do_not_annotate {
 }
 
 process download_esm{
-    publishDir "./", mode: 'copy'
+    publishDir "libs/", mode: 'copy'
 
     output:
     path "esm"
