@@ -6,9 +6,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 databases/*.tsv.gz
-
+work/*
+.nextflow/*
+.nextflow.lo*
 # C extensions
 *.so
+libs/*
 
 # Distribution / packaging
 .Python
