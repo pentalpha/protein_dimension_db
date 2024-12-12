@@ -10,9 +10,9 @@ Proteins are sorted by length. All files contain the same sequence of proteins, 
 
 |           Name          |                  Content                  | Download Links |
 |:-----------------------:|:-----------------------------------------:|:-------------:|
-|         ids.txt         |           Uniprot Accession IDs           |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/ids.txt), [Zenodo](#)       |
-| uniprot_sorted.fasta.gz | Aminoacid sequences of SwissProt proteins |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/uniprot_sorted.fasta.gz), [Zenodo](#)       |
-| taxid.tsv               | NCBI taxon ID of each protein             |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/taxid.tsv), [Zenodo](#)       |
+|         ids.txt         |           Uniprot Accession IDs           |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/ids.txt), [Zenodo](#)       |
+| uniprot_sorted.fasta.gz | Aminoacid sequences of SwissProt proteins |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/uniprot_sorted.fasta.gz), [Zenodo](#)       |
+| taxid.tsv               | NCBI taxon ID of each protein             |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/taxid.tsv), [Zenodo](#)       |
 
 ### Gene Ontology
 
@@ -20,10 +20,10 @@ All Gene Ontology annotations of Swiss-Prot proteins, excluding computational, n
 
 |            Name           |        Content       | Download Links |
 |:-------------------------:|:--------------------:|:-------------:|
-| go.expanded.tsv.gz        | MF, BP and CC annotations in simplified GAF format |  [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz), [Zenodo](go.expanded.tsv.gz)       |
-| go.experimental.mf.tsv.gz |  Molecular Functions |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz), [Zenodo](#)       |
-| go.experimental.bp.tsv.gz | Biological Processes |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.bp.tsv.gz), [Zenodo](#)       |
-| go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz), [Zenodo](#)       |
+| go.expanded.tsv.gz        | MF, BP and CC annotations in simplified GAF format |  [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz), [Zenodo](go.expanded.tsv.gz)       |
+| go.experimental.mf.tsv.gz |  Molecular Functions |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz), [Zenodo](#)       |
+| go.experimental.bp.tsv.gz | Biological Processes |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.bp.tsv.gz), [Zenodo](#)       |
+| go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz), [Zenodo](#)       |
 
 ### Embeddings
 
@@ -31,7 +31,7 @@ Several models are used to create computational descriptions of the Swiss-Prot p
 
 |             Name            |                                          Model                                         | Vector Length | Download Links |
 |:---------------------------:|:--------------------------------------------------------------------------------------:|:-------------:|:-------------:|
-|     emb.prottrans.npy.gz    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     |   [UFRN](http://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/emb.prottrans.npy.gz), [Zenodo](#)  |
+|     emb.prottrans.npy.gz    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     |   [UFRN](https://bioinformatics-brazil.org/~pitagoras/protein_dimension_db/release_1/emb.prottrans.npy.gz), [Zenodo](#)  |
 |     emb.esm2_t33.npy.gz     |                                   esm2_t33_650M_UR50D                                  |      1280     |    Upcoming   |
 |     emb.esm2_t30.npy.gz     |                                   esm2_t30_150M_UR50D                                  |      640      |    Upcoming   |
 |     emb.esm2_t12.npy.gz     |                                   esm2_t12_35M_UR50D                                   |      480      |    Upcoming   |
