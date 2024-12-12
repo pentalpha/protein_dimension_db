@@ -82,6 +82,18 @@ process download_prot5{
     """
 }
 
+process download_uniprot{
+    publishDir "databases", mode: 'copy'
+
+    output:
+    path "uniprot_sprot.fasta.gz", emit: uniprot_fasta
+
+    script:
+    """
+    wget https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/uniprot_sprot.fasta.gz
+    """
+}
+
 process download_goa{
     publishDir "databases", mode: 'copy'
 
@@ -99,6 +111,7 @@ process download_goa{
 
 workflow {
     download_uniprot(uniprot_url)
+    download_uniprot()
     //download_goa(goa_all_url)
     download_go(go_basic_url)
     download_esm(esm_git_url)

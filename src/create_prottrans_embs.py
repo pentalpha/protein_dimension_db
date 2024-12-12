@@ -3,15 +3,13 @@ import sys
 import h5py
 import numpy as np
 from tqdm import tqdm
-import pandas as pd
 
 if __name__ == '__main__':
-    proj_dir = sys.argv[1]
-    output_dir = sys.argv[2]
-
-    databases_dir = proj_dir + "/databases"
-    original_embs_path = databases_dir + "/per-protein.h5"
-    ids_path = output_dir + "/databases/ids.txt"
+    #"${proj_dir}/databases/per-protein.h5"
+    original_embs_path = sys.argv[1]
+    ids_path = sys.argv[2]
+    #output_dir+'/emb.prottrans.npy.gz'
+    output_file = sys.argv[3]
 
     ids_list = open(ids_path, 'r').read().split('\n')
     print('Ids from swiss prot:', len(ids_list))
@@ -27,7 +25,7 @@ if __name__ == '__main__':
             sorted_embs[index] = np.array(rawemb)
             indexes_used.add(index)
     
-    print('Replacing none with nan')
+    print('Replacing Nones with nan')
     emb_shape = None
     for i in range(len(sorted_embs)):
         if i in indexes_used:
@@ -41,14 +39,5 @@ if __name__ == '__main__':
     
     print('Creating numpy matrix')
     sorted_embs = np.asarray(sorted_embs)
-    print('Saving in npy.gz')
-    np.save(gzip.open(output_dir+'/prottrans.npy.gz', 'w'), sorted_embs)
-    #embs_df = pd.DataFrame()
-    #embs_df.index = ids_list
-    #embs_df['uniprot_id'] = ids_list
-    #embs_df['embedding'] = sorted_embs
-    #print('Dataframe created:', embs_df.shape)
-
-    #print(embs_df)
-
-    #embs_df.to_parquet(output_dir+'/prottrans.parquet', compression='gzip')
+    print('Saving in .npy.gz')
+    np.save(gzip.open(output_file, 'w'), sorted_embs)
