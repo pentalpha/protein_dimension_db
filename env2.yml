@@ -50,4 +50,10 @@ dependencies:
   - xz=5.4.6=h5eee18b_1
   - yaml=0.2.5=h7b6447c_0
   - zlib=1.2.13=h5eee18b_1
+  - pip:
+      - cramjam==2.9.0
+      - fastparquet==2024.11.0
+      - fsspec==2024.10.0
+      - h5py==3.12.1
+      - packaging==24.2
 prefix: /home/pitagoras/miniconda3/envs/dimension_db
