@@ -2,16 +2,20 @@ import gzip
 import sys
 
 def read_uniprot_fasta(fasta_path):
-    print('Loading', fasta_path)
+    print('Loading', fasta_path, file=sys.stderr)
     proteins = []
     header = None
     content = ""
-    for line in gzip.open(fasta_path, 'rt'):
+    for line in gzip.open(fasta_path, 'rt') if fasta_path.endswith('.gz') else open(fasta_path, 'r'):
         if line.startswith('>'):
             if header != None:
                 proteins.append((header, content))
                 content = ""
-            header = line.rstrip('\n').lstrip('>').split('|')[1]
+            header_parts = line.rstrip('\n').lstrip('>').split('|')
+            if len(header_parts) > 1:
+                header = header_parts[1]
+            else:
+                header = header_parts[0]
         else:
             content += line.rstrip('\n').strip()
     

@@ -1,0 +1,270 @@
+Loading /home/pitagoras/data/dimension_db/release_1/uniprot_sorted.fasta.gz
+benchmarking on 18 sequences
+facebook/esm2_t12_35M_UR50D
+Using device: cpu
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Some weights of EsmModel were not initialized from the model checkpoint at facebook/esm2_t12_35M_UR50D and are newly initialized: ['esm.pooler.dense.bias', 'esm.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Loaded models
+Loading sequence embedding caches: /home/pitagoras/data/dimension_db/cacheA/facebook_esm2_t12_35M_UR50D_*.json.gz
+  0%|          | 0/35 [00:00<?, ?it/s] 23%|██▎       | 8/35 [00:00<00:00, 79.91it/s] 46%|████▌     | 16/35 [00:00<00:00, 73.17it/s] 71%|███████▏  | 25/35 [00:00<00:00, 75.25it/s] 94%|█████████▍| 33/35 [00:00<00:00, 70.77it/s]100%|██████████| 35/35 [00:00<00:00, 73.11it/s]
+  0%|          | 0/18 [00:00<?, ?it/s]input seq has 101 aminoacids
+  6%|▌         | 1/18 [00:00<00:02,  7.41it/s]Done in 0.13578319549560547
+input seq has 401 aminoacids
+ 11%|█         | 2/18 [00:00<00:03,  4.83it/s]Done in 0.2569131851196289
+input seq has 601 aminoacids
+ 17%|█▋        | 3/18 [00:00<00:03,  3.79it/s]Done in 0.33129072189331055
+input seq has 801 aminoacids
+ 22%|██▏       | 4/18 [00:01<00:05,  2.68it/s]Done in 0.5408766269683838
+input seq has 901 aminoacids
+ 28%|██▊       | 5/18 [00:01<00:06,  2.12it/s]Done in 0.6473071575164795
+input seq has 1001 aminoacids
+ 33%|███▎      | 6/18 [00:02<00:07,  1.69it/s]Done in 0.8221414089202881
+input seq has 1401 aminoacids
+Traceback (most recent call last):
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 170, in <module>
+    run_embedding_time_benchmark(model_name, fasta_path, caches_path)
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 160, in run_embedding_time_benchmark
+    embeddings, elapsed = model.calc_embeddings_batched(seq_examples, 100, use_cache=False, detailed=True)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 98, in calc_embeddings_batched
+    emb = self.amino_to_embedding(s, use_cache=use_cache)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 64, in amino_to_embedding
+    outputs = self.model(input_ids=inputs["input_ids"], output_hidden_states=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 907, in forward
+    encoder_outputs = self.encoder(
+                      ^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 612, in forward
+    layer_outputs = layer_module(
+                    ^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 502, in forward
+    self_attention_outputs = self.attention(
+                             ^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 436, in forward
+    self_outputs = self.self(
+                   ^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 373, in forward
+    context_layer = torch.matmul(attention_probs.to(value_layer.dtype), value_layer)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+ 33%|███▎      | 6/18 [00:03<00:07,  1.63it/s]
+Loading /home/pitagoras/data/dimension_db/release_1/uniprot_sorted.fasta.gz
+benchmarking on 18 sequences
+facebook/esm2_t6_8M_UR50D
+Using device: cpu
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Some weights of EsmModel were not initialized from the model checkpoint at facebook/esm2_t6_8M_UR50D and are newly initialized: ['esm.pooler.dense.bias', 'esm.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Loaded models
+Loading sequence embedding caches: /home/pitagoras/data/dimension_db/cacheA/facebook_esm2_t6_8M_UR50D_*.json.gz
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+  0%|          | 0/18 [00:00<?, ?it/s]input seq has 101 aminoacids
+Done in 0.019482135772705078
+input seq has 401 aminoacids
+Done in 0.06458687782287598
+input seq has 601 aminoacids
+ 17%|█▋        | 3/18 [00:00<00:01, 14.98it/s]Done in 0.11634683609008789
+input seq has 801 aminoacids
+Done in 0.18319320678710938
+input seq has 901 aminoacids
+ 28%|██▊       | 5/18 [00:00<00:01,  7.24it/s]Done in 0.2423686981201172
+input seq has 1001 aminoacids
+ 33%|███▎      | 6/18 [00:00<00:02,  5.30it/s]Done in 0.33330702781677246
+input seq has 1401 aminoacids
+ 39%|███▉      | 7/18 [00:01<00:03,  3.52it/s]Done in 0.5435812473297119
+input seq has 1601 aminoacids
+ 44%|████▍     | 8/18 [00:02<00:04,  2.50it/s]Done in 0.7007408142089844
+input seq has 1801 aminoacids
+ 50%|█████     | 9/18 [00:03<00:04,  1.92it/s]Done in 0.8260293006896973
+input seq has 1901 aminoacids
+ 56%|█████▌    | 10/18 [00:03<00:05,  1.59it/s]Done in 0.8901891708374023
+input seq has 2001 aminoacids
+ 61%|██████    | 11/18 [00:04<00:05,  1.36it/s]Done in 0.9903531074523926
+input seq has 2403 aminoacids
+ 67%|██████▋   | 12/18 [00:06<00:05,  1.06it/s]Done in 1.4452507495880127
+input seq has 2601 aminoacids
+ 72%|███████▏  | 13/18 [00:07<00:05,  1.14s/it]Done in 1.6034884452819824
+input seq has 2801 aminoacids
+ 78%|███████▊  | 14/18 [00:10<00:05,  1.43s/it]Done in 2.1073157787323
+input seq has 2904 aminoacids
+ 83%|████████▎ | 15/18 [00:12<00:04,  1.63s/it]Done in 2.0928971767425537
+input seq has 3001 aminoacids
+ 89%|████████▉ | 16/18 [00:14<00:03,  1.80s/it]Done in 2.217005491256714
+input seq has 3101 aminoacids
+ 94%|█████████▍| 17/18 [00:16<00:01,  2.00s/it]Done in 2.4624311923980713
+input seq has 3206 aminoacids
+100%|██████████| 18/18 [00:19<00:00,  2.11s/it]Done in 2.3641433715820312
+100%|██████████| 18/18 [00:19<00:00,  1.07s/it]
+Loading /home/pitagoras/data/dimension_db/release_1/uniprot_sorted.fasta.gz
+benchmarking on 18 sequences
+facebook/esm2_t12_35M_UR50D
+Using device: cpu
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Some weights of EsmModel were not initialized from the model checkpoint at facebook/esm2_t12_35M_UR50D and are newly initialized: ['esm.pooler.dense.bias', 'esm.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Loaded models
+Loading sequence embedding caches: /home/pitagoras/data/dimension_db/cacheA/facebook_esm2_t12_35M_UR50D_*.json.gz
+  0%|          | 0/35 [00:00<?, ?it/s] 26%|██▌       | 9/35 [00:00<00:00, 83.53it/s] 51%|█████▏    | 18/35 [00:00<00:00, 80.00it/s] 77%|███████▋  | 27/35 [00:00<00:00, 78.89it/s]100%|██████████| 35/35 [00:00<00:00, 79.89it/s]
+  0%|          | 0/18 [00:00<?, ?it/s]input seq has 101 aminoacids
+Done in 0.07648158073425293
+input seq has 401 aminoacids
+ 11%|█         | 2/18 [00:00<00:02,  6.84it/s]Done in 0.21618390083312988
+input seq has 601 aminoacids
+ 17%|█▋        | 3/18 [00:00<00:03,  4.70it/s]Done in 0.30571913719177246
+input seq has 801 aminoacids
+ 22%|██▏       | 4/18 [00:01<00:04,  3.12it/s]Done in 0.5010824203491211
+input seq has 901 aminoacids
+ 28%|██▊       | 5/18 [00:01<00:05,  2.38it/s]Done in 0.6055879592895508
+input seq has 1001 aminoacids
+ 33%|███▎      | 6/18 [00:02<00:06,  1.93it/s]Done in 0.7154369354248047
+input seq has 1401 aminoacids
+ 39%|███▉      | 7/18 [00:03<00:08,  1.34it/s]Done in 1.2249085903167725
+input seq has 1601 aminoacids
+ 44%|████▍     | 8/18 [00:05<00:09,  1.01it/s]Done in 1.536609411239624
+input seq has 1801 aminoacids
+ 50%|█████     | 9/18 [00:07<00:11,  1.31s/it]Done in 2.008173942565918
+input seq has 1901 aminoacids
+ 56%|█████▌    | 10/18 [00:09<00:12,  1.62s/it]Done in 2.313736915588379
+input seq has 2001 aminoacids
+ 61%|██████    | 11/18 [00:12<00:13,  1.91s/it]Done in 2.569218635559082
+input seq has 2403 aminoacids
+ 67%|██████▋   | 12/18 [00:15<00:14,  2.40s/it]Done in 3.5432138442993164
+input seq has 2601 aminoacids
+ 72%|███████▏  | 13/18 [00:19<00:14,  2.95s/it]Done in 4.218649864196777
+input seq has 2801 aminoacids
+ 78%|███████▊  | 14/18 [00:24<00:13,  3.50s/it]Done in 4.75996470451355
+input seq has 2904 aminoacids
+ 83%|████████▎ | 15/18 [00:29<00:11,  3.96s/it]Done in 5.024274826049805
+input seq has 3001 aminoacids
+ 89%|████████▉ | 16/18 [00:34<00:08,  4.37s/it]Done in 5.321449518203735
+input seq has 3101 aminoacids
+ 94%|█████████▍| 17/18 [00:40<00:04,  4.86s/it]Done in 6.006367206573486
+input seq has 3206 aminoacids
+100%|██████████| 18/18 [00:47<00:00,  5.43s/it]Done in 6.758275747299194
+100%|██████████| 18/18 [00:47<00:00,  2.65s/it]
+Loading /home/pitagoras/data/dimension_db/release_1/uniprot_sorted.fasta.gz
+benchmarking on 18 sequences
+facebook/esm2_t30_150M_UR50D
+Using device: cpu
+The argument `trust_remote_code` is to be used with Auto classes. It has no effect here and is ignored.
+Some weights of EsmModel were not initialized from the model checkpoint at facebook/esm2_t30_150M_UR50D and are newly initialized: ['esm.pooler.dense.bias', 'esm.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Loaded models
+Loading sequence embedding caches: /home/pitagoras/data/dimension_db/cacheA/facebook_esm2_t30_150M_UR50D_*.json.gz
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+  0%|          | 0/18 [00:00<?, ?it/s]input seq has 101 aminoacids
+  6%|▌         | 1/18 [00:00<00:03,  4.67it/s]Done in 0.21493053436279297
+input seq has 401 aminoacids
+ 11%|█         | 2/18 [00:00<00:07,  2.03it/s]Done in 0.686565637588501
+input seq has 601 aminoacids
+ 17%|█▋        | 3/18 [00:02<00:12,  1.22it/s]Done in 1.2045564651489258
+input seq has 801 aminoacids
+ 22%|██▏       | 4/18 [00:03<00:15,  1.11s/it]Done in 1.5512399673461914
+input seq has 901 aminoacids
+ 28%|██▊       | 5/18 [00:05<00:17,  1.37s/it]Done in 1.8493156433105469
+input seq has 1001 aminoacids
+ 33%|███▎      | 6/18 [00:07<00:19,  1.64s/it]Done in 2.140296220779419
+input seq has 1401 aminoacids
+ 39%|███▉      | 7/18 [00:11<00:25,  2.28s/it]Done in 3.614224672317505
+input seq has 1601 aminoacids
+ 44%|████▍     | 8/18 [00:15<00:30,  3.01s/it]Done in 4.573692321777344
+input seq has 1801 aminoacids
+ 50%|█████     | 9/18 [00:23<00:40,  4.50s/it]Done in 7.764678001403809
+input seq has 1901 aminoacids
+ 56%|█████▌    | 10/18 [00:32<00:47,  5.90s/it]Done in 9.048741579055786
+input seq has 2001 aminoacids
+ 61%|██████    | 11/18 [00:42<00:49,  7.11s/it]Done in 9.856994867324829
+input seq has 2403 aminoacids
+Traceback (most recent call last):
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 170, in <module>
+    run_embedding_time_benchmark(model_name, fasta_path, caches_path)
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 160, in run_embedding_time_benchmark
+    embeddings, elapsed = model.calc_embeddings_batched(seq_examples, 100, use_cache=False, detailed=True)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 98, in calc_embeddings_batched
+    emb = self.amino_to_embedding(s, use_cache=use_cache)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/win/Users/conta/data/protein_dimension_db/src/embedding_calculation.py", line 64, in amino_to_embedding
+    outputs = self.model(input_ids=inputs["input_ids"], output_hidden_states=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 907, in forward
+    encoder_outputs = self.encoder(
+                      ^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 612, in forward
+    layer_outputs = layer_module(
+                    ^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 544, in forward
+    layer_output = self.feed_forward_chunk(attention_output)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 555, in feed_forward_chunk
+    intermediate_output = self.intermediate(attention_output_ln)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/transformers/models/esm/modeling_esm.py", line 456, in forward
+    hidden_states = self.dense(hidden_states)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pitagoras/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/nn/modules/linear.py", line 125, in forward
+    return F.linear(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
