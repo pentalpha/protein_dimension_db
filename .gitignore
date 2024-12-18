@@ -10,6 +10,7 @@ databases/*.tsv.gz
 databases/uniprot_sprot.fasta.gz
 databases/per-protein.h5
 databases/goa_uniprot_all.12-2023.gaf.gz
+others/.~lock*
 work/*
 .nextflow/*
 .nextflow.lo*
