@@ -1,0 +1,12 @@
+"model name","million parameters","processing time","time per protein","embedding length","time per embedding dimension","parameters per embedding dimension","short name"
+"facebook/esm2_t6_8M_UR50D",7.840121,3.35932302474976,"=C2/B12",320,"=D2/E2","=B2/E2*1000000","esm2_t6"
+"facebook/esm2_t12_35M_UR50D",33.992881,8.20486259460449,"=C3/B12",480,"=D3/E3","=B3/E3*1000000","esm2_t12"
+"facebook/esm2_t30_150M_UR50D",148.795481,23.703723192215,"=C4/B12",640,"=D4/E4","=B4/E4*1000000","esm2_30"
+"facebook/esm2_t33_650M_UR50D",652.353941,60.4125739383698,"=C5/B12",1280,"=D5/E5","=B5/E5*1000000","esm2_33"
+"ElnaggarLab/ankh-base",736.453632,76.6596865653992,"=C6/B12",768,"=D6/E6","=B6/E6*1000000","ankh_base"
+"ElnaggarLab/ankh-large",1878.705152,111,"=C7/B12",1536,"=D7/E7","=B7/E7*1000000","ankh_large"
+"ElnaggarLab/ankh2-ext1",1878.705152,116.007249116898,"=C8/B12",1536,"=D8/E8","=B8/E8*1000000","ankh2_ext1"
+"ElnaggarLab/ankh2-ext2",1878.705152,116.44,"=C9/B12",1536,"=D9/E9","=B9/E9*1000000","ankh2_ext2"
+"facebook/esm2_t36_3B_UR50D",2841.627041,195.722911119461,"=C10/B12",2560,"=D10/E10","=B10/E10*1000000","esm2_36"
+,,,,,,,
+"n proteins in benchmarking",17,,,,,,

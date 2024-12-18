@@ -12,10 +12,10 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import EsmTokenizer, EsmModel
 
 from sort_uniprot import read_uniprot_fasta
-from util_base import chunks
+from util_base import chunks, run_command
 
 class Embedder():
-    def __init__(self, model_name, caches_dir) -> None:
+    def __init__(self, model_name, caches_dir, max_prot_length=2000) -> None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {device}", file=sys.stderr)
         self.model_library = "ankh"
@@ -40,7 +40,8 @@ class Embedder():
         self.decoder_input_ids = decoder_input_ids
 
         self.base_cache_name = self.cache_dir+'/'+self.model_name_simple+'_CACHEN_.json.gz'
-
+        
+        self.max_prot_length = max_prot_length
         self.load_cache()
 
     def load_cache(self):
@@ -92,12 +93,18 @@ class Embedder():
         embeddings_list = []
         last_elapsed = time()
         started = None
+        emb_shape = None
         for seq_chunk in seq_chunks:
             new_embs = []
             for s in seq_chunk:
                 if detailed:
                     print('input seq has', len(s), 'aminoacids', file=sys.stderr)
-                emb = self.amino_to_embedding(s, use_cache=use_cache)
+                if len(s) > self.max_prot_length:
+                    emb = np.empty(emb_shape)
+                    emb = emb.fill(np.nan)
+                else:
+                    emb = self.amino_to_embedding(s, use_cache=use_cache)
+                    emb_shape = emb.shape
                 new_embs.append(emb)
                 iterator.update(1)
                 if detailed:
@@ -168,50 +175,31 @@ def run_embedding_time_benchmark(model_name, fasta_path, caches_path):
         
     print(model_name, total_time, final_shape)
 
+def embed_sequences(model_name, fasta_path, caches_path, max_prot_length):
+    fasta = read_uniprot_fasta(fasta_path)
+    seqs = [s for h, s in fasta]
+
+    print('embedding on', len(seqs), 'sequences with', file=sys.stderr)
+    print(model_name, file=sys.stderr)
+    model = Embedder(model_name, caches_path, max_prot_length=max_prot_length)
+    
+    embeddings, total_time = model.calc_embeddings_batched(seqs, 10000, use_cache=True, detailed=False)
+    final_shape = embeddings.shape
+        
+    print(model_name, total_time, final_shape)
+    return embeddings
+
 if __name__ == "__main__":
     model_name = sys.argv[1]
     fasta_path = sys.argv[2]
     caches_path = sys.argv[3]
-    run_embedding_time_benchmark(model_name, fasta_path, caches_path)
-    '''device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"Using device: {device}")
-
-    tokenizer = AutoTokenizer.from_pretrained("ElnaggarLab/ankh-base", trust_remote_code=True)
-    model = AutoModelForSeq2SeqLM.from_pretrained("ElnaggarLab/ankh-base", trust_remote_code=True).to(device)
-    print('Loaded models')
-    sequence_examples = ["PRTEINO", "SEQWENCE"]
-    decoder_input_ids = tokenizer("<s>", return_tensors="pt").input_ids.to(device)
-    print('decoder_input_ids')
-    input_seqs = np.array(["PRTEINO", "SEQWENCE"])
-    for seq in sequence_examples:
-        inputs = tokenizer(seq, return_tensors="pt", add_special_tokens=True).to(device)
-        print('inputs')
-        outputs = model(input_ids=inputs["input_ids"], decoder_input_ids=decoder_input_ids)
-        print('outputs')
-        emb = outputs.encoder_last_hidden_state
-        protein_emb = emb[0].mean(dim=0)
-        sequence_embedding = protein_emb.detach().cpu().numpy().squeeze()
-        print(sequence_embedding.shape, sequence_embedding)
-        print()
-    quit(0)'''
-    '''# tokenize sequences and pad up to the longest sequence in the batch
-    ids = tokenizer.batch_encode_plus(sequence_examples, add_special_tokens=True, padding="longest")
-    input_ids = torch.tensor(ids['input_ids']).to(device='cpu')
-    attention_mask = torch.tensor(ids['attention_mask']).to(device='cpu')
-    # generate embeddings
-    with torch.no_grad():
-        #embedding_repr = model(input_ids=input_ids, attention_mask=attention_mask, decoder_input_ids=decoder_input_ids)
-        embedding_repr = model(input_ids=input_ids, attention_mask=attention_mask, decoder_input_ids=input_ids)
-        emb = embedding_repr.encoder_last_hidden_state
-        protein_emb = emb[0].mean(dim=0)
-        sequence_embedding = protein_emb.detach().cpu().numpy().squeeze()
-        print(sequence_embedding.shape)
-
-    # extract embeddings for the first ([0,:]) sequence in the batch while removing padded & special tokens ([0,:7]) 
-    emb_0 = embedding_repr.last_hidden_state[0,:7] # shape (7 x 1536)
-    print(f"Shape of per-residue embedding of first sequences: {emb_0.shape}")
-    # do the same for the second ([1,:]) sequence in the batch while taking into account different sequence lengths ([1,:8])
-    emb_1 = embedding_repr.last_hidden_state[1,:8] # shape (8 x 1536)
-    # if you want to derive a single representation (per-protein embedding) for the whole protein
-    emb_0_per_protein = emb_0.mean(dim=0) # shape (1536)
-    print(f"Shape of per-protein embedding of first sequences: {emb_0_per_protein.shape}")'''
+    if len(sys.argv) >= 6:
+        output_npzgz = sys.argv[4]
+        max_prot_length = int(sys.argv[5])
+        embeddings = embed_sequences(model_name, fasta_path, caches_path, max_prot_length)
+        print('saving', model_name)
+        np.save(output_npzgz.rstrip(".gz"), embeddings, allow_pickle=False)
+        print('compressing', output_npzgz)
+        run_command(['gzip', output_npzgz.rstrip(".gz")])
+    else:
+        run_embedding_time_benchmark(model_name, fasta_path, caches_path)
