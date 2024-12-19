@@ -40,7 +40,7 @@ process list_taxids{
 }
 
 process prottrans_embs{
-    conda 'env2.txt'
+    conda 'conda_envs/env2.txt'
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -57,7 +57,7 @@ process prottrans_embs{
 }
 
 process process_goa{
-    conda 'env2.txt'
+    conda 'conda_envs/env2.txt'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -77,7 +77,7 @@ process process_goa{
 }
 
 process taxa_profiles{
-    conda 'basic_env.txt'
+    conda 'conda_envs/basic_env.txt'
     publishDir params.release_dir, mode: 'copy'
 
     input:
