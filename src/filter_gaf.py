@@ -1,13 +1,11 @@
-from collections import Counter
 import gzip
-from os import path, mkdir
-import subprocess
+from os import path
 import sys
 import pandas as pd
 from tqdm import tqdm
 
 from gene_ontology import expand_go_set, gos_not_to_use, load_go_graph
-from util import count_lines_large, open_file, run_command, write_file
+from util_base import count_lines_large, open_file, write_file
 
 #manual urls:
 #quickgo:

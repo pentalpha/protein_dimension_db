@@ -1,6 +1,6 @@
 esm_script_path = "esm/scripts/extract.py"
 go_basic_url = "https://purl.obolibrary.org/obo/go/go-basic.obo"
-esm_git_url = "git@github.com:facebookresearch/esm.git"
+esm_git_url = "https://github.com/facebookresearch/esm.git"
 taxallnomy_git_url = "https://github.com/tetsufmbio/taxallnomy.git"
 gocheck_url = "https://current.geneontology.org/ontology/subsets/gocheck_do_not_annotate.json"
 goa_all_url = 'https://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz'
