@@ -5,7 +5,7 @@ go_basic_path = projectDir+"/databases/go-basic.obo"
 goa_raw_path = projectDir+"/databases/goa_uniprot_all.gaf.gz"
 uniprot_path = "${projectDir}/databases/uniprot_sprot.fasta.gz"
 prot_trans_path = "${projectDir}/databases/per-protein.h5"
-taxallnomy_tsv_path = "${projectDir}/databases/databases/taxallnomy.tsv.gz"
+taxallnomy_tsv_path = "${projectDir}/databases/taxallnomy.tsv.gz"
 
 process sort_uniprot{
     publishDir params.release_dir, mode: 'copy'

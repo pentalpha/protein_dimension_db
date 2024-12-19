@@ -13,12 +13,18 @@ class TaxaProfileModel():
     def __init__(self, taxids_to_use: List[str], taxallnomy_df_path: str = None) -> None:
         print('Starting TaxaProfileModel graph')
         self.taxid_parent_lists = {}
-        if taxallnomy_df_path != None and path.exists(taxallnomy_df_path):
-            for rawline in gzip.open(taxallnomy_df_path, 'rt'):
-                cells = rawline.rstrip("\n").split('\t')
-                taxids = [float(x) for x in cells]
-                self.taxid_parent_lists[taxids[0]] = taxids
-                self.taxonomy_depth = len(taxids)
+
+        assert taxallnomy_df_path != None and path.exists(taxallnomy_df_path)
+
+        for rawline in gzip.open(taxallnomy_df_path, 'rt'):
+            cells = rawline.rstrip("\n").split('\t')
+            taxids = [float(x) for x in cells]
+            parent_taxa = list(reversed(taxids[1:]))
+            self.taxid_parent_lists[taxids[0]] = parent_taxa
+        
+        for vec in self.taxid_parent_lists.values():
+            self.taxonomy_depth = len(vec)
+            break
 
         self.results_cache = {}
         self.onehot_cache = {}
@@ -27,11 +33,27 @@ class TaxaProfileModel():
     def calc(self, taxid):
         if taxid in self.results_cache:
             return self.results_cache[taxid]
+        
+        if not taxid in self.taxid_parent_lists:
+            print(taxid, 'not found in parent lists', file=sys.stderr)
+            print(len(self.taxid_parent_lists), 'length of parent lists', file=sys.stderr)
+            print('some valid keys:', file=sys.stderr)
+            m = 3
+            for key in self.taxid_parent_lists.keys():
+                print(key, type(key))
+                m -= 1
+                if m == 0:
+                    break
+            quit(1)
+        
         taxid_parents = self.taxid_parent_lists[taxid]
         similarities = []
         for common_taxid in self.taxids_to_use:
-            n_equals = sum([t1 == t2 for t1, t2 in zip(taxid_parents, self.taxid_parent_lists[common_taxid])])
-            similarities.append(((n_equals)/self.taxonomy_depth))
+            if common_taxid == taxid:
+                similarities.append(1.0)
+            else:
+                n_equals = sum([t1 == t2 for t1, t2 in zip(taxid_parents, self.taxid_parent_lists[common_taxid])])
+                similarities.append((n_equals/self.taxonomy_depth)*0.95)
         result = np.array(similarities)
         if not taxid in self.results_cache:
             self.results_cache[taxid] = result
