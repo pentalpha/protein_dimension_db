@@ -1,6 +1,6 @@
 # 🧬🖥 Protein Dimension DB 🖥🧬
 
-Datasets with embeddings and other representations for all proteins in Uniprot/Swiss-Prot
+Datasets with PLM embeddings, GO annotations and taxonomy representations for all proteins in Uniprot/Swiss-Prot
 
 ## Current Release
 
@@ -25,7 +25,7 @@ All Gene Ontology annotations of Swiss-Prot proteins, excluding computational, n
 | go.experimental.bp.tsv.gz | Biological Processes |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.bp.tsv.gz)       |
 | go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz)       |
 
-### Embeddings 🔢
+### Protein Language Model Embeddings 🔢
 
 Several models are used to create computational descriptions of the Swiss-Prot proteins:
 
@@ -39,7 +39,7 @@ Several models are used to create computational descriptions of the Swiss-Prot p
 
 ### Taxonomy 🔢
 
-Numerical representations of the NCBI taxon IDs:
+Numerical representations of the NCBI taxon IDs of each protein. Instead of the original NCBI taxonomy tree, we use the custom taxonomy created by [taxallnomy](https://github.com/tetsufmbio/taxallnomy) project, because it attributes the same number of parent taxa (genus, family, order...) to each species ID. 
 
 |             Name            |                                          Description                                         | Vector Length 📏 | Download Links 🔗 |
 |:---------------------------:|:--------------------------------------------------------------------------------------:|:-------------:|:-------------:|
@@ -60,10 +60,11 @@ Numerical representations of the NCBI taxon IDs:
 
 ## Create Release
 
-Requirements:
+Requirements to generate the datasets from scratch:
 - Nextflow >= 24
 - Mamba package manager
-- Internet connection to download original datasets
+- Fast and stable internet connection to download original datasets
+- At least 16GB of RAM
 
 ```
 $ nextflow run prepare_requirements.nf
