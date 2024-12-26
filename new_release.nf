@@ -6,6 +6,7 @@ goa_raw_path = projectDir+"/databases/goa_uniprot_all.gaf.gz"
 uniprot_path = "${projectDir}/databases/uniprot_sprot.fasta.gz"
 prot_trans_path = "${projectDir}/databases/per-protein.h5"
 taxallnomy_tsv_path = "${projectDir}/databases/taxallnomy.tsv.gz"
+esm_cache_path = "${params.release_dir}/../fairesm_cache"
 max_protein_len = 1800
 
 process sort_uniprot{
@@ -36,6 +37,27 @@ process filter_large_proteins{
     script:
     """
     python $projectDir/src/filter_fasta_by_len.py $sorted_uniprot uniprot_sorted.not_large.fasta $max_protein_len
+    """
+}
+
+process calc_esm_embeddings{
+    conda 'conda_envs/pytorch.yml'
+    publishDir params.release_dir, mode: 'copy'
+    
+    input:
+        path sorted_uniprot_not_large
+        path all_uniprot_ids
+    
+    output:
+        path "emb.esm2_t6.npy.gz"
+        path "emb.esm2_t12.npy.gz"
+        path "emb.esm2_t30.npy.gz"
+        path "emb.esm2_t33.npy.gz"
+        path "emb.esm2_t36.npy.gz"
+
+    script:
+    """
+    python $projectDir/src/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids
     """
 }
 
@@ -117,6 +139,7 @@ process taxa_profiles{
 workflow {
     sort_uniprot(uniprot_path)
     filter_large_proteins(sort_uniprot.out.uniprot_sorted)
+    calc_esm_embeddings(filter_large_proteins.out.uniprot_not_large, sort_uniprot.out.ids)
     //list_taxids(uniprot_path, sort_uniprot.out.ids)
     //prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
     //process_goa(sort_uniprot.out.ids)

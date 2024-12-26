@@ -72,6 +72,13 @@ def fasta_n_seqs(fasta_path):
             n += 1
     return n
 
+def fasta_total_seqlength(fasta_path):
+    n = 0
+    for rawline in open_file(fasta_path):
+        if not rawline.startswith('>'):
+            n += len(rawline)-1
+    return n
+
 def fasta_equal_split(fasta_path, n_fastas: int):
     n_seqs = fasta_n_seqs(fasta_path)
     seqs_per_fasta = int(n_seqs / n_fastas)
@@ -91,6 +98,41 @@ def fasta_equal_split(fasta_path, n_fastas: int):
                 current_fasta.write(seq+'\n')
                 current_total += 1
                 if current_total == seqs_per_fasta:
+                    current_fasta.close()
+                    fastas.append(current_fasta_path)
+                    current_fasta_path = fasta_path + '.'+str(len(fastas)+1)+'.fasta'
+                    current_fasta = open(current_fasta_path, 'w')
+                    current_total = 0
+            last_title = rawline.lstrip('>').rstrip('\n')
+            seq = ""
+        else:
+            seq += rawline.rstrip('\n')
+    current_fasta.write('>'+last_title+'\n')
+    current_fasta.write(seq+'\n')
+    current_fasta.close()
+    fastas.append(current_fasta_path)
+
+    return fastas
+
+def fasta_equal_split_by_len(fasta_path, n_fastas: int):
+    total_seq = fasta_total_seqlength(fasta_path)
+    subfasta_len = int(total_seq / n_fastas)
+    print('Split', fasta_path, 'with', total_seq, 'sequences',
+          'into', n_fastas, 'fastas with', subfasta_len, 'each')
+    
+    fastas = []
+    current_total = 0
+    seq = ""
+    last_title = None
+    current_fasta_path = fasta_path + '.'+str(len(fastas)+1)+'.fasta'
+    current_fasta = open(current_fasta_path, 'w')
+    for rawline in open_file(fasta_path):
+        if rawline.startswith('>'):
+            if last_title:
+                current_fasta.write('>'+last_title+'\n')
+                current_fasta.write(seq+'\n')
+                current_total += len(seq)
+                if current_total >= subfasta_len:
                     current_fasta.close()
                     fastas.append(current_fasta_path)
                     current_fasta_path = fasta_path + '.'+str(len(fastas)+1)+'.fasta'

@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from tqdm import tqdm
 
 from util_base import proj_dir, run_command
-from fasta import fasta_equal_split, remove_from_fasta
+from fasta import fasta_equal_split, fasta_equal_split_by_len, remove_from_fasta
 
 esm_script_path = proj_dir + '/libs/esm/scripts/extract.py'
 
@@ -63,13 +63,14 @@ class ESM_Embedder():
         'esm2_t36_3B_UR50D': {'batch_max': 5000, 'processes': 1},
         'esm2_t33_650M_UR50D': {'batch_max': 10000, 'processes': 1},
         'esm2_t30_150M_UR50D': {'batch_max': 10000, 'processes': 1},
-        'esm2_t12_35M_UR50D': {'batch_max': 400000, 'processes': 2},
-        'esm2_t6_8M_UR50D': {'batch_max': 600000, 'processes': 2}
+        'esm2_t12_35M_UR50D': {'batch_max': 200000, 'processes': 2},
+        'esm2_t6_8M_UR50D': {'batch_max': 300000, 'processes': 2}
     }
 
     def __init__(self, cache_dir, model_full_name) -> None:
         self.model_name = model_full_name.split('/')[-1]
-        assert self.model_name in ESM_Embedder.models_names
+        assert self.model_name in ESM_Embedder.models_names, (model_full_name 
+            + ' / '+ self.model_name + ' not in' + str(ESM_Embedder.models_names))
         self.processes = ESM_Embedder.models_params[self.model_name]['processes']
         self.batch_max = ESM_Embedder.models_params[self.model_name]['batch_max']
         self.model_dim = ESM_Embedder.models_dims[self.model_name]
@@ -136,7 +137,7 @@ class ESM_Embedder():
                 return
             input_fasta = to_process_fasta
         
-        fasta_parts = fasta_equal_split(input_fasta, self.processes)
+        fasta_parts = fasta_equal_split_by_len(input_fasta, self.processes)
         for f in fasta_parts:
             print(f)
         
@@ -162,8 +163,18 @@ class ESM_Embedder():
 
 if __name__ == "__main__":
     fasta_input_path = sys.argv[1]
-    model_full_name = sys.argv[2]
-    cache_dir = sys.argv[3]
+    cache_dir = sys.argv[2]
+    all_uniprot_ids_path = sys.argv[3]
+    models_meta_info_csv_path = proj_dir+'/others/model_sizes.csv'
+    facebook_models = []
 
-    embedder = ESM_Embedder(cache_dir, model_full_name)
-    embedder.calc_embeddings(fasta_input_path)
+    for rawline in open(models_meta_info_csv_path, 'r'):
+        cells = rawline.rstrip('\n').split(',')
+        model_full_name = cells[0].strip('"')
+        if 'facebook' in model_full_name:
+            print(cells)
+            facebook_models.append(model_full_name)
+
+    for model_full_name in facebook_models:
+        embedder = ESM_Embedder(cache_dir, model_full_name)
+        embedder.calc_embeddings(fasta_input_path)
