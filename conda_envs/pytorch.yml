@@ -2,6 +2,7 @@ name: pytorch
 channels:
   - pytorch
   - defaults
+  - conda-forge
 dependencies:
   - _libgcc_mutex=0.1=main
   - _openmp_mutex=5.1=1_gnu
@@ -46,6 +47,7 @@ dependencies:
       - accelerate==1.2.1
       - certifi==2024.12.14
       - charset-normalizer==3.4.0
+      - fair-esm==2.0.0
       - fsspec==2024.10.0
       - huggingface-hub==0.27.0
       - idna==3.10
@@ -60,4 +62,4 @@ dependencies:
       - tqdm==4.67.1
       - transformers==4.47.0
       - urllib3==2.2.3
-prefix: /home/pitagoras/miniconda3/envs/pytorch
+prefix: /home/pita/miniforge3/envs/pytorch

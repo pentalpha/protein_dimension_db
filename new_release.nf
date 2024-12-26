@@ -6,6 +6,7 @@ goa_raw_path = projectDir+"/databases/goa_uniprot_all.gaf.gz"
 uniprot_path = "${projectDir}/databases/uniprot_sprot.fasta.gz"
 prot_trans_path = "${projectDir}/databases/per-protein.h5"
 taxallnomy_tsv_path = "${projectDir}/databases/taxallnomy.tsv.gz"
+max_protein_len = 1800
 
 process sort_uniprot{
     publishDir params.release_dir, mode: 'copy'
@@ -20,6 +21,21 @@ process sort_uniprot{
     script:
     """
     python $projectDir/src/sort_uniprot.py $original_uniprot ids.txt uniprot_sorted.fasta.gz
+    """
+}
+
+process filter_large_proteins{
+    publishDir params.release_dir, mode: 'copy'
+    
+    input:
+        path sorted_uniprot
+    
+    output:
+        path "uniprot_sorted.not_large.fasta", emit: uniprot_not_large
+
+    script:
+    """
+    python $projectDir/src/filter_fasta_by_len.py $sorted_uniprot uniprot_sorted.not_large.fasta $max_protein_len
     """
 }
 
@@ -100,8 +116,9 @@ process taxa_profiles{
 
 workflow {
     sort_uniprot(uniprot_path)
-    list_taxids(uniprot_path, sort_uniprot.out.ids)
+    filter_large_proteins(sort_uniprot.out.uniprot_sorted)
+    //list_taxids(uniprot_path, sort_uniprot.out.ids)
     //prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
-    process_goa(sort_uniprot.out.ids)
-    taxa_profiles(process_goa.out.go_experimental_mf, list_taxids.out.taxids)
+    //process_goa(sort_uniprot.out.ids)
+    //taxa_profiles(process_goa.out.go_experimental_mf, list_taxids.out.taxids)
 }
