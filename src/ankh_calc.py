@@ -46,7 +46,7 @@ class Embedder():
         print('Sequences in cache:', len(self.cached_seqs))
     
     def aminos_to_embeddings(self, protein_sequences):
-        torch.set_num_threads(int(multiprocessing.cpu_count()*0.7))
+        #torch.set_num_threads(int(multiprocessing.cpu_count()*0.7))
         protein_sequences = [list(seq) for seq in protein_sequences]
         outputs = self.tokenizer.batch_encode_plus(protein_sequences, 
             add_special_tokens=True, 
@@ -73,7 +73,7 @@ class Embedder():
             json.dump(not_cached, output_stream)
     
     def calc_embeddings_batched(self, seqs, use_cache=True):
-        parts = 200
+        parts = 100
         part_size = int(len(seqs)/parts)
         seq_chunks = chunks(seqs, part_size)
         iterator = tqdm(total=parts)
