@@ -41,7 +41,7 @@ process filter_large_proteins{
 }
 
 process calc_esm_embeddings{
-    conda 'conda_envs/pytorch.yml'
+    conda 'conda_envs/pytorch2.yml'
     publishDir params.release_dir, mode: 'copy'
     
     input:

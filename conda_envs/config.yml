@@ -1,7 +1,0 @@
-max_taxons: 256
-go_annotation_raw: databases/goa_uniprot_all.gaf.gz
-esm_processes: 30
-esm_models_to_use: [6, 12, 30, 33]
-parsing_processes: 8
-release_dir: /home/pitagoras/data/dimension_db/release_1
-min_annotations: 1

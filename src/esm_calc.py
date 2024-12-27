@@ -5,6 +5,7 @@ import sys
 import torch
 from multiprocessing import Pool
 from tqdm import tqdm
+import numpy as np
 
 from util_base import proj_dir, run_command
 from fasta import fasta_equal_split, fasta_equal_split_by_len, remove_from_fasta
@@ -60,11 +61,11 @@ class ESM_Embedder():
     }
 
     models_params = {
-        'esm2_t36_3B_UR50D': {'batch_max': 5000, 'processes': 1},
+        'esm2_t36_3B_UR50D': {'batch_max': 10000, 'processes': 1},
         'esm2_t33_650M_UR50D': {'batch_max': 10000, 'processes': 1},
-        'esm2_t30_150M_UR50D': {'batch_max': 10000, 'processes': 1},
-        'esm2_t12_35M_UR50D': {'batch_max': 200000, 'processes': 2},
-        'esm2_t6_8M_UR50D': {'batch_max': 300000, 'processes': 2}
+        'esm2_t30_150M_UR50D': {'batch_max': 100000, 'processes': 1},
+        'esm2_t12_35M_UR50D': {'batch_max': 200000, 'processes': 1},
+        'esm2_t6_8M_UR50D': {'batch_max': 600000, 'processes': 1}
     }
 
     def __init__(self, cache_dir, model_full_name) -> None:
@@ -75,6 +76,7 @@ class ESM_Embedder():
         self.batch_max = ESM_Embedder.models_params[self.model_name]['batch_max']
         self.model_dim = ESM_Embedder.models_dims[self.model_name]
         self.n_layers = ESM_Embedder.models_n_layers[self.model_name]
+        self.shape = (self.model_dim,)
 
         print('Loading fair-esm embedding utility')
         self.embs_dir = cache_dir + '/' + model_full_name.replace('/', '_') + '_cache'
@@ -98,29 +100,25 @@ class ESM_Embedder():
         else:
             print(uniprotid, 'not found at dictionary with', 
                 len(self.calculated), 'keys', file=sys.stderr)
-            return None
+            empty_vec = np.empty(self.shape)
+            empty_vec.fill(np.nan)
+            return empty_vec
     
     def get_embeddings(self,uniprotids: list):
         print('Loading embeddings for', len(uniprotids), 'proteins')
         embs_list = [self.load_embedding(ID) for ID in tqdm(uniprotids)]
         return embs_list
     
-    '''def export_embeddings(self, uniprotids: list, output_path: str):
+    def export_embeddings(self, uniprotids: list, output_path: str):
         embs_list = self.get_embeddings(uniprotids)
 
-        proccesed_uniprotids = [uniprotids[i] for i in range(len(embs_list)) if embs_list[i]]
-        proccesed_embs_list = [embs_list[i] for i in range(len(embs_list)) if embs_list[i]]
-        print(len(embs_list) - len(proccesed_embs_list), 'protein IDs had invalid embeddings')
-        print('saving embeddings for', len(proccesed_uniprotids), 'proteins')
+        all_embeddings = np.asarray(embs_list)
+        print('Saving to file', output_path)
+        np.save(output_path, all_embeddings, allow_pickle=False)
+        print('compressing', output_path)
+        run_command(['gzip', output_path])
 
-        features_ids_path = output_path.replace('.tsv.gz', '_ids.txt')
-        open(features_ids_path, 'w').write('\n'.join(proccesed_uniprotids))
-        output = write_file(output_path)
-        for embs in proccesed_embs_list:
-            output.write('\t'.join([str(x) for x in embs]) + '\n')
-        output.close()
-
-        return features_ids_path, output_path'''
+        return output_path + '.gz'
 
     def calc_embeddings(self, input_fasta: str):
         calculated_proteins = self.calculated
@@ -165,16 +163,20 @@ if __name__ == "__main__":
     fasta_input_path = sys.argv[1]
     cache_dir = sys.argv[2]
     all_uniprot_ids_path = sys.argv[3]
+    all_ids = open(all_uniprot_ids_path, 'r').read().split('\n')
     models_meta_info_csv_path = proj_dir+'/others/model_sizes.csv'
     facebook_models = []
 
     for rawline in open(models_meta_info_csv_path, 'r'):
         cells = rawline.rstrip('\n').split(',')
         model_full_name = cells[0].strip('"')
+        short_name = cells[-1].strip('"')
         if 'facebook' in model_full_name:
             print(cells)
-            facebook_models.append(model_full_name)
+            facebook_models.append((model_full_name, short_name))
 
-    for model_full_name in facebook_models:
+    for model_full_name, short_name in facebook_models:
         embedder = ESM_Embedder(cache_dir, model_full_name)
         embedder.calc_embeddings(fasta_input_path)
+        output_path = 'emb.'+short_name+'.npy'
+        embedder.export_embeddings(all_ids, output_path)
