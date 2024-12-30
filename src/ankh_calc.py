@@ -73,7 +73,7 @@ class Embedder():
             json.dump(not_cached, output_stream)
     
     def calc_embeddings_batched(self, seqs, use_cache=True):
-        parts = 100
+        parts = 500
         part_size = int(len(seqs)/parts)
         seq_chunks = chunks(seqs, part_size)
         iterator = tqdm(total=parts)
