@@ -116,3 +116,21 @@ def get_items_at_indexes(all_items, indexes):
     for i in indexes:
         new_items.append(all_items[i])
     return new_items
+
+def split_list_by_maxtokens(all_items, max_items):
+    current = 0
+    lists = []
+    current_list = []
+    for item in all_items:
+        if (current + len(item)) > max_items and len(current_list) > 0:
+            lists.append(current_list)
+            current_list = []
+            current = 0
+        
+        current += len(item)
+        current_list.append(item)
+
+    if len(current_list) > 0:
+        lists.append(current_list)
+
+    return lists

@@ -12,7 +12,7 @@ import ankh
 import torch
 
 from sort_uniprot import read_uniprot_fasta
-from util_base import chunks, run_command
+from util_base import chunks, run_command, split_list_by_maxtokens
 
 class Embedder():
     def __init__(self, is_large, caches_dir) -> None:
@@ -73,12 +73,14 @@ class Embedder():
             json.dump(not_cached, output_stream)
     
     def calc_embeddings_batched(self, seqs, use_cache=True):
-        parts = 500
-        part_size = int(len(seqs)/parts)
-        seq_chunks = chunks(seqs, part_size)
-        iterator = tqdm(total=parts)
+        #parts = 500
+        #part_size = int(len(seqs)/parts)
+        #seq_chunks = chunks(seqs, part_size)
+        seq_chunks = split_list_by_maxtokens(seqs, 100000)
+        total_iter = len(seq_chunks)
         embeddings_list = []
         started = time()
+        iterator = None
         for seq_chunk in seq_chunks:
             not_cached = [(i, seq_chunk[i]) 
                           for i in range(len(seq_chunk)) 
@@ -90,20 +92,24 @@ class Embedder():
                         for s in range(len(seq_chunk))]
             
             if len(not_cached_seqs) > 0:
+                if not iterator:
+                    iterator = tqdm(total=total_iter)
                 print('Chunk is', (1.0-(len(not_cached_seqs)/len(seq_chunk)))*100, '% cached')
                 calculated_embs = self.aminos_to_embeddings(not_cached_seqs)
                 for i, emb in zip(not_cached_indexes, calculated_embs):
                     new_embs[i] = emb
             else:
-                print('Cached chunk')
+                total_iter -= 1
             
             if use_cache:
                 self.cache_results(seq_chunk, new_embs)
-            iterator.update(1)
+            if iterator:
+                iterator.update(1)
             embeddings_list += new_embs
         #embeddings_list = [self.amino_to_embedding(s) for s in iterator]
         elapsed = time() - started
-        iterator.close()
+        if iterator:
+            iterator.close()
         return embeddings_list, elapsed
 
 def embed_sequences(is_large, fasta_path, caches_path):
