@@ -8,24 +8,22 @@ import sys
 from time import time
 import numpy as np
 from tqdm import tqdm
-import ankh
-import torch
+from esm.models.esmc import ESMC
+from esm.sdk.api import ESMProtein, LogitsConfig
 
 from sort_uniprot import read_uniprot_fasta
 from util_base import chunks, run_command, split_list_by_maxtokens
 
-class Embedder():
-    def __init__(self, is_large, caches_dir) -> None:
-        if is_large:
-            self.model, self.tokenizer = ankh.load_large_model()
-            self.model_name = 'ankh-large'
-            self.emb_len = 1536
-        else:
-            self.model, self.tokenizer = ankh.load_base_model()
-            self.model_name = 'ankh-base'
-            self.emb_len = 768
+class ESMCEmbedder():
+    def __init__(self, model_name, caches_dir) -> None:
+        client = ESMC.from_pretrained(model_name).to("cpu") # or "cpu"
+        if model_name == 'esmc_600m':
+            self.emb_len = 1152
+        elif model_name == 'esmc_300m':
+            self.emb_len = 960
+        self.model_name = model_name
         self.emb_shape = (self.emb_len,)
-        self.model.eval()
+        
         self.cache_dir  = caches_dir + '/'+self.model_name
 
         self.base_cache_name = self.cache_dir+'/'+self.model_name+'_CACHEN_.json.gz'
@@ -46,6 +44,7 @@ class Embedder():
         print('Sequences in cache:', len(self.cached_seqs))
     
     def aminos_to_embeddings(self, protein_sequences):
+        proteins = [ESMProtein(sequence=s) for s in protein_sequences]
         #torch.set_num_threads(int(multiprocessing.cpu_count()*0.7))
         protein_sequences = [list(seq) for seq in protein_sequences]
         outputs = self.tokenizer.batch_encode_plus(protein_sequences, 
@@ -124,7 +123,7 @@ if __name__ == "__main__":
 
     nonetype = type(None)
 
-    for is_large in [True]:
+    for is_large in [False, True]:
         if is_large:
             output_np = 'emb.ankh_large.npy'
         else:

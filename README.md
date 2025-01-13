@@ -32,8 +32,9 @@ Several models are used to create computational descriptions of the Swiss-Prot p
 |             Name            |                                          Model 🤖                                         | Vector Length 📏 | Download Links 🔗 |
 |:---------------------------:|:--------------------------------------------------------------------------------------:|:-------------:|:-------------:|
 |     emb.prottrans.npy.gz    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.prottrans.npy.gz)  |
-|     emb.ankh_large.npy    | ankh-large |      1536     |   Upcoming  |
-|     emb.ankh_base.npy    | ankh-base |      768     |   Upcoming  |
+|     emb.ankh_large.npy    | ankh-large |      1536     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_large.npy.gz)  |
+|     emb.ankh_base.npy    | ankh-base |      768     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_base.npy.gz)  |
+|     emb.esm2_t36.npy.gz     |                                   esm2_t36_3B_UR50D                                  |      2560     |    Upcoming   |
 |     emb.esm2_t33.npy.gz     |                                   esm2_t33_650M_UR50D                                  |      1280     |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_33.npy.gz)   |
 |     emb.esm2_t30.npy.gz     |                                   esm2_t30_150M_UR50D                                  |      640      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_30.npy.gz)   |
 |     emb.esm2_t12.npy.gz     |                                   esm2_t12_35M_UR50D                                   |      480      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t12.npy.gz)   |
