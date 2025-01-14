@@ -2,7 +2,7 @@ from glob import glob
 import gzip
 import json
 from multiprocessing import Pool
-import multiprocessing
+#import multiprocessing
 from os import mkdir, path
 import sys
 from time import time
@@ -10,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 import ankh
 import torch
+import polars as pl
 
 from sort_uniprot import read_uniprot_fasta
 from util_base import chunks, run_command, split_list_by_maxtokens
@@ -124,11 +125,11 @@ if __name__ == "__main__":
 
     nonetype = type(None)
 
-    for is_large in [True]:
+    for is_large in [False,True]:
         if is_large:
-            output_np = 'emb.ankh_large.npy'
+            output_pq = 'emb.ankh_large.parquet'
         else:
-            output_np = 'emb.ankh_base.npy'
+            output_pq = 'emb.ankh_base.parquet'
         
         seq_names, embeddings = embed_sequences(is_large, fasta_path, caches_path)
 
@@ -148,7 +149,13 @@ if __name__ == "__main__":
         
         print('Converting to numpy matrix')
         all_embeddings = np.asarray(all_embeddings)
-        print('Saving to file', output_np)
-        np.save(output_np, all_embeddings, allow_pickle=False)
-        print('compressing', output_np)
-        run_command(['gzip', output_np])
+        print('Creating polars df')
+        df = pl.DataFrame({
+            'id': all_ids,
+            'emb': all_embeddings
+        })
+        print('Saving to file', output_pq)
+        df.write_parquet(output_pq)
+        #np.save(output_np, all_embeddings, allow_pickle=False)
+        #print('compressing', output_np)
+        #run_command(['gzip', output_np])#

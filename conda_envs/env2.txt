@@ -2,18 +2,20 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 @EXPLICIT
-https://repo.anaconda.com/pkgs/main/linux-64/_libgcc_mutex-0.1-main.conda
+https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
 https://repo.anaconda.com/pkgs/main/linux-64/blas-1.0-mkl.conda
-https://repo.anaconda.com/pkgs/main/linux-64/ca-certificates-2024.11.26-h06a4308_0.conda
+https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2024.12.14-hbcca054_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/ld_impl_linux-64-2.40-h12ee557_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libgfortran5-11.2.0-h1234567_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libstdcxx-ng-11.2.0-h1234567_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/python_abi-3.13-0_cp313.conda
 https://repo.anaconda.com/pkgs/main/noarch/tzdata-2024b-h04d1e81_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libgfortran-ng-11.2.0-h00389a5_1.conda
-https://repo.anaconda.com/pkgs/main/linux-64/libgomp-11.2.0-h1234567_1.conda
-https://repo.anaconda.com/pkgs/main/linux-64/_openmp_mutex-5.1-1_gnu.conda
-https://repo.anaconda.com/pkgs/main/linux-64/libgcc-ng-11.2.0-h1234567_1.conda
+https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.2.0-h77fa898_1.conda
+https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+https://conda.anaconda.org/conda-forge/linux-64/libgcc-14.2.0-h77fa898_1.conda
+https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-14.2.0-h69a702a_1.conda
+https://conda.anaconda.org/conda-forge/linux-64/openssl-3.4.0-h7b32b05_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/bzip2-1.0.8-h5eee18b_6.conda
 https://repo.anaconda.com/pkgs/main/linux-64/c-ares-1.19.1-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/expat-2.6.3-h6a678d5_0.conda
@@ -22,11 +24,11 @@ https://repo.anaconda.com/pkgs/main/linux-64/libffi-3.4.4-h6a678d5_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libmpdec-4.0.0-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libuuid-1.41.5-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/ncurses-6.4-h6a678d5_0.conda
-https://repo.anaconda.com/pkgs/main/linux-64/openssl-3.0.15-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/tbb-2021.8.0-hdb19cb5_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/xz-5.4.6-h5eee18b_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/yaml-0.2.5-h7b6447c_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/zlib-1.2.13-h5eee18b_1.conda
+https://repo.anaconda.com/pkgs/main/linux-64/hdf5-1.12.1-h2b7332f_3.conda
 https://repo.anaconda.com/pkgs/main/linux-64/intel-openmp-2023.1.0-hdb19cb5_46306.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libedit-3.1.20230828-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libnghttp2-1.57.0-h2d74bed_0.conda
@@ -39,9 +41,9 @@ https://repo.anaconda.com/pkgs/main/linux-64/sqlite-3.45.3-h5eee18b_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/libcurl-8.9.1-h251f7ec_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/python-3.13.0-hf623796_100_cp313.conda
 https://repo.anaconda.com/pkgs/main/linux-64/colorama-0.4.6-py313h06a4308_0.conda
-https://repo.anaconda.com/pkgs/main/linux-64/hdf5-1.12.1-h2b7332f_3.conda
 https://repo.anaconda.com/pkgs/main/linux-64/mkl-service-2.4.0-py313h5eee18b_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/networkx-3.3-py313h06a4308_0.conda
+https://conda.anaconda.org/conda-forge/noarch/packaging-24.2-pyhd8ed1ab_2.conda
 https://repo.anaconda.com/pkgs/main/noarch/python-tzdata-2023.3-pyhd3eb1b0_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/pytz-2024.1-py313h06a4308_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/pyyaml-6.0.2-py313h5eee18b_0.conda
@@ -53,6 +55,7 @@ https://conda.anaconda.org/bioconda/noarch/obonet-1.1.0-pyh7e72e81_0.tar.bz2
 https://repo.anaconda.com/pkgs/main/linux-64/pip-24.2-py313h06a4308_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/python-dateutil-2.9.0post0-py313h06a4308_2.conda
 https://repo.anaconda.com/pkgs/main/noarch/tqdm-4.63.0-pyhd3eb1b0_0.conda
+https://conda.anaconda.org/conda-forge/linux-64/polars-1.17.1-py313hae41bca_1.conda
 https://repo.anaconda.com/pkgs/main/linux-64/bottleneck-1.4.2-py313hf0014fa_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/h5py-3.12.1-py313hc0802c4_0.conda
 https://repo.anaconda.com/pkgs/main/linux-64/mkl_fft-1.3.11-py313h5eee18b_0.conda

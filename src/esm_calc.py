@@ -6,6 +6,7 @@ import torch
 from multiprocessing import Pool
 from tqdm import tqdm
 import numpy as np
+import polars as pl
 
 from util_base import proj_dir, run_command
 from fasta import fasta_equal_split, fasta_equal_split_by_len, remove_from_fasta
@@ -114,11 +115,17 @@ class ESM_Embedder():
 
         all_embeddings = np.asarray(embs_list)
         print('Saving to file', output_path)
-        np.save(output_path, all_embeddings, allow_pickle=False)
-        print('compressing', output_path)
-        run_command(['gzip', output_path])
+        df = pl.DataFrame({
+            'id': uniprotids,
+            'emb': all_embeddings
+        })
+        print('Saving to file', output_path)
+        df.write_parquet(output_path)
+        #np.save(output_path, all_embeddings, allow_pickle=False)
+        #print('compressing', output_path)
+        #run_command(['gzip', output_path])
 
-        return output_path + '.gz'
+        return output_path
 
     def calc_embeddings(self, input_fasta: str):
         calculated_proteins = self.calculated
@@ -178,5 +185,5 @@ if __name__ == "__main__":
     for model_full_name, short_name in facebook_models:
         embedder = ESM_Embedder(cache_dir, model_full_name)
         embedder.calc_embeddings(fasta_input_path)
-        output_path = 'emb.'+short_name+'.npy'
+        output_path = 'emb.'+short_name+'.parquet'
         embedder.export_embeddings(all_ids, output_path)

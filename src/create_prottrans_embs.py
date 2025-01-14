@@ -3,6 +3,7 @@ import sys
 import h5py
 import numpy as np
 from tqdm import tqdm
+import polars as pl
 
 if __name__ == '__main__':
     #"${proj_dir}/databases/per-protein.h5"
@@ -39,5 +40,11 @@ if __name__ == '__main__':
     
     print('Creating numpy matrix')
     sorted_embs = np.asarray(sorted_embs)
-    print('Saving in .npy.gz')
-    np.save(gzip.open(output_file, 'w'), sorted_embs)
+    df = pl.DataFrame({
+        'id': ids_list,
+        'emb': sorted_embs
+    })
+    print('Saving to file', output_file)
+    df.write_parquet(output_file)
+    #print('Saving in .npy.gz')
+    #np.save(gzip.open(output_file, 'w'), sorted_embs)

@@ -166,6 +166,7 @@ dependencies:
       - packaging==24.2
       - parso==0.8.4
       - pexpect==4.9.0
+      - polars==1.19.0
       - prompt-toolkit==3.0.48
       - propcache==0.2.1
       - ptyprocess==0.7.0
