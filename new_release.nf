@@ -63,7 +63,7 @@ process calc_esm_embeddings{
 }
 
 process calc_ankh_embeddings{
-    conda 'conda_envs/pytorch2.yml'
+    conda 'conda_envs/ankh.yml'
     publishDir params.release_dir, mode: 'copy'
     
     input:
