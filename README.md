@@ -29,16 +29,16 @@ All Gene Ontology annotations of Swiss-Prot proteins, excluding computational, n
 
 Several models are used to create computational descriptions of the Swiss-Prot proteins:
 
-|             Name            |                                          Model 🤖                                         | Vector Length 📏 | Download Links 🔗 |
-|:---------------------------:|:--------------------------------------------------------------------------------------:|:-------------:|:-------------:|
-|     emb.prottrans.parquet    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.prottrans.parquet)  |
-|     emb.ankh_large.parquet    | ankh-large |      1536     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_large.parquet)  |
-|     emb.ankh_base.parquet    | ankh-base |      768     |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_base.parquet)  |
-|     emb.esm2_t36.parquet     |                                   esm2_t36_3B_UR50D                                  |      2560     |    Upcoming   |
-|     emb.esm2_t33.parquet     |                                   esm2_t33_650M_UR50D                                  |      1280     |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_33.parquet)   |
-|     emb.esm2_t30.parquet     |                                   esm2_t30_150M_UR50D                                  |      640      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_30.parquet)   |
-|     emb.esm2_t12.parquet     |                                   esm2_t12_35M_UR50D                                   |      480      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t12.parquet)   |
-|      emb.esm2_t6.parquet     |                                    esm2_t6_8M_UR50D                                    |      320      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t6.parquet)   |
+|             Name            |                                          Model 🤖                                         | Vector Length 📏 | File Size | Download Links 🔗 |
+|:---------------------------:|:--------------------------------------------------------------------------------------:|:------------:|:------------:|:------------:|
+|     emb.prottrans.parquet    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     | 1.3G |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.prottrans.parquet)  |
+|     emb.ankh_large.parquet    | ankh-large |      1536     | 3.4G |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_large.parquet)  |
+|     emb.ankh_base.parquet    | ankh-base |      768     | 1.7G |   [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_base.parquet)  |
+|     emb.esm2_t36.parquet     |                                   esm2_t36_3B_UR50D                                  |      2560     | 5.7G |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t36.parquet)  |
+|     emb.esm2_t33.parquet     |                                   esm2_t33_650M_UR50D                                  |      1280     | 2.8G |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t33.parquet)   |
+|     emb.esm2_t30.parquet     |                                   esm2_t30_150M_UR50D                                  |      640      | 1.4G |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t30.parquet)   |
+|     emb.esm2_t12.parquet     |                                   esm2_t12_35M_UR50D                                   |      480      | 1G |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t12.parquet)   |
+|      emb.esm2_t6.parquet     |                                    esm2_t6_8M_UR50D                                    |      320      | 700M |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t6.parquet)   |
 
 ### Taxonomy 🔢
 
