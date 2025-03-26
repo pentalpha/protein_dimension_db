@@ -2,9 +2,9 @@ import json
 import networkx as nx
 import obonet
 
-from util import go_not_use_path, go_basic_path
+#from util import go_not_use_path, go_basic_path
 
-def gos_not_to_use():
+def gos_not_to_use(go_not_use_path):
     notuse_json = json.load(open(go_not_use_path, 'r'))
     nodes = notuse_json['graphs'][0]['nodes']
     ids = [nodes[i]['id']
@@ -12,7 +12,7 @@ def gos_not_to_use():
     goids = ['GO:'+x.split('_')[-1] for x in ids if 'GO_' in x]
     return set(goids)
 
-def load_go_graph():
+def load_go_graph(go_basic_path):
     graph = obonet.read_obo(go_basic_path)
     return graph
 

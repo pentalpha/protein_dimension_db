@@ -70,7 +70,14 @@ Requirements to generate the datasets from scratch:
 - Fast and stable internet connection to download original datasets
 - At least 16GB of RAM
 
+Test:
 ```
-$ nextflow run prepare_requirements.nf
-$ nextflow run new_release.nf --release_dir <path to generate database at>
+$ mkdir test
+$ nextflow run prepare_requirements.nf --mode test --release_dir ~/test
+```
+
+Full release:
+```
+$ mkdir <path to generate database at>
+$ nextflow run prepare_requirements.nf --mode release --release_dir <path to generate database at>
 ```

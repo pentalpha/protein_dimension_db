@@ -157,11 +157,13 @@ process taxa_profiles{
 
 workflow {
     sort_uniprot(uniprot_path)
-    prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
     filter_large_proteins(sort_uniprot.out.uniprot_sorted)
-    calc_ankh_embeddings(filter_large_proteins.out.uniprot_not_large, sort_uniprot.out.ids)
-    calc_esm_embeddings(filter_large_proteins.out.uniprot_not_large, sort_uniprot.out.ids)
     list_taxids(uniprot_path, sort_uniprot.out.ids)
     process_goa(sort_uniprot.out.ids)
+    
+
+    prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
+    calc_ankh_embeddings(filter_large_proteins.out.uniprot_not_large, sort_uniprot.out.ids)
+    calc_esm_embeddings(filter_large_proteins.out.uniprot_not_large, sort_uniprot.out.ids)
     taxa_profiles(process_goa.out.go_experimental_mf, list_taxids.out.taxids)
 }

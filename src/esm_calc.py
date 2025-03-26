@@ -11,7 +11,8 @@ import polars as pl
 from util_base import proj_dir, run_command
 from fasta import fasta_equal_split, fasta_equal_split_by_len, remove_from_fasta
 
-esm_script_path = proj_dir + '/libs/esm/scripts/extract.py'
+#esm_script_path = proj_dir + '/libs/esm/scripts/extract.py'
+esm_script_path = 'esm/scripts/extract.py'
 
 def run_esm_extract(args: dict):
     fasta_input = args['fasta_input']
@@ -171,7 +172,7 @@ if __name__ == "__main__":
     cache_dir = sys.argv[2]
     all_uniprot_ids_path = sys.argv[3]
     all_ids = open(all_uniprot_ids_path, 'r').read().split('\n')
-    models_meta_info_csv_path = proj_dir+'/others/model_sizes.csv'
+    models_meta_info_csv_path = 'others/model_sizes.csv'
     facebook_models = []
 
     for rawline in open(models_meta_info_csv_path, 'r'):

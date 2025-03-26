@@ -1,14 +1,11 @@
 from glob import glob
-import gzip
 from os import path
-import subprocess
 from tqdm import tqdm
-import yaml
 import numpy as np
 
 from util_base import open_file, proj_dir, write_file
 
-config = yaml.safe_load(open(proj_dir+"/config.yml", "r"))
+'''config = yaml.safe_load(open(proj_dir+"/config.yml", "r"))
 
 release_dir = config['release_dir']
 
@@ -24,10 +21,10 @@ esm_features_pattern = release_dir+'/esm2_t*.tsv.gz'
 esm_model_ids = [str(x) for x in config['esm_models_to_use']]
 esm_features_paths = [esm_features_prefix+x+'.tsv.gz' for x in esm_model_ids]
 labels_path = release_dir+'/go_labels.tsv'
-ids_path = release_dir+'/ids.txt'
+ids_path = release_dir+'/ids.txt
 
 go_not_use_path = proj_dir+"/databases/gocheck_do_not_annotate.json"
-go_basic_path = proj_dir+"/databases/go-basic.obo"
+go_basic_path = proj_dir+"/databases/go-basic.obo"'''
 
 def load_parsed_goa(file_path=goa_parsed):
     anns = []

@@ -4,59 +4,11 @@
     "meta" : {
       "basicPropertyValues" : [ {
         "pred" : "http://www.w3.org/2002/07/owl#versionInfo",
-        "val" : "2024-11-03"
+        "val" : "2025-03-16"
       } ],
-      "version" : "http://purl.obolibrary.org/obo/go/2024-11-03/subsets/gocheck_do_not_annotate.owl"
+      "version" : "http://purl.obolibrary.org/obo/go/releases/2025-03-16/subsets/gocheck_do_not_annotate.owl"
     },
     "nodes" : [ {
-      "id" : "http://purl.obolibrary.org/obo/BFO_0000050",
-      "lbl" : "part of",
-      "type" : "PROPERTY",
-      "meta" : {
-        "xrefs" : [ {
-          "val" : "BFO:0000050"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "part_of"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/BFO_0000051",
-      "lbl" : "has part",
-      "type" : "PROPERTY",
-      "meta" : {
-        "xrefs" : [ {
-          "val" : "BFO:0000051"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "has_part"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/BFO_0000066",
-      "lbl" : "occurs in",
-      "type" : "PROPERTY",
-      "meta" : {
-        "xrefs" : [ {
-          "val" : "BFO:0000066"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "occurs_in"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0000075",
       "lbl" : "cell cycle checkpoint signaling",
       "type" : "CLASS",
@@ -90,6 +42,8 @@
           "val" : "G2/M transition checkpoint"
         } ],
         "xrefs" : [ {
+          "val" : "Reactome:R-HSA-69620"
+        }, {
           "val" : "Wikipedia:Cell_cycle_checkpoint"
         } ],
         "basicPropertyValues" : [ {
@@ -129,6 +83,9 @@
         "synonyms" : [ {
           "pred" : "hasExactSynonym",
           "val" : "G1 phase of mitotic cell cycle"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-69236"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
@@ -195,6 +152,9 @@
         }, {
           "pred" : "hasExactSynonym",
           "val" : "M-phase of mitotic cell cycle"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-68886"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
@@ -308,6 +268,9 @@
         },
         "comments" : [ "Note that this term should not be used for direct annotation. If you are trying to make an annotation to x phase, it is likely that the correct annotation is 'regulation of x/y phase transition' or to a process which occurs during the reported phase (i.e mitotic DNA replication for mitotic S-phase). To capture the phase when a specific location or process is observed, the phase term can be used in an annotation extension (PMID:24885854) applied to a cellular component term (with the relation exists_during) or a biological process term (with the relation happens_during)." ],
         "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-68877"
+        } ],
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
           "val" : "https://github.com/geneontology/go-ontology/issues/24374"
@@ -1193,6 +1156,41 @@
         } ]
       }
     }, {
+      "id" : "http://purl.obolibrary.org/obo/GO_0006090",
+      "lbl" : "pyruvate metabolic process",
+      "type" : "CLASS",
+      "meta" : {
+        "definition" : {
+          "val" : "The chemical reactions and pathways involving pyruvate, 2-oxopropanoate.",
+          "xrefs" : [ "GOC:go_curators" ]
+        },
+        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate", "http://purl.obolibrary.org/obo/go#goslim_drosophila" ],
+        "synonyms" : [ {
+          "pred" : "hasExactSynonym",
+          "val" : "pyruvate metabolism"
+        }, {
+          "pred" : "hasRelatedSynonym",
+          "val" : "pyruvate dehydrogenase bypass"
+        } ],
+        "xrefs" : [ {
+          "val" : "MetaCyc:P41-PWY"
+        }, {
+          "val" : "Reactome:R-HSA-70268"
+        }, {
+          "val" : "Wikipedia:Pyruvic_acid"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
+          "val" : "https://github.com/geneontology/go-ontology/issues/29541"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId",
+          "val" : "GO:0006087"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "biological_process"
+        } ]
+      }
+    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0006810",
       "lbl" : "transport",
       "type" : "CLASS",
@@ -1206,6 +1204,9 @@
         "synonyms" : [ {
           "pred" : "hasRelatedSynonym",
           "val" : "single-organism transport"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-382551"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
@@ -1256,6 +1257,9 @@
           "pred" : "hasRelatedSynonym",
           "val" : "single-organism organelle organization"
         } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-1852241"
+        } ],
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
           "val" : "https://github.com/geneontology/go-ontology/issues/27189"
@@ -1288,6 +1292,8 @@
           "val" : "cell-division cycle"
         } ],
         "xrefs" : [ {
+          "val" : "Reactome:R-HSA-1640170"
+        }, {
           "val" : "Wikipedia:Cell_cycle"
         } ],
         "basicPropertyValues" : [ {
@@ -1613,6 +1619,8 @@
           "val" : "metabolism"
         } ],
         "xrefs" : [ {
+          "val" : "Reactome:R-HSA-1430728"
+        }, {
           "val" : "Wikipedia:Metabolism"
         } ],
         "basicPropertyValues" : [ {
@@ -1684,7 +1692,7 @@
       }
     }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0008937",
-      "lbl" : "ferredoxin-NAD(P) reductase activity",
+      "lbl" : "ferredoxin-[NAD(P)H] reductase activity",
       "type" : "CLASS",
       "meta" : {
         "definition" : {
@@ -1699,6 +1707,9 @@
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
           "val" : "https://github.com/geneontology/go-ontology/issues/21649"
+        }, {
+          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
+          "val" : "https://github.com/geneontology/go-ontology/issues/29598"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "molecular_function"
@@ -1849,6 +1860,8 @@
           "val" : "embryonal development"
         } ],
         "xrefs" : [ {
+          "val" : "Reactome:R-HSA-5619507"
+        }, {
           "val" : "Wikipedia:Embryogenesis"
         } ],
         "basicPropertyValues" : [ {
@@ -2364,6 +2377,8 @@
           "val" : "multicellular organismal protein metabolic process"
         } ],
         "xrefs" : [ {
+          "val" : "Reactome:R-HSA-392499"
+        }, {
           "val" : "Wikipedia:Protein_metabolism"
         } ],
         "basicPropertyValues" : [ {
@@ -4310,21 +4325,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0033341",
-      "lbl" : "regulation of collagen binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of collagen binding.",
-          "xrefs" : [ "GOC:mah" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0033342",
       "lbl" : "negative regulation of collagen binding",
       "type" : "CLASS",
@@ -4346,37 +4346,6 @@
         }, {
           "pred" : "hasNarrowSynonym",
           "val" : "inhibition of collagen binding"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0033343",
-      "lbl" : "positive regulation of collagen binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of collagen binding.",
-          "xrefs" : [ "GOC:mah" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of collagen binding"
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of collagen binding"
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of collagen binding"
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of collagen binding"
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "stimulation of collagen binding"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
@@ -4460,6 +4429,36 @@
         } ]
       }
     }, {
+      "id" : "http://purl.obolibrary.org/obo/GO_0034212",
+      "lbl" : "protein N-acetyltransferase activity",
+      "type" : "CLASS",
+      "meta" : {
+        "definition" : {
+          "val" : "Catalysis of the acetylation of an amino acid residue of a peptide or protein, according to the reaction: acetyl-CoA + peptide = CoA + N-acetylpeptide.",
+          "xrefs" : [ "GOC:mah" ]
+        },
+        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "synonyms" : [ {
+          "pred" : "hasBroadSynonym",
+          "val" : "RHEA:45948"
+        }, {
+          "pred" : "hasExactSynonym",
+          "val" : "peptide N-acetyltransferase activity"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-3371554"
+        }, {
+          "val" : "Reactome:R-HSA-9760081"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
+          "val" : "https://github.com/geneontology/go-ontology/issues/29507"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "molecular_function"
+        } ]
+      }
+    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0035393",
       "lbl" : "chemokine (C-X-C motif) ligand 9 production",
       "type" : "CLASS",
@@ -4510,27 +4509,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2010-05-07T10:21:15Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0035561",
-      "lbl" : "regulation of chromatin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of chromatin binding. Chromatin binding is the selective interaction with chromatin, the network of fibers of DNA, protein, and sometimes RNA, that make up the chromosomes of the eukaryotic nucleus during interphase.",
-          "xrefs" : [ "GOC:bf", "PMID:20404130" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bf"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2010-05-19T10:28:36Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -5746,31 +5724,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0044362",
-      "lbl" : "negative regulation of molecular function in another organism",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process in which an organism stops, prevents or reduces the frequency, rate or extent of the function of proteins in a second organism.",
-          "xrefs" : [ "GOC:jl" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of molecular function in other organism"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "jl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-10-27T02:12:49Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0044419",
       "lbl" : "biological process involved in interspecies interaction between organisms",
       "type" : "CLASS",
@@ -5792,6 +5745,9 @@
         }, {
           "pred" : "hasExactSynonym",
           "val" : "interspecies interaction with other organisms"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-9824443"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
@@ -6294,6 +6250,9 @@
         }, {
           "pred" : "hasExactSynonym",
           "val" : "reproductive process in a multicellular organism"
+        } ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-1474165"
         } ],
         "basicPropertyValues" : [ {
           "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
@@ -6935,6 +6894,9 @@
         },
         "comments" : [ "Note that this term is in the subset of terms that should not be used for direct gene product annotation. Instead, select a child term or, if no appropriate child term exists, please request a new term. Direct annotations to this term may be amended during annotation QC." ],
         "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-8953897"
+        } ],
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -7040,46 +7002,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0060380",
-      "lbl" : "regulation of single-stranded telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of binding to single-stranded telomeric DNA.",
-          "xrefs" : [ "GOC:dph", "GOC:tb" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of telomeric ssDNA binding",
-          "xrefs" : [ "GOC:mah" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0060381",
-      "lbl" : "positive regulation of single-stranded telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that increases the frequency, rate or extent of single-stranded telomeric DNA binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:dph", "GOC:tb" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of telomeric ssDNA binding",
-          "xrefs" : [ "GOC:mah" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0061082",
       "lbl" : "myeloid leukocyte cytokine production",
       "type" : "CLASS",
@@ -7120,6 +7042,33 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/GO_0062039",
+      "lbl" : "biofilm matrix",
+      "type" : "CLASS",
+      "meta" : {
+        "definition" : {
+          "val" : "A type of extracellular matrix that surrounds the cells within a microbial biofilm. The matrix is composed of extracellular polymeric substances including exopolysaccharides, proteins, nucleic acids, lipids, and other biomolecules.",
+          "xrefs" : [ "PMID:22571672", "PMID:27129222", "PMID:28516088", "PMID:32663461" ]
+        },
+        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "PMID:28955324"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
+          "val" : "https://github.com/geneontology/go-ontology/issues/22176"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
+          "val" : "dph"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
+          "val" : "2018-05-04T12:49:17Z"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "cellular_component"
         } ]
       }
     }, {
@@ -7545,6 +7494,9 @@
         },
         "comments" : [ "Note that this term is in the subset of terms that should not be used for direct gene product annotation. Instead, select a child term or, if no appropriate child term exists, please request a new term. Direct annotations to this term may be amended during annotation QC." ],
         "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "Reactome:R-HSA-9860931"
+        } ],
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
           "val" : "mah"
@@ -9503,45 +9455,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_0140104",
-      "lbl" : "molecular carrier activity",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Directly binding to a specific ion or molecule and delivering it either to an acceptor molecule or to a specific location.",
-          "xrefs" : [ "GOC:molecular_function_refactoring", "GOC:pdt" ]
-        },
-        "comments" : [ "Note that a carrier moves with its substrate/cargo, while a transporter does not move with the cargo, but facilitates the change in localization." ],
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate", "http://purl.obolibrary.org/obo/go#goslim_euk_cellular_processes_ribbon", "http://purl.obolibrary.org/obo/go#goslim_generic", "http://purl.obolibrary.org/obo/go#goslim_plant_ribbon", "http://purl.obolibrary.org/obo/go#goslim_prokaryote", "http://purl.obolibrary.org/obo/go#goslim_prokaryote_ribbon" ],
-        "xrefs" : [ {
-          "val" : "Reactome:R-HSA-1449687"
-        }, {
-          "val" : "Reactome:R-HSA-3149494"
-        }, {
-          "val" : "Reactome:R-HSA-3149563"
-        }, {
-          "val" : "Reactome:R-HSA-3159259"
-        }, {
-          "val" : "Reactome:R-HSA-3204318"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
-          "val" : "https://github.com/geneontology/go-ontology/issues/14221"
-        }, {
-          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
-          "val" : "https://github.com/geneontology/go-ontology/issues/20848"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "pg"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-09-19T13:10:18Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "molecular_function"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_0140110",
       "lbl" : "transcription regulator activity",
       "type" : "CLASS",
@@ -9918,6 +9831,30 @@
         } ]
       }
     }, {
+      "id" : "http://purl.obolibrary.org/obo/GO_0180051",
+      "lbl" : "translation factor activity",
+      "type" : "CLASS",
+      "meta" : {
+        "definition" : {
+          "val" : "A molecular function required for translation of a mRNA into a protein functioning as part of initiation, elongation or termination of translation.",
+          "xrefs" : [ "GOC:pg" ]
+        },
+        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
+          "val" : "https://github.com/geneontology/go-ontology/issues/29089"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
+          "val" : "vw"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
+          "val" : "2025-01-20T11:51:48Z"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "molecular_function"
+        } ]
+      }
+    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1900068",
       "lbl" : "negative regulation of cellular response to alkaline pH",
       "type" : "CLASS",
@@ -10223,27 +10160,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1900130",
-      "lbl" : "regulation of lipid binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of lipid binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:pm" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "pm"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2012-02-23T04:05:03Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1900131",
       "lbl" : "negative regulation of lipid binding",
       "type" : "CLASS",
@@ -10276,230 +10192,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2012-02-23T04:05:07Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1900132",
-      "lbl" : "positive regulation of lipid binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of lipid binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:pm" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of lipid binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of lipid binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of lipid binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of lipid binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "pm"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2012-02-23T04:05:11Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1900265",
-      "lbl" : "regulation of substance P receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of substance P receptor binding.",
-          "xrefs" : [ "GOC:TermGenie" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "tb"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2012-04-03T11:11:27Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1900266",
-      "lbl" : "negative regulation of substance P receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of substance P receptor binding.",
-          "xrefs" : [ "GOC:TermGenie" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "inhibition of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "down regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "down-regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "downregulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "negative regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "tb"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2012-04-03T11:11:36Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1900267",
-      "lbl" : "positive regulation of substance P receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of substance P receptor binding.",
-          "xrefs" : [ "GOC:TermGenie" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "activation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of neurokinin-1 receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of substance P receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "positive regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "up regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "up-regulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "upregulation of substance P receptor ligand",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "tb"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2012-04-03T11:11:45Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -10593,65 +10285,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1901839",
-      "lbl" : "regulation of RNA polymerase I regulatory region sequence-specific DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of RNA polymerase I regulatory region sequence-specific DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:sart" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sart"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2013-01-23T10:24:33Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1901840",
-      "lbl" : "negative regulation of RNA polymerase I regulatory region sequence-specific DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of RNA polymerase I regulatory region sequence-specific DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:sart" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of RNA polymerase I regulatory region sequence-specific DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of RNA polymerase I regulatory region sequence-specific DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of RNA polymerase I regulatory region sequence-specific DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of RNA polymerase I regulatory region sequence-specific DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sart"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2013-01-23T10:24:37Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1901876",
       "lbl" : "regulation of calcium ion binding",
       "type" : "CLASS",
@@ -10730,64 +10363,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2013-02-06T12:38:22Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1901878",
-      "lbl" : "positive regulation of calcium ion binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of calcium ion binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:rl", "PMID:16432188" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of calcium ion binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of calcium ion binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of calcium ion binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of calcium ion binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "activation of calcium ion storage activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "positive regulation of calcium ion storage activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "up regulation of calcium ion storage activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "up-regulation of calcium ion storage activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "upregulation of calcium ion storage activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "rl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2013-02-06T12:38:26Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -11053,32 +10628,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1902595",
-      "lbl" : "regulation of DNA replication origin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of DNA replication origin binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:11850415" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasNarrowSynonym",
-          "val" : "regulation of ARS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "mah"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2013-12-19T16:19:39Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1902596",
       "lbl" : "negative regulation of DNA replication origin binding",
       "type" : "CLASS",
@@ -11195,65 +10744,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1902619",
-      "lbl" : "regulation of microtubule minus-end binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of microtubule minus-end binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:di", "GO_REF:0000059", "PMID:22939623" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "tb"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-01-14T22:17:16Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1902620",
-      "lbl" : "positive regulation of microtubule minus-end binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of microtubule minus-end binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:di", "GO_REF:0000059", "PMID:22939623" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of microtubule minus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of microtubule minus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of microtubule minus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of microtubule minus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "tb"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-01-14T22:17:25Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1903025",
       "lbl" : "regulation of RNA polymerase II regulatory region sequence-specific DNA binding",
       "type" : "CLASS",
@@ -11307,65 +10797,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2014-05-15T17:56:00Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903031",
-      "lbl" : "regulation of microtubule plus-end binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of microtubule plus-end binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:hjd", "GO_REF:0000059", "PMID:16148041" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "hjd"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-05-16T18:38:26Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903032",
-      "lbl" : "negative regulation of microtubule plus-end binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of microtubule plus-end binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:hjd", "GO_REF:0000059", "PMID:16148041" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of microtubule plus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of microtubule plus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of microtubule plus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of microtubule plus-end binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "hjd"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-05-16T18:38:32Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -11501,253 +10932,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903642",
-      "lbl" : "regulation of recombination hotspot binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of recombination hotspot binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19436749" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "al"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-11-21T12:02:22Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903643",
-      "lbl" : "positive regulation of recombination hotspot binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of recombination hotspot binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19436749" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of recombination hotspot binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of recombination hotspot binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of recombination hotspot binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of DNA binding, recombination hotspot",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of recombination hotspot binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "al"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2014-11-21T12:02:31Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903837",
-      "lbl" : "regulation of mRNA 3'-UTR binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of mRNA 3'-UTR binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:als", "GO_REF:0000059", "PMID:19575011" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "als"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-01-22T11:53:59Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903838",
-      "lbl" : "negative regulation of mRNA 3'-UTR binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of mRNA 3'-UTR binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:als", "GO_REF:0000059", "PMID:19575011" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "als"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-01-22T11:54:08Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1903839",
-      "lbl" : "positive regulation of mRNA 3'-UTR binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of mRNA 3'-UTR binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:als", "GO_REF:0000059", "PMID:19575011" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of mRNA 3' UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of mRNA 3'-UTR binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "als"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-01-22T11:54:17Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904424",
-      "lbl" : "regulation of GTP binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of GTP binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19066305", "PMID:21454546" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-02T20:34:44Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904425",
       "lbl" : "negative regulation of GTP binding",
       "type" : "CLASS",
@@ -11824,65 +11008,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904432",
-      "lbl" : "regulation of ferrous iron binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of ferrous iron binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:kom", "GO_REF:0000059", "PMID:18353247" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "kom"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-06T13:46:30Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904433",
-      "lbl" : "negative regulation of ferrous iron binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of ferrous iron binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:kom", "GO_REF:0000059", "PMID:18353247" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of ferrous iron binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of ferrous iron binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of ferrous iron binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of ferrous iron binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "kom"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-06T13:46:36Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904434",
       "lbl" : "positive regulation of ferrous iron binding",
       "type" : "CLASS",
@@ -11921,65 +11046,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904435",
-      "lbl" : "regulation of transferrin receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of transferrin receptor binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:kom", "GO_REF:0000059", "PMID:18353247" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "kom"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-06T13:49:01Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904436",
-      "lbl" : "negative regulation of transferrin receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of transferrin receptor binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:kom", "GO_REF:0000059", "PMID:18353247" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of transferrin receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of transferrin receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of transferrin receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of transferrin receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "kom"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-06T13:49:07Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904437",
       "lbl" : "positive regulation of transferrin receptor binding",
       "type" : "CLASS",
@@ -12012,122 +11078,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2015-07-06T13:49:13Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904475",
-      "lbl" : "regulation of small GTPase binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of small GTPase binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:15798216" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasNarrowSynonym",
-          "val" : "regulation of Ras GTPase binding"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
-          "val" : "https://github.com/geneontology/go-ontology/issues/18750"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-10T22:47:31Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904476",
-      "lbl" : "negative regulation of small GTPase binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of small GTPase binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:15798216" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of Ras GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "inhibition of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "negative regulation of Ras GTPase binding"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
-          "val" : "https://github.com/geneontology/go-ontology/issues/18750"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-10T22:47:38Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904477",
-      "lbl" : "positive regulation of small GTPase binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of small GTPase binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:15798216" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of small GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of Ras GTPase binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "positive regulation of Ras GTPase binding"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://purl.obolibrary.org/obo/IAO_0000233",
-          "val" : "https://github.com/geneontology/go-ontology/issues/18750"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-10T22:47:43Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -12320,36 +11270,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904529",
-      "lbl" : "regulation of actin filament binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of actin filament binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:als", "GO_REF:0000059", "PMID:24520051" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of F-actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "regulation of actin cross-linking activity",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "als"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-07-30T10:41:49Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904530",
       "lbl" : "negative regulation of actin filament binding",
       "type" : "CLASS",
@@ -12506,186 +11426,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904572",
-      "lbl" : "negative regulation of mRNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of mRNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19716792" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of mRNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of mRNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of mRNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of mRNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-19T17:51:03Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904573",
-      "lbl" : "regulation of selenocysteine insertion sequence binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of selenocysteine insertion sequence binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19716792" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-19T17:51:09Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904574",
-      "lbl" : "negative regulation of selenocysteine insertion sequence binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of selenocysteine insertion sequence binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19716792" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-19T17:51:15Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904575",
-      "lbl" : "positive regulation of selenocysteine insertion sequence binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of selenocysteine insertion sequence binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:19716792" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of SECIS binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of selenocysteine insertion sequence binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "sl"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-19T17:51:21Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904616",
       "lbl" : "regulation of actin binding",
       "type" : "CLASS",
@@ -12706,152 +11446,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2015-08-27T19:08:56Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904617",
-      "lbl" : "negative regulation of actin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of actin binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:mr", "GO_REF:0000059", "PMID:8621557" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "down regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "down-regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "downregulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "negative regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "mr"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-27T19:09:02Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904618",
-      "lbl" : "positive regulation of actin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of actin binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:mr", "GO_REF:0000059", "PMID:8621557" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "positive regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "up regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "up-regulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "upregulation of membrane associated actin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "mr"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-08-27T19:09:08Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904742",
-      "lbl" : "regulation of telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of telomeric DNA binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:24415760" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of telomere binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of telomeric repeat binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-10-19T12:18:48Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -13014,124 +11608,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904793",
-      "lbl" : "regulation of euchromatin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of euchromatin binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:22723415" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-11-09T11:43:04Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904794",
-      "lbl" : "negative regulation of euchromatin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of euchromatin binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:22723415" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-11-09T11:43:12Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904795",
-      "lbl" : "positive regulation of euchromatin binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of euchromatin binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:22723415" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of euchromatin binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-11-09T11:43:19Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1904796",
-      "lbl" : "regulation of core promoter binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of core promoter binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:22723415" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2015-11-09T12:32:23Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1904797",
       "lbl" : "negative regulation of core promoter binding",
       "type" : "CLASS",
@@ -13246,27 +11722,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2016-04-08T12:36:47Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905214",
-      "lbl" : "regulation of RNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of RNA binding.",
-          "xrefs" : [ "GOC:PARL", "GOC:TermGenie", "GOC:bf", "GO_REF:0000059" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bf"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-06-06T10:20:56Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -13397,449 +11852,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2016-09-26T14:53:21Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905494",
-      "lbl" : "negative regulation of G-quadruplex DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of G-quadruplex DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:26503245" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "negative regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "ans"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-09-26T14:53:29Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905495",
-      "lbl" : "positive regulation of G-quadruplex DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of G-quadruplex DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:26503245" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "positive regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of G quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of G quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of G-DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of G-quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of G-quartet DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of quadruplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of tetraplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "ans"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-09-26T14:53:37Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905496",
-      "lbl" : "regulation of triplex DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of triplex DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:26503245" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "ans"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-09-26T14:57:09Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905497",
-      "lbl" : "negative regulation of triplex DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of triplex DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:26503245" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "ans"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-09-26T14:57:17Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905498",
-      "lbl" : "positive regulation of triplex DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of triplex DNA binding.",
-          "xrefs" : [ "GOC:TermGenie", "GO_REF:0000059", "PMID:26503245" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of triplex DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "ans"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-09-26T14:57:25Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905595",
-      "lbl" : "regulation of low-density lipoprotein particle receptor binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of low-density lipoprotein particle receptor binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:22848640" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of LDL receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "regulation of low-density lipoprotein receptor binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-10-26T10:57:23Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -14002,65 +12014,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905610",
-      "lbl" : "regulation of mRNA cap binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of mRNA cap binding.",
-          "xrefs" : [ "GOC:PARL", "GOC:TermGenie", "GOC:bc", "GO_REF:0000059", "PMID:23409027" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-10-28T11:27:28Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905611",
-      "lbl" : "negative regulation of mRNA cap binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of mRNA cap binding.",
-          "xrefs" : [ "GOC:PARL", "GOC:TermGenie", "GOC:bc", "GO_REF:0000059", "PMID:23409027" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of mRNA cap binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of mRNA cap binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of mRNA cap binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of mRNA cap binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-10-28T11:27:36Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_1905612",
       "lbl" : "positive regulation of mRNA cap binding",
       "type" : "CLASS",
@@ -14131,342 +12084,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2016-11-03T12:03:07Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905767",
-      "lbl" : "regulation of double-stranded telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of double-stranded telomeric DNA binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:18812185" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-12-20T15:33:58Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905768",
-      "lbl" : "negative regulation of double-stranded telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of double-stranded telomeric DNA binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:18812185" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-12-20T15:34:07Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905769",
-      "lbl" : "positive regulation of double-stranded telomeric DNA binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of double-stranded telomeric DNA binding.",
-          "xrefs" : [ "GOC:BHF", "GOC:BHF_telomere", "GOC:TermGenie", "GOC:nc", "GO_REF:0000059", "PMID:18812185" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of double-stranded telomeric DNA binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "nc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2016-12-20T15:34:15Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905853",
-      "lbl" : "regulation of heparan sulfate binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of heparan sulfate binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T13:25:30Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905854",
-      "lbl" : "negative regulation of heparan sulfate binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of heparan sulfate binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T13:25:38Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905855",
-      "lbl" : "positive regulation of heparan sulfate binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of heparan sulfate binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of heparan sulfate binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T13:25:47Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905858",
-      "lbl" : "regulation of heparan sulfate proteoglycan binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of heparan sulfate proteoglycan binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasRelatedSynonym",
-          "val" : "regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T14:25:10Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905859",
-      "lbl" : "negative regulation of heparan sulfate proteoglycan binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of heparan sulfate proteoglycan binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "down regulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "down-regulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "downregulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "inhibition of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "down regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "down-regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "downregulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "inhibition of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "negative regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T14:25:19Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_1905860",
-      "lbl" : "positive regulation of heparan sulfate proteoglycan binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of heparan sulfate proteoglycan binding.",
-          "xrefs" : [ "GOC:TermGenie", "GOC:aruk", "GOC:bc", "GO_REF:0000059", "PMID:7683668" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "synonyms" : [ {
-          "pred" : "hasExactSynonym",
-          "val" : "up regulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "up-regulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasExactSynonym",
-          "val" : "upregulation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasNarrowSynonym",
-          "val" : "activation of heparan sulfate proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "activation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "positive regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "up regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "up-regulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        }, {
-          "pred" : "hasRelatedSynonym",
-          "val" : "upregulation of heparin proteoglycan binding",
-          "xrefs" : [ "GOC:TermGenie" ]
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "bc"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2017-01-23T14:25:27Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -14622,27 +12239,6 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_2000656",
-      "lbl" : "regulation of apolipoprotein binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of apolipoprotein binding.",
-          "xrefs" : [ "GOC:BHF" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "vk"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-05-02T05:33:41Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
       "id" : "http://purl.obolibrary.org/obo/GO_2000657",
       "lbl" : "negative regulation of apolipoprotein binding",
       "type" : "CLASS",
@@ -14658,27 +12254,6 @@
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
           "val" : "2011-05-02T05:33:44Z"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
-        } ]
-      }
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_2000658",
-      "lbl" : "positive regulation of apolipoprotein binding",
-      "type" : "CLASS",
-      "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of apolipoprotein binding.",
-          "xrefs" : [ "GOC:BHF" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "vk"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-05-02T05:33:46Z"
         }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
           "val" : "biological_process"
@@ -14748,76 +12323,176 @@
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_2001263",
-      "lbl" : "regulation of C-C chemokine binding",
-      "type" : "CLASS",
+      "id" : "http://purl.obolibrary.org/obo/BFO_0000050",
+      "lbl" : "part of",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
       "meta" : {
-        "definition" : {
-          "val" : "Any process that modulates the frequency, rate or extent of C-C chemokine binding.",
-          "xrefs" : [ "GOC:obol" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "BFO:0000050"
+        } ],
         "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "yaf"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-12-09T01:13:54Z"
-        }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "part_of"
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_2001264",
-      "lbl" : "negative regulation of C-C chemokine binding",
-      "type" : "CLASS",
+      "id" : "http://purl.obolibrary.org/obo/BFO_0000051",
+      "lbl" : "has part",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
       "meta" : {
-        "definition" : {
-          "val" : "Any process that stops, prevents or reduces the frequency, rate or extent of C-C chemokine binding.",
-          "xrefs" : [ "GOC:obol" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "BFO:0000051"
+        } ],
         "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "yaf"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-12-09T01:14:01Z"
-        }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "has_part"
         } ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/GO_2001265",
-      "lbl" : "positive regulation of C-C chemokine binding",
-      "type" : "CLASS",
+      "id" : "http://purl.obolibrary.org/obo/BFO_0000066",
+      "lbl" : "occurs in",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
       "meta" : {
-        "definition" : {
-          "val" : "Any process that activates or increases the frequency, rate or extent of C-C chemokine binding.",
-          "xrefs" : [ "GOC:obol" ]
-        },
-        "subsets" : [ "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate" ],
+        "xrefs" : [ {
+          "val" : "BFO:0000066"
+        } ],
         "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#created_by",
-          "val" : "yaf"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
-          "val" : "2011-12-09T01:14:07Z"
-        }, {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "biological_process"
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "occurs_in"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002091",
+      "lbl" : "starts during",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002091"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "starts_during"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002092",
+      "lbl" : "happens during",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002092"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "happens_during"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002093",
+      "lbl" : "ends during",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002093"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "ends_during"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002211",
+      "lbl" : "regulates",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002211"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "regulates"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002212",
+      "lbl" : "negatively regulates",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002212"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "negatively_regulates"
+        } ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002213",
+      "lbl" : "positively regulates",
+      "type" : "PROPERTY",
+      "propertyType" : "OBJECT",
+      "meta" : {
+        "xrefs" : [ {
+          "val" : "RO:0002213"
+        } ],
+        "basicPropertyValues" : [ {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
+          "val" : "external"
+        }, {
+          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
+          "val" : "positively_regulates"
         } ]
       }
     }, {
       "id" : "http://purl.obolibrary.org/obo/IAO_0000115",
       "lbl" : "definition",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/IAO_0000116",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/IAO_0000231",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://purl.obolibrary.org/obo/IAO_0000233",
       "lbl" : "term tracker item",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
         "xrefs" : [ {
           "val" : "IAO:0000233"
@@ -14837,9 +12512,14 @@
         } ]
       }
     }, {
+      "id" : "http://purl.obolibrary.org/obo/IAO_0000589",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
       "id" : "http://purl.obolibrary.org/obo/IAO_0000700",
       "lbl" : "has ontology root term",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
         "xrefs" : [ {
           "val" : "IAO:0000700"
@@ -14861,111 +12541,180 @@
     }, {
       "id" : "http://purl.obolibrary.org/obo/IAO_0100001",
       "lbl" : "term replaced by",
-      "type" : "PROPERTY"
-    }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002091",
-      "lbl" : "starts during",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002161",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/RO_0002175",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#chebi_ph7_3",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002091"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "starts_during"
-        } ]
+        "comments" : [ "Rhea list of ChEBI terms representing the major species at pH 7.3." ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002092",
-      "lbl" : "happens during",
+      "id" : "http://purl.obolibrary.org/obo/go#gocheck_do_not_annotate",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002092"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "happens_during"
-        } ]
+        "comments" : [ "Term not to be used for direct annotation" ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002093",
-      "lbl" : "ends during",
+      "id" : "http://purl.obolibrary.org/obo/go#gocheck_obsoletion_candidate",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002093"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "ends_during"
-        } ]
+        "comments" : [ "Terms planned for obsoletion" ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002211",
-      "lbl" : "regulates",
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_agr",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002211"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "regulates"
-        } ]
+        "comments" : [ "AGR slim" ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002212",
-      "lbl" : "negatively regulates",
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_aspergillus",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002212"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "negatively_regulates"
-        } ]
+        "comments" : [ "Aspergillus GO slim" ]
       }
     }, {
-      "id" : "http://purl.obolibrary.org/obo/RO_0002213",
-      "lbl" : "positively regulates",
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_candida",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
-        "xrefs" : [ {
-          "val" : "RO:0002213"
-        } ],
-        "basicPropertyValues" : [ {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
-          "val" : "external"
-        }, {
-          "pred" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
-          "val" : "positively_regulates"
-        } ]
+        "comments" : [ "Candida GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_chembl",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "ChEMBL protein targets summary" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_drosophila",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Drosophila GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_euk_cellular_processes_ribbon",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "GO ribbon for eukaroytic cellular processes" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_flybase_ribbon",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Insecta GO ribbon slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_generic",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Generic GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_metagenomics",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Metagenomics GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_mouse",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Mouse GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_pir",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "PIR GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_plant",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Plant GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_plant_ribbon",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Plant GO ribbon" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_pombe",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Fission yeast GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_prokaryote",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "GO subset for prokaryotes" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_prokaryote_ribbon",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Prokaryote GO ribbon slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_synapse",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "synapse GO slim" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_virus",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "GO subset for viruses" ]
+      }
+    }, {
+      "id" : "http://purl.obolibrary.org/obo/go#goslim_yeast",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
+      "meta" : {
+        "comments" : [ "Yeast GO slim" ]
       }
     }, {
       "id" : "http://purl.obolibrary.org/obo/go#syngo_official_label",
       "lbl" : "label approved by the SynGO project",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://purl.obolibrary.org/obo/go#systematic_synonym",
       "lbl" : "Systematic synonym",
       "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION",
       "meta" : {
         "basicPropertyValues" : [ {
           "pred" : "http://www.geneontology.org/formats/oboInOwl#hasScope",
@@ -14973,65 +12722,131 @@
         } ]
       }
     }, {
+      "id" : "http://purl.org/dc/elements/1.1/description",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.org/dc/elements/1.1/title",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://purl.org/dc/terms/license",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#SubsetProperty",
       "lbl" : "subset_property",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#SynonymTypeProperty",
       "lbl" : "synonym_type_property",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#consider",
       "lbl" : "consider",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#created_by",
+      "lbl" : "created by",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#creation_date",
+      "lbl" : "creation date",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasAlternativeId",
       "lbl" : "has_alternative_id",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym",
       "lbl" : "has_broad_synonym",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasDbXref",
       "lbl" : "database_cross_reference",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasExactSynonym",
       "lbl" : "has_exact_synonym",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym",
       "lbl" : "has_narrow_synonym",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasOBOFormatVersion",
       "lbl" : "has_obo_format_version",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasOBONamespace",
       "lbl" : "has_obo_namespace",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym",
       "lbl" : "has_related_synonym",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasScope",
       "lbl" : "has_scope",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#hasSynonymType",
       "lbl" : "has_synonym_type",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#id",
+      "lbl" : "id",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#inSubset",
       "lbl" : "in_subset",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#is_class_level",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#is_metadata_tag",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     }, {
       "id" : "http://www.geneontology.org/formats/oboInOwl#shorthand",
       "lbl" : "shorthand",
-      "type" : "PROPERTY"
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.geneontology.org/formats/oboInOwl#source",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.w3.org/2000/01/rdf-schema#comment",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.w3.org/2000/01/rdf-schema#label",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
+    }, {
+      "id" : "http://www.w3.org/2002/07/owl#deprecated",
+      "type" : "PROPERTY",
+      "propertyType" : "ANNOTATION"
     } ],
     "edges" : [ {
       "sub" : "http://purl.obolibrary.org/obo/GO_0000075",
@@ -15381,6 +13196,10 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_0005622",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0110165"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0006090",
+      "pred" : "is_a",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0008152"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0006810",
       "pred" : "is_a",
@@ -15894,25 +13713,9 @@
       "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051179"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0033341",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0033342",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0033341"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0033342",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0033343",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0033341"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0033343",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0033643",
       "pred" : "is_a",
@@ -15946,21 +13749,9 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0032602"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0035561",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0035562",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0035561"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0035562",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0035563",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0035561"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0035563",
       "pred" : "is_a",
@@ -16233,14 +14024,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_0044238",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0008152"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0044362",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0044092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0044362",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0044419"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0044467",
       "pred" : "is_a",
@@ -16538,18 +14321,6 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0060206"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0060380",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904742"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0060381",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0060380"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0060381",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904744"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0061082",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0002367"
@@ -16557,6 +14328,14 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_0061919",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0009987"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0062039",
+      "pred" : "is_a",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0110165"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0062039",
+      "pred" : "http://purl.obolibrary.org/obo/BFO_0000050",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0110165"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0070603",
       "pred" : "is_a",
@@ -16946,12 +14725,24 @@
       "pred" : "http://purl.obolibrary.org/obo/RO_0002092",
       "obj" : "http://purl.obolibrary.org/obo/GO_0022414"
     }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0098762",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002093",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0007049"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0098762",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002093",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0022414"
+    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0098763",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0022403"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0098763",
       "pred" : "http://purl.obolibrary.org/obo/RO_0002092",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0007049"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_0098763",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002093",
       "obj" : "http://purl.obolibrary.org/obo/GO_0007049"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0098764",
@@ -17041,10 +14832,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_0140029",
       "pred" : "http://purl.obolibrary.org/obo/BFO_0000050",
       "obj" : "http://purl.obolibrary.org/obo/GO_0009987"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_0140142",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0140104"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_0140142",
       "pred" : "http://purl.obolibrary.org/obo/BFO_0000050",
@@ -17182,45 +14969,9 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1900120"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900130",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1900131",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900131",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900130"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900132",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900132",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900130"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900265",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900120"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900266",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900121"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900266",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900265"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900267",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900122"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1900267",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900265"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1901698",
       "pred" : "is_a",
@@ -17237,18 +14988,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_1901700",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0042221"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901839",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2000677"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901840",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1901839"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901840",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2000678"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1901876",
       "pred" : "is_a",
@@ -17268,18 +15007,6 @@
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1901877",
       "pred" : "http://purl.obolibrary.org/obo/RO_0002212",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901878",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901878",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1901876"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1901878",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1901976",
@@ -17314,9 +15041,17 @@
       "pred" : "http://purl.obolibrary.org/obo/RO_0002212",
       "obj" : "http://purl.obolibrary.org/obo/GO_0000075"
     }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_1901977",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0007049"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_1901977",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0022402"
+    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1902415",
       "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905214"
+      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1902416",
       "pred" : "is_a",
@@ -17354,37 +15089,13 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1901700"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902595",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051101"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1902596",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043392"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902596",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902595"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1902597",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043388"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902597",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902595"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902619",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904526"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902620",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902619"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1902620",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904528"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1903025",
       "pred" : "is_a",
@@ -17397,22 +15108,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_1903026",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_2000678"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903031",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904526"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903032",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1903031"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903032",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904527"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903033",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1903031"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1903033",
       "pred" : "is_a",
@@ -17446,53 +15141,13 @@
       "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
       "obj" : "http://purl.obolibrary.org/obo/GO_0071174"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903642",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051101"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903643",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043388"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903643",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1903642"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903837",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902415"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903838",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1903837"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903838",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904572"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903839",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902416"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1903839",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1903837"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904424",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904424",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904425",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904425",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904424"
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904425",
       "pred" : "http://purl.obolibrary.org/obo/RO_0002212",
@@ -17503,31 +15158,11 @@
       "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904426",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904424"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904426",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904432",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904432",
       "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904433",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904433",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904432"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904433",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002212",
+      "sub" : "http://purl.obolibrary.org/obo/GO_1904426",
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904434",
@@ -17535,52 +15170,16 @@
       "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904434",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904432"
+      "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904434",
       "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904435",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900120"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904436",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900121"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904436",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904435"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904437",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1900122"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904437",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904435"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904475",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043393"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904476",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904476",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904475"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904477",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904477",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904475"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904526",
       "pred" : "is_a",
@@ -17602,129 +15201,37 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1904526"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904529",
+      "sub" : "http://purl.obolibrary.org/obo/GO_1904530",
+      "pred" : "is_a",
+      "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
+    }, {
+      "sub" : "http://purl.obolibrary.org/obo/GO_1904530",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1904616"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904530",
+      "sub" : "http://purl.obolibrary.org/obo/GO_1904531",
       "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904529"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904530",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904617"
+      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904531",
       "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904529"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904531",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904618"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904572",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902415"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904572",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905215"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904573",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902415"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904574",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904572"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904574",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904573"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904575",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902416"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904575",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904573"
+      "obj" : "http://purl.obolibrary.org/obo/GO_1904616"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904616",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043393"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904617",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904617",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904616"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904618",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904618",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904616"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904742",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051101"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904743",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043392"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904743",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904742"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904744",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0043388"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904744",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904742"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904793",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0035561"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904794",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0035562"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904794",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904793"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904795",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0035563"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904795",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904793"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904796",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2000677"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904797",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904796"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904797",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_2000678"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1904798",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904796"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1904798",
       "pred" : "is_a",
@@ -17746,105 +15253,29 @@
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1905119"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905214",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905215",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905215",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905214"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905216",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905216",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905214"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905493",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0051101"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905494",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043392"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905494",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905493"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905495",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043388"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905495",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905493"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905496",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051101"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905497",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043392"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905497",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905496"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905498",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043388"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905498",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905496"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905595",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1900120"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905596",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1900121"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905596",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905595"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905597",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1900122"
     }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905597",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905595"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905610",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1902415"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905611",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904572"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905611",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905610"
-    }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905612",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_1902416"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905612",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905610"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1905636",
       "pred" : "is_a",
@@ -17853,78 +15284,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_1905636",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_2000679"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905767",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904742"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905768",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904743"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905768",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905767"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905769",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1904744"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905769",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905767"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905853",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051098"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905853",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002211",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905854",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051100"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905854",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905853"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905854",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002212",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905855",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0051099"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905855",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905853"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905855",
-      "pred" : "http://purl.obolibrary.org/obo/RO_0002213",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043167"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905858",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043393"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905859",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905859",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905858"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905860",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1905860",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905858"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1990054",
       "pred" : "is_a",
@@ -17948,35 +15307,11 @@
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_1990968",
       "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0044092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1990968",
-      "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0044419"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_1990968",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_1905214"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2000656",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043393"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_2000657",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2000657",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2000656"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2000658",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2000658",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2000656"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/GO_2000677",
       "pred" : "is_a",
@@ -17997,26 +15332,6 @@
       "sub" : "http://purl.obolibrary.org/obo/GO_2000679",
       "pred" : "is_a",
       "obj" : "http://purl.obolibrary.org/obo/GO_2000677"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2001263",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0043393"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2001264",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032091"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2001264",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2001263"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2001265",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_0032092"
-    }, {
-      "sub" : "http://purl.obolibrary.org/obo/GO_2001265",
-      "pred" : "is_a",
-      "obj" : "http://purl.obolibrary.org/obo/GO_2001263"
     }, {
       "sub" : "http://purl.obolibrary.org/obo/RO_0002092",
       "pred" : "subPropertyOf",

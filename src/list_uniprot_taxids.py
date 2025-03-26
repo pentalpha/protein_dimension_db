@@ -6,7 +6,11 @@ def read_uniprot_fasta(fasta_path):
     protein_taxa = {}
     for line in gzip.open(fasta_path, 'rt'):
         if line.startswith('>'):
-            uniprot_id = line.rstrip('\n').lstrip('>').split('|')[1]
+            header_parts = line.rstrip('\n').lstrip('>').split('|')
+            if len(header_parts) == 1:
+                uniprot_id = header_parts[0]
+            else:
+                uniprot_id = header_parts[1]
             taxid = line.split('OX=')[-1].split()[0].rstrip('\n')
             protein_taxa[uniprot_id] = taxid
     return protein_taxa

@@ -1,4 +1,3 @@
-import gzip
 import sys
 import h5py
 import numpy as np
@@ -17,6 +16,7 @@ if __name__ == '__main__':
     id_to_index = {x: i for i, x in enumerate(ids_list)}
     sorted_embs = [None for _ in range(len(ids_list))]
 
+    print('Loading', original_embs_path)
     file = h5py.File(original_embs_path, "r")
     print('ProtTrans-T5 embeddings from uniprot:', len(file))
     indexes_used = set()

@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 from util_base import run_command
 
-prj_dir = path.dirname(path.dirname(__file__))
+#prj_dir = path.dirname(path.dirname(__file__))
 
 class TaxaProfileModel():
     

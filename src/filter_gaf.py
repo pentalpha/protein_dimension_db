@@ -74,14 +74,18 @@ def parse_gaf(goa_gaf, evi_not_use, bar):
 
 
 if __name__ == '__main__':
-    proj_dir = sys.argv[1]
-    go_annotation_raw = sys.argv[2]
-    ids_path = sys.argv[3]
-    output_dir = sys.argv[4]
-    calc_go_expanded = sys.argv[4] == "rerun"
+    evi_not_use_path = sys.argv[1]
+    go_not_use_path = sys.argv[2]
+    go_basic_path = sys.argv[3]
+    go_annotation_raw = sys.argv[4]
+    ids_path = sys.argv[5]
+    output_dir = './'
+    calc_go_expanded = sys.argv[6] == "rerun"
 
-    evi_not_use_path = proj_dir+'/evi_not_to_use.txt'
-    databases_dir = proj_dir + "/databases"
+    #evi_not_use_path = proj_dir+'/evi_not_to_use.txt'
+    #go_not_use_path = proj_dir+"/databases/gocheck_do_not_annotate.json"
+    #go_basic_path = proj_dir+"/databases/go-basic.obo"
+    
     goa_parsed = output_dir+'/go.experimental.tsv.gz'
     goa_expanded = output_dir+'/go.expanded.tsv.gz'
     
@@ -112,8 +116,8 @@ if __name__ == '__main__':
         parsed = open_file(goa_parsed).read().split('\n')
 
         print('Loading GO')
-        goes_to_not_use = gos_not_to_use()
-        go_graph = load_go_graph()
+        goes_to_not_use = gos_not_to_use(go_not_use_path)
+        go_graph = load_go_graph(go_basic_path)
         new_parsed = set()
 
         print('Expanding GO')
