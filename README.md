@@ -73,11 +73,11 @@ Requirements to generate the datasets from scratch:
 Test:
 ```
 $ mkdir test
-$ nextflow run prepare_requirements.nf --mode test --release_dir ~/test
+$ nextflow run main.nf --mode test --release_dir ~/test
 ```
 
 Full release:
 ```
 $ mkdir <path to generate database at>
-$ nextflow run prepare_requirements.nf --mode release --release_dir <path to generate database at>
+$ nextflow run main.nf --mode release --release_dir <path to generate database at>
 ```
