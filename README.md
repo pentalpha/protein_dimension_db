@@ -73,7 +73,7 @@ Requirements to generate the datasets from scratch:
 Test:
 ```
 $ mkdir test
-$ nextflow run main.nf --mode test --release_dir ~/test
+$ nextflow run main.nf --mode test --release_dir test
 ```
 
 Full release:
