@@ -1,4 +1,6 @@
 test/*
+*.sif
+*.stdout
 file_chunk.gz
 goa_uniprot_all.gaf.g*
 .snakemake/*

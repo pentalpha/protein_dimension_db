@@ -3,8 +3,8 @@ params.mode = "release"
 //params.esm_script_path = "esm/scripts/extract.py"
 params.go_basic_url = "https://purl.obolibrary.org/obo/go/go-basic.obo"
 params.esm_git_url = "https://github.com/facebookresearch/esm.git"
-params.taxallnomy_git_url = "https://github.com/tetsufmbio/taxallnomy.git"
 params.gocheck_url = "https://current.geneontology.org/ontology/subsets/gocheck_do_not_annotate.json"
+params.taxallnomy_tsv_url = "https://huggingface.co/datasets/pitagoras-alves/taxallnomy/resolve/main/taxallnomy.tsv.gz"
 //ProtT5 swiss_prot
 params.prot_t5_embs_url = "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/embeddings/uniprot_sprot/per-protein.h5"
 params.max_protein_len = 1800
@@ -118,46 +118,18 @@ process download_goa{
     """
 }
 
-process clone_taxallnomy{
+process download_taxallnomy{
     //publishDir "libs/", mode: 'copy'
 
     input:
-        val taxallnomy_git
-    
-    output:
-        path "taxallnomy", emit: taxallnomy_dir
-
-    script:
-    """
-    git clone $taxallnomy_git
-    """
-}
-
-process run_taxallnomy{
-    input:
-        val taxallnomy_dir
-    
-    output:
-        path "taxallnomy_data/taxallnomy_lin.tab", emit: taxallnomy_lin
-
-    script:
-    """
-    perl $taxallnomy_dir/generate_taxallnomy.pl
-    """
-}
-
-process compress_and_save_taxallnomy{
-    //publishDir "databases", mode: 'copy'
-
-    input:
-        val taxallnomy_lin_path
+        val url
     
     output:
         path "taxallnomy.tsv.gz", emit: taxallnomy_tsv_path
 
     script:
     """
-    gzip -c $taxallnomy_lin_path > taxallnomy.tsv.gz
+    wget $url
     """
 }
 
@@ -334,9 +306,7 @@ workflow {
     gocheck_do_not_annotate = download_gocheck_do_not_annotate(params.gocheck_url)
     esm_dir = download_esm(params.esm_git_url)
     //esm_dir + "/scripts/extract.py"
-    taxallnomy_dir = clone_taxallnomy(params.taxallnomy_git_url)
-    taxallnomy_lin = run_taxallnomy(taxallnomy_dir)
-    taxallnomy_tsv_path = compress_and_save_taxallnomy(taxallnomy_lin)
+    taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
 
     sort_uniprot(uniprot_path)
     not_large_proteins = filter_large_proteins(sort_uniprot.out.uniprot_sorted, params.max_protein_len)

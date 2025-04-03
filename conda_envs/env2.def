@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: mambaorg/micromamba:cuda12.8.1-ubuntu24.04
+
+%post
+    ls -lsht /tmp
+    micromamba install -c bioconda -c conda-forge -y -n base \
+        numpy h5py polars tqdm obonet pyyaml networkx python=3.13.0 hdf5 \
+         && micromamba clean --all --yes
+        
