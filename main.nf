@@ -210,7 +210,7 @@ process list_taxids{
 }
 
 process process_goa{
-    conda 'conda_envs/env2.txt'
+    conda 'conda_envs/env2_wsl.txt'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -234,7 +234,7 @@ process process_goa{
 }
 
 process prottrans_embs{
-    conda 'conda_envs/env2.txt'
+    conda 'conda_envs/env2_wsl.txt'
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -274,7 +274,7 @@ process taxa_profiles{
 }
 
 process calc_ankh_embeddings{
-    conda 'conda_envs/ankh.yml'
+    conda 'conda_envs/ankh_wsl.yml'
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -335,8 +335,8 @@ workflow {
     esm_dir = download_esm(params.esm_git_url)
     //esm_dir + "/scripts/extract.py"
     taxallnomy_dir = clone_taxallnomy(params.taxallnomy_git_url)
-    taxallnomy_lin = run_taxallnomy(taxallnomy_dir)
-    taxallnomy_tsv_path = compress_and_save_taxallnomy(taxallnomy_lin)
+    //taxallnomy_lin = run_taxallnomy(taxallnomy_dir)
+    //taxallnomy_tsv_path = compress_and_save_taxallnomy(taxallnomy_lin)
 
     sort_uniprot(uniprot_path)
     not_large_proteins = filter_large_proteins(sort_uniprot.out.uniprot_sorted, params.max_protein_len)
@@ -346,13 +346,13 @@ workflow {
     
     prot_trans_path = download_prot5(params.prot_t5_embs_url)
     prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
-    taxa_profiles(process_goa.out.go_experimental_mf, taxids, taxallnomy_tsv_path)
+    //taxa_profiles(process_goa.out.go_experimental_mf, taxids, taxallnomy_tsv_path)
 
     //release_dir_channel = Channel.fromPath(params.release_dir)
     parent_dir = file(params.release_dir).getParent()
     caches_tp = create_caches(parent_dir)
-    calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
-        create_caches.out.ankh_cache)
-    calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
-        create_caches.out.fairesm_cache, esm_dir, params.others_dir)
+    //calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+    //    create_caches.out.ankh_cache)
+    //calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+    //    create_caches.out.fairesm_cache, esm_dir, params.others_dir)
 }
