@@ -2,4 +2,4 @@ Bootstrap: docker
 From: python:3.13.2
 
 %post 
-    pip install tqdm numpy==2.2.0
+    pip install tqdm numpy==2.2.0 polars

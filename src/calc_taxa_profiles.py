@@ -5,6 +5,7 @@ from typing import List
 import numpy as np
 from tqdm import tqdm
 from glob import glob
+import polars as pl
 from util_base import run_command
 
 #prj_dir = path.dirname(path.dirname(__file__))
@@ -117,26 +118,27 @@ if __name__ == "__main__":
     most_annotated_taxids = [(t, n_gos) for t, n_gos in gos_by_species.items()]
     most_annotated_taxids.sort(key = lambda tp: -tp[1])
     most_annotated_taxids = most_annotated_taxids[:max(profile_lengths)]
+    for x, y in most_annotated_taxids:
+        print(x, y)
     
     print('Creating models')
     taxa_graph_nx = None
     for profile_len in profile_lengths:
-        taxids_to_use = [t for t, n_gos in most_annotated_taxids][:profile_len]
-        profile_model = TaxaProfileModel(taxids_to_use, taxallnomy_df_path=taxallnomy_df_path)
-        
-        profiled = [profile_model.calc(taxid) for taxid in tqdm(taxids)]
+        if len(most_annotated_taxids) > profile_len:
+            taxids_to_use = [t for t, n_gos in most_annotated_taxids][:profile_len]
+        else:
+            taxids_to_use = [t for t, n_gos in most_annotated_taxids]
+
         tops_savepath = release_dir + '/top_taxa_'+str(profile_len)+'.txt'
         open(tops_savepath, 'w').write('\n'.join([str(x) for x  in taxids_to_use]))
-        save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.npy.gz'
-        np.save(save_path.rstrip('.gz'), np.asarray(profiled))
-        if path.exists(save_path):
-            run_command(['rm', save_path])
-        run_command(['gzip', save_path.rstrip('.gz')])
+
+        profile_model = TaxaProfileModel(taxids_to_use, taxallnomy_df_path=taxallnomy_df_path)
+        profiled = np.asarray([profile_model.calc(taxid) for taxid in tqdm(taxids)])
+        save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.parquet'
+        pl.DataFrame({'id': uniprots, 'emb': profiled}).write_parquet(save_path)
         
-        onehot = [profile_model.calc_onehot(taxid) for taxid in tqdm(taxids)]
-        save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+'.npy.gz'
-        np.save(save_path2.rstrip('.gz'), np.asarray(onehot))
-        if path.exists(save_path2):
-            run_command(['rm', save_path2])
-        run_command(['gzip', save_path2.rstrip('.gz')])
+        onehot = np.asarray([profile_model.calc_onehot(taxid) for taxid in tqdm(taxids)])
+        save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+'.parquet'
+        pl.DataFrame({'id': uniprots, 'emb': onehot}).write_parquet(save_path2)
+        
         del profile_model

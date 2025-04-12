@@ -17,6 +17,7 @@ params.create_esm_embeddings = true
 params.create_ankh_embeddings = true
 params.create_prottrans_embeddings = true
 params.basic_env_container = "singularity_images/basic_env.sif"
+params.env2_container = "singularity_images/env2.sif"
 //params.esm_cache_path = "${params.release_dir}/../fairesm_cache"
 //params.ankh_cache_path = "${params.release_dir}/../ankh_caches"
 
@@ -213,19 +214,20 @@ process process_goa{
 }
 
 process prottrans_embs{
-    conda 'conda_envs/env2_wsl.txt'
+    //conda 'conda_envs/env2_wsl.txt'
     publishDir params.release_dir, mode: 'copy'
     
     input:
         path prot_trans_original
         path sorted_ids
+        path src_dir
     
     output:
         path "emb.prottrans.parquet", emit: emb_prottrans
 
     script:
     """
-    python $projectDir/src/create_prottrans_embs.py $prot_trans_original $sorted_ids emb.prottrans.parquet
+    python src/create_prottrans_embs.py $prot_trans_original $sorted_ids emb.prottrans.parquet
     """
 }
 
@@ -240,11 +242,11 @@ process taxa_profiles{
         path src_dir
 
     output:
-        path "onehot.taxa_256.npy.gz"
-        path "emb.taxa_profile_256.npy.gz"
+        path "onehot.taxa_256.parquet"
+        path "emb.taxa_profile_256.parquet"
         path "top_taxa_256.txt"
-        path "onehot.taxa_128.npy.gz"
-        path "emb.taxa_profile_128.npy.gz"
+        path "onehot.taxa_128.parquet"
+        path "emb.taxa_profile_128.parquet"
         path "top_taxa_128.txt"
 
     script:
@@ -343,10 +345,10 @@ workflow {
 
     if(create_prottrans_embeddings){
         prot_trans_path = download_prot5(params.prot_t5_embs_url)
-        prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
+        prottrans_embs(prot_trans_path, sort_uniprot.out.ids, src_dir)
     }
     
-    if(create_ankh_embeddings || create_esm_embeddings){
+    /*if(create_ankh_embeddings || create_esm_embeddings){
         parent_dir = file(release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         if(create_ankh_embeddings){
@@ -359,6 +361,6 @@ workflow {
             calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
                 create_caches.out.fairesm_cache, esm_dir, params.others_dir)
         }
-    }
+    }*/
     //release_dir_channel = Channel.fromPath(params.release_dir)
 }
