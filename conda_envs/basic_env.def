@@ -1,8 +1,5 @@
 Bootstrap: docker
-From: mambaorg/micromamba:cuda12.8.1-ubuntu24.04
+From: python:3.13.2
 
-%post
-    micromamba install -c bioconda -c conda-forge -y -n base \
-        python=3.13.1 colorama tk tqdm pip=24.3.1 numpy=2.2.0 \
-    && micromamba clean --all --yes
-        
+%post 
+    pip install tqdm numpy==2.2.0

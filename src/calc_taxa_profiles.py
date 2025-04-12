@@ -4,6 +4,7 @@ import gzip
 from typing import List
 import numpy as np
 from tqdm import tqdm
+from glob import glob
 from util_base import run_command
 
 #prj_dir = path.dirname(path.dirname(__file__))
@@ -81,6 +82,18 @@ if __name__ == "__main__":
     go_experimental_mf_path = sys.argv[2]
     #taxid_path = release_dir + '/taxid.tsv'
     taxid_path = sys.argv[3]
+
+    print(sys.argv)
+    print([path.exists(a) for a in sys.argv])
+    
+    # Check if files exist before proceeding
+    if not path.exists(go_experimental_mf_path):
+        print(f"Error: File {go_experimental_mf_path} does not exist", file=sys.stderr)
+        sys.exit(1)
+    if not path.exists(taxid_path):
+        print(f"Error: File {taxid_path} does not exist", file=sys.stderr)
+        sys.exit(1)
+    
     print('Loading taxon of uniprotids')
     uniprot2taxid = {}
     uniprots = []

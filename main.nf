@@ -10,6 +10,13 @@ params.prot_t5_embs_url = "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_r
 params.max_protein_len = 1800
 params.evi_not_use_path = projectDir+'/evi_not_to_use.txt'
 params.others_dir = projectDir+'/others'
+
+params.create_taxon_profiles = true
+params.create_plm_embeddings = true
+params.create_esm_embeddings = true
+params.create_ankh_embeddings = true
+params.create_prottrans_embeddings = true
+params.basic_env_container = "singularity_images/basic_env.sif"
 //params.esm_cache_path = "${params.release_dir}/../fairesm_cache"
 //params.ankh_cache_path = "${params.release_dir}/../ankh_caches"
 
@@ -223,13 +230,14 @@ process prottrans_embs{
 }
 
 process taxa_profiles{
-    conda 'conda_envs/basic_env.txt'
+    //conda 'conda_envs/basic_env.txt'
     publishDir params.release_dir, mode: 'copy'
 
     input:
         path go_experimental_mf
         path taxids_path
         path taxallnomy_tsv_path
+        path src_dir
 
     output:
         path "onehot.taxa_256.npy.gz"
@@ -240,8 +248,10 @@ process taxa_profiles{
         path "top_taxa_128.txt"
 
     script:
+    //singularity exec --bind $projectDir/src:/src --bind $taxallnomy_tsv_path:/$taxallnomy_tsv_path --bind $go_experimental_mf:/$go_experimental_mf --bind $taxids_path:/$taxids_path \\
+    //$projectDir/$params.basic_env_container \\ 
     """
-    python $projectDir/src/calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path
+    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path
     """
 }
 
@@ -289,10 +299,23 @@ process calc_esm_embeddings{
 }
 
 workflow {
+    create_esm_embeddings = params.create_esm_embeddings
+    create_ankh_embeddings = params.create_ankh_embeddings
+    create_prottrans_embeddings = params.create_prottrans_embeddings
+
+    if(params.create_plm_embeddings != true){
+        print('Not creating PLM embeddings')
+        create_esm_embeddings = false
+        create_ankh_embeddings = false
+        create_prottrans_embeddings = false
+    }
+
+    print(params)
     goa_all_url = 'https://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz'
     goa_test_url = "https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/test_input/goa_uniprot_all.gaf.gz"
     uniprot_all_url = "https://ftp.uniprot.org/pub/databases/uniprot/knowledgebase/complete/uniprot_sprot.fasta.gz"
     uniprot_test_url = "https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/test_input/uniprot_sprot.fasta.gz"
+    
     goa_url = Channel.value(goa_all_url)
     uniprot_url = Channel.value(uniprot_all_url)
     if (params.mode == 'test'){
@@ -304,8 +327,6 @@ workflow {
     goa_raw_path = download_goa(goa_url)
     go_basic_path = download_go(params.go_basic_url)
     gocheck_do_not_annotate = download_gocheck_do_not_annotate(params.gocheck_url)
-    esm_dir = download_esm(params.esm_git_url)
-    //esm_dir + "/scripts/extract.py"
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
 
     sort_uniprot(uniprot_path)
@@ -314,15 +335,30 @@ workflow {
     process_goa(sort_uniprot.out.ids, goa_raw_path, 
         gocheck_do_not_annotate, params.evi_not_use_path, go_basic_path)
     
-    prot_trans_path = download_prot5(params.prot_t5_embs_url)
-    prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
-    //taxa_profiles(process_goa.out.go_experimental_mf, taxids, taxallnomy_tsv_path)
+    src_dir = file(projectDir+'/src')
+    view(src_dir)
+    if(params.create_taxon_profiles){
+        taxa_profiles(process_goa.out.go_experimental_mf, taxids, taxallnomy_tsv_path, src_dir)
+    }
 
+    if(create_prottrans_embeddings){
+        prot_trans_path = download_prot5(params.prot_t5_embs_url)
+        prottrans_embs(prot_trans_path, sort_uniprot.out.ids)
+    }
+    
+    if(create_ankh_embeddings || create_esm_embeddings){
+        parent_dir = file(release_dir).getParent()
+        caches_tp = create_caches(parent_dir)
+        if(create_ankh_embeddings){
+            calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+                create_caches.out.ankh_cache)
+        }
+        if(create_esm_embeddings){
+            //esm_dir + "/scripts/extract.py"
+            esm_dir = download_esm(params.esm_git_url)
+            calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+                create_caches.out.fairesm_cache, esm_dir, params.others_dir)
+        }
+    }
     //release_dir_channel = Channel.fromPath(params.release_dir)
-    parent_dir = file(params.release_dir).getParent()
-    caches_tp = create_caches(parent_dir)
-    //calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
-    //    create_caches.out.ankh_cache)
-    //calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
-    //    create_caches.out.fairesm_cache, esm_dir, params.others_dir)
 }
