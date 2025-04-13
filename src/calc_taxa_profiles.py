@@ -1,6 +1,7 @@
 import sys
 from os import path
 import gzip
+from collections import Counter
 from typing import List
 import numpy as np
 from tqdm import tqdm
@@ -31,6 +32,20 @@ class TaxaProfileModel():
         self.results_cache = {}
         self.onehot_cache = {}
         self.taxids_to_use = taxids_to_use
+    
+    '''
+    Find frequency of taxids missing from taxid_parent_lists
+    '''
+    def find_missing_taxids(self, taxids):
+        taxid_frequency = {k: c for k, c in Counter(taxids).items()}
+        missing_taxids = [k for k, c in taxid_frequency.items() if k not in self.taxid_parent_lists]
+        total_missing = sum(taxid_frequency[k] for k in missing_taxids)
+        freq_relative = total_missing / len(taxids)
+        print('Taxids missing from taxalnomy:', len(missing_taxids), 'total missing:', total_missing, file=sys.stderr)
+        print('Total missing percentage:', freq_relative, file=sys.stderr)
+
+        for missing in missing_taxids:
+            self.results_cache[missing] = np.zeros(len(self.taxids_to_use))
 
     def calc(self, taxid):
         if taxid in self.results_cache:
@@ -133,6 +148,8 @@ if __name__ == "__main__":
         open(tops_savepath, 'w').write('\n'.join([str(x) for x  in taxids_to_use]))
 
         profile_model = TaxaProfileModel(taxids_to_use, taxallnomy_df_path=taxallnomy_df_path)
+        profile_model.find_missing_taxids(taxids)
+        #quit(1)
         profiled = np.asarray([profile_model.calc(taxid) for taxid in tqdm(taxids)])
         save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.parquet'
         pl.DataFrame({'id': uniprots, 'emb': profiled}).write_parquet(save_path)
