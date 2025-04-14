@@ -46,10 +46,10 @@ Numerical representations of the NCBI taxon IDs of each protein. Instead of the 
 
 |             Name            |                                          Description                                         | Vector Length 📏 | Download Links 🔗 |
 |:---------------------------:|:--------------------------------------------------------------------------------------:|:-------------:|:-------------:|
-| emb.taxa_profile_256.npy.gz |                                     Taxa Proximity [0.0, 1.0] to each one of the 256 most annotated taxa                                    |      256      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.taxa_profile_256.npy.gz)   |
-| emb.taxa_profile_128.npy.gz |                                     Taxa Proximity [0.0, 1.0] to each one of the 128 most annotated taxa                                    |      128      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.taxa_profile_128.npy.gz)   |
-|    onehot.taxa_256.npy.gz   |                                  Taxa One-Hot Encoding                                 |      256      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/onehot.taxa_256.npy.gz)   |
-|    onehot.taxa_128.npy.gz   |                                  Taxa One-Hot Encoding                                 |      128      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/onehot.taxa_128.npy.gz)   |
+| emb.taxa_profile_256.parquet |                                     Taxa Proximity [0.0, 1.0] to each one of the 256 most annotated taxa                                    |      256      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.taxa_profile_256.parquet)   |
+| emb.taxa_profile_128.parquet |                                     Taxa Proximity [0.0, 1.0] to each one of the 128 most annotated taxa                                    |      128      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.taxa_profile_128.parquet)   |
+|    onehot.taxa_256.parquet   |                                  Taxa One-Hot Encoding                                 |      256      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/onehot.taxa_256.parquet)   |
+|    onehot.taxa_128.parquet   |                                  Taxa One-Hot Encoding                                 |      128      |    [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/onehot.taxa_128.parquet)   |
 
 ## File Formats 🗃️
 
@@ -59,8 +59,7 @@ Numerical representations of the NCBI taxon IDs of each protein. Instead of the 
 | taxid.tsv                | Tab-separated table with columns: UniprotID, NCBI Taxon ID                                                         |
 | go.expanded.tsv.gz       | Tab-separated table with columns: UniprotID, GO ID, ECO ID, NCBI Taxon ID, GO Ontology Code                        |
 | go.experimental.*.tsv.gz | Tab-separated table with columns: UniprotID, GO IDs separated by ','                                               |
-| emb.*.npy.gz             | Numpy matrix compressed with gzip. For rows where an embedding could not be defined, a vector of np.NaN is placed. |
-| emb.*.parquet             | Parquet formatted dataset. Has only two columns ('id' and 'emb'). For rows where an embedding could not be defined, a vector of np.NaN is placed. |
+| *.parquet             | Parquet formatted dataset. Has only two columns ('id' and 'emb'). For rows where an embedding could not be defined, a vector of np.NaN is placed. |
 
 ## Create Release
 
