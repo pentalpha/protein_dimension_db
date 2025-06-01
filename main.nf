@@ -348,8 +348,8 @@ workflow {
         prottrans_embs(prot_trans_path, sort_uniprot.out.ids, src_dir)
     }
     
-    /*if(create_ankh_embeddings || create_esm_embeddings){
-        parent_dir = file(release_dir).getParent()
+    if(create_ankh_embeddings || create_esm_embeddings){
+        parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         if(create_ankh_embeddings){
             calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
@@ -361,6 +361,6 @@ workflow {
             calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
                 create_caches.out.fairesm_cache, esm_dir, params.others_dir)
         }
-    }*/
+    }
     //release_dir_channel = Channel.fromPath(params.release_dir)
 }
