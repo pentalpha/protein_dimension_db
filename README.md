@@ -6,6 +6,22 @@ Datasets with PLM embeddings, GO annotations and taxonomy representations for al
 
 Proteins are sorted by length. All files contain the same sequence of proteins, so the "ids.txt" file can be used as the row names.
 
+### Protein Language Model Embeddings 🔢
+
+Several models are used to create computational descriptions of the Swiss-Prot proteins:
+
+|             Name            |                                          Model 🤖                                         | Vector Length 📏 | File Size | Download Links 🔗 |
+|:---------------------------:|:--------------------------------------------------------------------------------------:|:------------:|:------------:|:------------:|
+|     emb.prottrans.parquet    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     | 1.3G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-prostt5/resolve/main/emb.prostt5.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.prottrans.parquet)  |
+|     emb.ankh_large.parquet    | ankh-large |      1536     | 3.4G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-ankh/resolve/main/emb.ankh_large.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_large.parquet)  |
+|     emb.ankh_base.parquet    | ankh-base |      768     | 1.7G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-ankh/resolve/main/emb.ankh_base.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_base.parquet)  |
+|     emb.esm2_t36.parquet     |                                   esm2_t36_3B_UR50D                                  |      2560     | 5.7G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t36.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t36.parquet)  |
+|     emb.esm2_t33.parquet     |                                   esm2_t33_650M_UR50D                                  |      1280     | 2.8G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_33.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t33.parquet)   |
+|     emb.esm2_t30.parquet     |                                   esm2_t30_150M_UR50D                                  |      640      | 1.4G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t30.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t30.parquet)   |
+|     emb.esm2_t12.parquet     |                                   esm2_t12_35M_UR50D                                   |      480      | 1G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t12.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t12.parquet)   |
+|      emb.esm2_t6.parquet     |                                    esm2_t6_8M_UR50D                                    |      320      | 700M |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t6.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t6.parquet)   |
+
+
 ### Uniprot/Swiss-Prot 🔬
 
 |           Name          |                  Content                  | Download Links 🔗 |
@@ -24,21 +40,6 @@ All Gene Ontology annotations of Swiss-Prot proteins, excluding computational, n
 | go.experimental.mf.tsv.gz |  Molecular Functions |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz)       |
 | go.experimental.bp.tsv.gz | Biological Processes |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.bp.tsv.gz)       |
 | go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz)       |
-
-### Protein Language Model Embeddings 🔢
-
-Several models are used to create computational descriptions of the Swiss-Prot proteins:
-
-|             Name            |                                          Model 🤖                                         | Vector Length 📏 | File Size | Download Links 🔗 |
-|:---------------------------:|:--------------------------------------------------------------------------------------:|:------------:|:------------:|:------------:|
-|     emb.prottrans.parquet    | prottrans_t5_xl_u50 (calculated by [Uniprot](https://www.uniprot.org/help/embeddings)) |      1024     | 1.3G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-prostt5/resolve/main/emb.prostt5.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.prottrans.parquet)  |
-|     emb.ankh_large.parquet    | ankh-large |      1536     | 3.4G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-ankh/resolve/main/emb.ankh_large.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_large.parquet)  |
-|     emb.ankh_base.parquet    | ankh-base |      768     | 1.7G |   [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-ankh/resolve/main/emb.ankh_base.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.ankh_base.parquet)  |
-|     emb.esm2_t36.parquet     |                                   esm2_t36_3B_UR50D                                  |      2560     | 5.7G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t36.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t36.parquet)  |
-|     emb.esm2_t33.parquet     |                                   esm2_t33_650M_UR50D                                  |      1280     | 2.8G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_33.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t33.parquet)   |
-|     emb.esm2_t30.parquet     |                                   esm2_t30_150M_UR50D                                  |      640      | 1.4G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t30.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t30.parquet)   |
-|     emb.esm2_t12.parquet     |                                   esm2_t12_35M_UR50D                                   |      480      | 1G |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t12.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t12.parquet)   |
-|      emb.esm2_t6.parquet     |                                    esm2_t6_8M_UR50D                                    |      320      | 700M |    [HF](https://huggingface.co/datasets/pitagoras-alves/swissprot_protein_embeddings-esm2/resolve/main/emb.esm2_t6.parquet?download=true), [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/emb.esm2_t6.parquet)   |
 
 ### Taxonomy 🔢
 
