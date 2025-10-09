@@ -36,10 +36,10 @@ All Gene Ontology annotations of Swiss-Prot proteins, excluding computational, n
 
 |            Name           |        Content       | Download Links 🔗 |
 |:-------------------------:|:--------------------:|:-------------:|
-| go.expanded.tsv.gz        | MF, BP and CC annotations in simplified GAF format |  [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz)       |
-| go.experimental.mf.tsv.gz |  Molecular Functions |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz)       |
+| go.expanded.tsv.gz        | MF, BP and CC annotations in simplified GAF format |  [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.expanded.tsv.gz)       |
+| go.experimental.mf.tsv.gz |  Molecular Functions |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz)       |
 | go.experimental.bp.tsv.gz | Biological Processes |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.bp.tsv.gz)       |
-| go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.mf.tsv.gz)       |
+| go.experimental.cc.tsv.gz | Cellular Components  |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/go.experimental.cc.tsv.gz)       |
 
 ### Taxonomy 🔢
 
@@ -81,3 +81,27 @@ Full release:
 $ mkdir <path to generate database at>
 $ nextflow run main.nf --mode release --release_dir <path to generate database at>
 ```
+
+## Citation
+
+Please cite the following work:
+
+Bibtext:
+```bibtex
+@inproceedings{AlvesSobrinho2025ProteinDimensionDB,
+  author       = {Pit{\'{a}}goras de Azevedo Alves Sobrinho and Tetsu Sakamoto and Wilfredo Blanco Figuerola},
+  title        = {Protein Dimension DB: A Unified Protein Repository for Representation Learning and Functional Analysis},
+  booktitle    = {BioInformatics: 21st Brazilian Congress, X-Meeting 2025, João Pessoa, Brazil, June 3–6, 2025, Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {16037},
+  year         = {2025},
+  editor       = {Marcio Dorn and Fabricio Martins Lopes},
+  publisher    = {Springer Cham},
+  isbn         = {978-3-032-09335-6},
+  eisbn        = {978-3-032-09336-3},
+  address      = {Cham, Switzerland}
+}
+```
+
+APA reference:
+> Alves Sobrinho, P. de A., Sakamoto, T., & Blanco Figuerola, W. (2025). Protein Dimension DB: A unified protein repository for representation learning and functional analysis. BioInformatics: 21st Brazilian Congress, X-Meeting 2025, João Pessoa, Brazil, June 3–6, 2025, Proceedings (Lecture Notes in Computer Science, Vol. 16037). Springer Cham.
