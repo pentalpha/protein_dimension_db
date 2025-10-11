@@ -1,6 +1,6 @@
 # 🧬🖥 Protein Dimension DB 🖥🧬
 
-Datasets with PLM embeddings, GO annotations and taxonomy representations for all proteins in Uniprot/Swiss-Prot
+Scientific data lake with PLM embeddings, GO annotations and taxonomy representations for all proteins in Uniprot/Swiss-Prot
 
 ## Current Release
 
