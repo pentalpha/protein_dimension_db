@@ -5,14 +5,25 @@ def read_uniprot_fasta(fasta_path, protein_taxa=None):
     print('Loading', fasta_path)
     if protein_taxa is None:
         protein_taxa = {}
-    for line in gzip.open(fasta_path, 'rt'):
+    
+    opener = gzip.open if fasta_path.endswith('.gz') else open
+    
+    for line in opener(fasta_path, 'rt'):
         if line.startswith('>'):
             header_parts = line.rstrip('\n').lstrip('>').split('|')
             if len(header_parts) == 1:
-                uniprot_id = header_parts[0]
+                uniprot_id = header_parts[0].split()[0]
             else:
                 uniprot_id = header_parts[1]
-            taxid = line.split('OX=')[-1].split()[0].rstrip('\n')
+            
+            if 'OX=' in line:
+                taxid = line.split('OX=')[-1].split()[0].rstrip('\n')
+            else:
+                parts = line.rstrip('\n').split()
+                if len(parts) > 1:
+                    taxid = parts[-1]
+                else:
+                    taxid = '0'
             protein_taxa[uniprot_id] = taxid
     return protein_taxa
 

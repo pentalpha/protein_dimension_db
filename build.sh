@@ -1,3 +1,5 @@
-mkdir -p singularity_images
-singularity build singularity_images/env2_1.sif conda_envs/env2.def > singularity_images/env2.stdout
-singularity build singularity_images/basic_env.sif conda_envs/basic_env.def > singularity_images/basic_env.stdout
+#!/bin/bash
+mkdir -p singularity/sif
+singularity build singularity/sif/ankh.sif singularity/def/ankh.def > singularity/sif/ankh.stdout 2>&1
+singularity build singularity/sif/env2.sif singularity/def/env2.def > singularity/sif/env2.stdout 2>&1
+singularity build singularity/sif/basic_env.sif singularity/def/basic_env.def > singularity/sif/basic_env.stdout 2>&1

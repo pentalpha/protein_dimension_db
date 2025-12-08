@@ -122,14 +122,18 @@ if __name__ == "__main__":
     caches_path = sys.argv[2]
     all_ids_path = sys.argv[3]
     all_ids = open(all_ids_path, 'r').read().split('\n')
+    
+    output_suffix = ""
+    if len(sys.argv) > 4:
+        output_suffix = sys.argv[4]
 
     nonetype = type(None)
 
-    for is_large in [False,True]:
+    for is_large in [False]:
         if is_large:
-            output_pq = 'emb.ankh_large.parquet'
+            output_pq = 'emb.ankh_large'+output_suffix+'.parquet'
         else:
-            output_pq = 'emb.ankh_base.parquet'
+            output_pq = 'emb.ankh_base'+output_suffix+'.parquet'
         
         seq_names, embeddings = embed_sequences(is_large, fasta_path, caches_path)
 

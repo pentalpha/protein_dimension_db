@@ -50,10 +50,10 @@ def filter_by_len(input_fastas, fasta_out_path, ids_path, maxlen):
         id_out.write('\n'.join(id_list))
 
 if __name__ == "__main__":
-    input_fasta1 = sys.argv[1]
-    input_fasta2 = sys.argv[2]
-    output_fasta = sys.argv[3]
-    ids_path = sys.argv[4]
-    maxlen = int(sys.argv[5])
+    # Usage: python filter_fasta_by_len.py <input_fasta1> ... <input_fastaN> <output_fasta> <ids_path> <maxlen>
+    inputs = sys.argv[1:-3]
+    output_fasta = sys.argv[-3]
+    ids_path = sys.argv[-2]
+    maxlen = int(sys.argv[-1])
     
-    filter_by_len([input_fasta1, input_fasta2], output_fasta, ids_path, maxlen)
+    filter_by_len(inputs, output_fasta, ids_path, maxlen)

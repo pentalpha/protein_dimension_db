@@ -322,7 +322,7 @@ process taxa_profiles{
 }
 
 process calc_ankh_embeddings{
-    conda 'conda_envs/ankh_wsl.yml'
+    //conda 'conda_envs/ankh_wsl.yml'
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -341,7 +341,7 @@ process calc_ankh_embeddings{
 }
 
 process calc_esm_embeddings{
-    conda 'conda_envs/pytorch2.yml'
+    //conda 'conda_envs/pytorch2.yml'
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -413,28 +413,28 @@ workflow {
     
     src_dir = file(projectDir+'/src')
     view(src_dir)
-    '''if(params.create_taxon_profiles){
+    if(params.create_taxon_profiles){
         taxa_profiles(process_goa.out.go_experimental_mf, taxids, taxallnomy_tsv_path, src_dir)
     }
     
     if(create_prottrans_embeddings){
         prot_trans_path = download_prot5(params.prot_t5_embs_url)
-        prottrans_embs(prot_trans_path, sort_uniprot.out.ids, src_dir)
+        prottrans_embs(prot_trans_path, filter_large_proteins.out.ids, src_dir)
     }
     
     if(create_ankh_embeddings || create_esm_embeddings){
         parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         if(create_ankh_embeddings){
-            calc_ankh_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+            calc_ankh_embeddings(filter_large_proteins.out.fasta, filter_large_proteins.out.ids, 
                 create_caches.out.ankh_cache)
         }
         if(create_esm_embeddings){
             //esm_dir + "/scripts/extract.py"
             esm_dir = download_esm(params.esm_git_url)
-            calc_esm_embeddings(not_large_proteins, sort_uniprot.out.ids, 
+            calc_esm_embeddings(filter_large_proteins.out.fasta, filter_large_proteins.out.ids, 
                 create_caches.out.fairesm_cache, esm_dir, params.others_dir)
         }
-    }'''
+    }
     //release_dir_channel = Channel.fromPath(params.release_dir)
 }

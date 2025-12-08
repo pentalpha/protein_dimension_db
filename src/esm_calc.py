@@ -172,6 +172,11 @@ if __name__ == "__main__":
     cache_dir = sys.argv[2]
     all_uniprot_ids_path = sys.argv[3]
     all_ids = open(all_uniprot_ids_path, 'r').read().split('\n')
+    
+    output_suffix = ""
+    if len(sys.argv) > 4:
+        output_suffix = sys.argv[4]
+
     models_meta_info_csv_path = 'others/model_sizes.csv'
     facebook_models = []
 
@@ -179,14 +184,14 @@ if __name__ == "__main__":
         cells = rawline.rstrip('\n').split(',')
         model_full_name = cells[0].strip('"')
         short_name = cells[-1].strip('"')
-        if 'facebook' in model_full_name:
+        if 'facebook' in model_full_name and 't30' in model_full_name:
             print(cells)
             facebook_models.append((model_full_name, short_name))
 
     for model_full_name, short_name in facebook_models:
         embedder = ESM_Embedder(cache_dir, model_full_name)
         embedder.calc_embeddings(fasta_input_path)
-        output_path = 'emb.'+short_name+'.parquet'
+        output_path = 'emb.'+short_name+output_suffix+'.parquet'
         if not 'esm2_t' in output_path:
             output_path = output_path.replace('esm2_', 'esm2_t')
         embedder.export_embeddings(all_ids, output_path)
