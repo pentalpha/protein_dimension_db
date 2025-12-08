@@ -1,9 +1,10 @@
 import gzip
 import sys
 
-def read_uniprot_fasta(fasta_path):
+def read_uniprot_fasta(fasta_path, protein_taxa=None):
     print('Loading', fasta_path)
-    protein_taxa = {}
+    if protein_taxa is None:
+        protein_taxa = {}
     for line in gzip.open(fasta_path, 'rt'):
         if line.startswith('>'):
             header_parts = line.rstrip('\n').lstrip('>').split('|')
@@ -16,12 +17,15 @@ def read_uniprot_fasta(fasta_path):
     return protein_taxa
 
 if __name__ == "__main__":
-    fasta_path = sys.argv[1]
-    ids_path = sys.argv[2]
-    output_path = sys.argv[3]
+    #$swissprot_fasta $trembl_fasta
+    fasta_path1 = sys.argv[1]
+    fasta_path2 = sys.argv[2]
+    ids_path = sys.argv[3]
+    output_path = sys.argv[4]
 
     uniprots_list = open(ids_path, 'r').read().split('\n')
-    protein_taxa = read_uniprot_fasta(fasta_path)
+    protein_taxa = read_uniprot_fasta(fasta_path1)
+    protein_taxa = read_uniprot_fasta(fasta_path2, protein_taxa)
 
     protein2taxa = []
     for protein in uniprots_list:
