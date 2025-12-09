@@ -245,6 +245,7 @@ process list_taxids_simple{
 process calc_ankh_embeddings{
     //conda 'conda_envs/ankh_wsl.yml'
     publishDir params.release_dir, mode: 'copy'
+    label 'long'
     
     input:
         path sorted_uniprot_not_large
@@ -264,6 +265,7 @@ process calc_ankh_embeddings{
 process calc_esm_embeddings{
     //conda 'conda_envs/pytorch2.yml'
     publishDir params.release_dir, mode: 'copy'
+    label 'long'
     
     input:
         path sorted_uniprot_not_large

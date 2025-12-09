@@ -130,7 +130,7 @@ class ESM_Embedder():
 
     def calc_embeddings(self, input_fasta: str):
         calculated_proteins = self.calculated
-        print('Q6UY62 is in calculated_proteins', 'Q6UY62' in calculated_proteins)
+        #print('Q6UY62 is in calculated_proteins', 'Q6UY62' in calculated_proteins)
         if len(calculated_proteins) > 0:
             print('Some embeddings have already been calculated')
             print('Removing them from the input fasta')
@@ -143,7 +143,8 @@ class ESM_Embedder():
                 return
             input_fasta = to_process_fasta
         
-        fasta_parts = fasta_equal_split_by_len(input_fasta, self.processes)
+        print('Fasta parts:')
+        fasta_parts = fasta_equal_split_by_len(input_fasta, self.processes*12)
         for f in fasta_parts:
             print(f)
         
@@ -184,7 +185,7 @@ if __name__ == "__main__":
         cells = rawline.rstrip('\n').split(',')
         model_full_name = cells[0].strip('"')
         short_name = cells[-1].strip('"')
-        if 'facebook' in model_full_name and 't30' in model_full_name:
+        if 'facebook' in model_full_name and 't33' in model_full_name:
             print(cells)
             facebook_models.append((model_full_name, short_name))
 
