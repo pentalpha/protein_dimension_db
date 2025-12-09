@@ -33,7 +33,7 @@ params.others_dir = projectDir+'/others'
 params.create_taxon_profiles = true
 params.create_plm_embeddings = true
 params.create_esm_embeddings = true
-params.create_ankh_embeddings = false
+params.create_ankh_embeddings = true
 //params.basic_env_container = "singularity_images/basic_env.sif"
 //params.env2_container = "singularity_images/env2.sif"
 
@@ -63,12 +63,14 @@ workflow {
         parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         
+        src_dir = file(projectDir+'/src')
         if(create_ankh_embeddings){
             // Train
             calc_ankh_embeddings_train(
                 filter_large_proteins_train.out.fasta, 
                 filter_large_proteins_train.out.ids, 
                 create_caches.out.ankh_cache,
+                src_dir,
                 "_train"
             )
             // Test
@@ -76,6 +78,7 @@ workflow {
                 filter_large_proteins_test.out.fasta, 
                 filter_large_proteins_test.out.ids, 
                 create_caches.out.ankh_cache,
+                src_dir,
                 "_test"
             )
         }
@@ -90,6 +93,7 @@ workflow {
                 create_caches.out.fairesm_cache, 
                 esm_dir, 
                 params.others_dir,
+                src_dir,
                 "_train"
             )
             
@@ -100,6 +104,7 @@ workflow {
                 create_caches.out.fairesm_cache, 
                 esm_dir, 
                 params.others_dir,
+                src_dir,
                 "_test"
             )
         }
@@ -107,7 +112,7 @@ workflow {
 
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
     
-    src_dir = file(projectDir+'/src')
+
     if(params.create_taxon_profiles){
         train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
         train_taxonomy = Channel.fromPath("databases/cafa6/Train/train_taxonomy.tsv")

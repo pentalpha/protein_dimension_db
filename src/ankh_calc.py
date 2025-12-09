@@ -17,6 +17,8 @@ from util_base import chunks, run_command, split_list_by_maxtokens
 
 class Embedder():
     def __init__(self, is_large, caches_dir) -> None:
+        print('Loading model', file=sys.stderr)
+        started = time()
         if is_large:
             self.model, self.tokenizer = ankh.load_large_model()
             self.model_name = 'ankh-large'
@@ -25,6 +27,7 @@ class Embedder():
             self.model, self.tokenizer = ankh.load_base_model()
             self.model_name = 'ankh-base'
             self.emb_len = 768
+        print('Model loaded in', time() - started, file=sys.stderr)
         self.emb_shape = (self.emb_len,)
         self.model.eval()
         self.cache_dir  = caches_dir + '/'+self.model_name
@@ -85,7 +88,7 @@ class Embedder():
         seqs.sort(key=lambda s: len(s))
         print('Not cached (non redundant):', len(seqs))
         if len(seqs) > 0:
-            seq_chunks = split_list_by_maxtokens(seqs, 100000)
+            seq_chunks = split_list_by_maxtokens(seqs, 5000)
             total_iter = len(seq_chunks)
             iterator = tqdm(total=total_iter)
             for not_cached_seqs in seq_chunks:

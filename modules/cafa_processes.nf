@@ -251,6 +251,7 @@ process calc_ankh_embeddings{
         path sorted_uniprot_not_large
         path all_uniprot_ids
         path ankh_cache_path
+        path src_dir
         val output_suffix
     
     output:
@@ -258,7 +259,8 @@ process calc_ankh_embeddings{
 
     script:
     """
-    python $projectDir/src/ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids $output_suffix
+    ls -la ./
+    python $src_dir/ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids $output_suffix
     """
 }
 
@@ -273,6 +275,7 @@ process calc_esm_embeddings{
         path esm_cache_path
         path esm_dir
         path others_dir
+        path src_dir
         val output_suffix
     
     output:
@@ -280,6 +283,6 @@ process calc_esm_embeddings{
 
     script:
     """
-    python $projectDir/src/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
+    python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
     """
 }
