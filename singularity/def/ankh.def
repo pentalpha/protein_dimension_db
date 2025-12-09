@@ -31,4 +31,6 @@ From: nvcr.io/nvidia/pytorch:25.11-py3
         banal \
         sqlalchemy \
         xxhash \
-        yarl
+        yarl \
+        polars \
+        fair-esm==2.0.0

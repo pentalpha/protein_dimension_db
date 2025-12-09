@@ -1,0 +1,1 @@
+nextflow -C nextflow.config run main-cafa6.nf -resume --release_dir /home/pita/data/pddb_cafa

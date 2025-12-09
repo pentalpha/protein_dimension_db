@@ -45,7 +45,7 @@ def filter_by_len(input_fastas, fasta_out_path, ids_path, maxlen):
         output.write(content+'\n')
     output.close()
 
-    id_list = [header.lstrip('>') for length, header, content in sequences]
+    id_list = [header.lstrip('>').split()[0] for length, header, content in sequences]
     with open(ids_path, 'w') as id_out:
         id_out.write('\n'.join(id_list))
 
