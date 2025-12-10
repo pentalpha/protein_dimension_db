@@ -27,17 +27,22 @@ def filter_fasta(fasta_path, allowed_ids, output_path, id_pos = 0):
 
 def remove_from_fasta(fasta_path, to_remove, output_path, id_pos = 0):
     keep = []
-
+    print(f'Fasta: {fasta_path}')
+    print(f'To remove: {len(to_remove)}')
     last_title = None
     current_seq = ''
+    titles_to_print = 10
     for rawline in open_file(fasta_path):
         if rawline.startswith('>'):
             if last_title:
                 keep.append((last_title, current_seq))
                 current_seq = ""
-            title_parts = rawline.lstrip('>').rstrip('\n').split('|')
+            title_parts = rawline.lstrip('>').rstrip('\n').replace('|', ' ').split(' ')
             current_id = title_parts[id_pos]
             if not current_id in to_remove:
+                if titles_to_print > 0:
+                    print(f'{rawline} -> {title_parts}')
+                    titles_to_print -= 1
                 last_title = current_id
             else:
                 last_title = None
@@ -49,7 +54,7 @@ def remove_from_fasta(fasta_path, to_remove, output_path, id_pos = 0):
     for name, seq in keep:
         output.write('>'+name+'\n')
         output.write(seq+'\n')
-
+    print(f'Kept: {len(keep)}')
     return [n for n, seq in keep]
 
 def ids_from_fasta(fasta_path):

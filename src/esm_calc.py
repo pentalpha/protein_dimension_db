@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from tqdm import tqdm
 import numpy as np
 import polars as pl
-
+from random import randint
 from util_base import proj_dir, run_command
 from fasta import fasta_equal_split, fasta_equal_split_by_len, remove_from_fasta
 
@@ -89,7 +89,7 @@ class ESM_Embedder():
     
     def find_calculated(self):
         emb_files = glob(self.embs_dir+'/*.pt')
-        uniprotids = [path.basename(f.rstrip('.pt')) for f in emb_files]
+        uniprotids = [path.basename(f.replace('.pt', '')) for f in emb_files]
         self.calculated.update(uniprotids)
         print('ESM', self.model_name, ':', len(self.calculated), 'proteins calculated')
 
@@ -100,8 +100,19 @@ class ESM_Embedder():
             emb = x['mean_representations'][self.n_layers].tolist()
             return emb
         else:
-            print(uniprotid, 'not found at dictionary with', 
-                len(self.calculated), 'keys', file=sys.stderr)
+            emb_path = path.join(self.embs_dir, uniprotid+'.pt')
+            if path.exists(emb_path):
+                try:
+                    x = torch.load(emb_path)
+                    emb = x['mean_representations'][self.n_layers].tolist()
+                    self.calculated.add(uniprotid)
+                    return emb
+                except:
+                    pass
+            else:
+                #print(uniprotid, 'not found at dictionary with', 
+                #    len(self.calculated), 'keys (', next(iter(self.calculated)), ')', file=sys.stderr)
+                pass
             empty_vec = np.empty(self.shape)
             empty_vec.fill(np.nan)
             return empty_vec
@@ -113,6 +124,11 @@ class ESM_Embedder():
     
     def export_embeddings(self, uniprotids: list, output_path: str):
         embs_list = self.get_embeddings(uniprotids)
+
+        #count NaNs
+        nans = np.isnan(embs_list).sum()
+        print('NaNs:', nans)
+        print('Not found:', nans/len(embs_list))
 
         all_embeddings = np.asarray(embs_list)
         print('Saving to file', output_path)
@@ -133,18 +149,27 @@ class ESM_Embedder():
         #print('Q6UY62 is in calculated_proteins', 'Q6UY62' in calculated_proteins)
         if len(calculated_proteins) > 0:
             print('Some embeddings have already been calculated')
+            ntop = 4
+            for cp in calculated_proteins:
+                print(cp)
+                ntop -= 1
+                if ntop == 0:
+                    break   
             print('Removing them from the input fasta')
-            to_process_fasta = self.embs_dir+'/to_calc.fasta'
+            #to_calc_[X].fasta with random ID
+            to_process_fasta = self.embs_dir+'/to_calc_'+str(randint(0, 1000))+'.fasta'
             kept = remove_from_fasta(input_fasta, calculated_proteins, to_process_fasta)
-            print('Q6UY62 is in kept', 'Q6UY62' in kept)
+            
             if len(kept) == 0:
                 run_command(['rm', to_process_fasta])
                 print('All proteins calculated')
                 return
+            else:
+                print(f'Proteins to calculate: {len(kept)}')
             input_fasta = to_process_fasta
         
         print('Fasta parts:')
-        fasta_parts = fasta_equal_split_by_len(input_fasta, self.processes*12)
+        fasta_parts = fasta_equal_split_by_len(input_fasta, self.processes*24)
         for f in fasta_parts:
             print(f)
         
@@ -156,8 +181,8 @@ class ESM_Embedder():
                         'esm_output_dir': self.embs_dir, 'batch_size': self.batch_max}
             for fasta_part in fasta_parts]
         
-        with Pool(self.processes) as pool:
-            print("Parallel processing with", self.processes, 'processes')
+        with Pool(1) as pool:
+            print("Parallel processing with", self.processes, 'processes started')
             pool.map(run_esm_extract, esm_run_params)
 
         pt_files = glob(self.embs_dir+'/*.pt')
