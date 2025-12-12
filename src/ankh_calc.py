@@ -127,6 +127,9 @@ class Embedder():
                 cache_name = self.base_cache_name.replace('_CACHEN_', '_'+str(cache_i))
             output_stream = gzip.open(cache_name, 'wt')
             json.dump(not_cached, output_stream)
+            for seq, emb in not_cached.items():
+                self.cached_seqs.add(seq)
+                self.seq_to_path[seq] = cache_name
     
     def calc_embeddings_batched(self, original_seqs, use_cache=True):
         started = time()
@@ -166,7 +169,7 @@ class Embedder():
 
 def embed_sequences(is_large, fasta_path, caches_path):
     fasta = read_uniprot_fasta(fasta_path)
-    seq_names = [h for h, x in fasta]
+    seq_names = [h.replace('|', ' ').split(' ')[0] for h, x in fasta]
     seqs = [s for h, s in fasta]
 
     print('embedding on', len(seqs), 'sequences with', file=sys.stderr)
