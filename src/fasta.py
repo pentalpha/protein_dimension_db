@@ -27,17 +27,22 @@ def filter_fasta(fasta_path, allowed_ids, output_path, id_pos = 0):
 
 def remove_from_fasta(fasta_path, to_remove, output_path, id_pos = 0):
     keep = []
-
+    print(f'Fasta: {fasta_path}')
+    print(f'To remove: {len(to_remove)}')
     last_title = None
     current_seq = ''
+    titles_to_print = 10
     for rawline in open_file(fasta_path):
         if rawline.startswith('>'):
             if last_title:
                 keep.append((last_title, current_seq))
                 current_seq = ""
-            title_parts = rawline.lstrip('>').rstrip('\n').split('|')
+            title_parts = rawline.lstrip('>').rstrip('\n').replace('|', ' ').split(' ')
             current_id = title_parts[id_pos]
             if not current_id in to_remove:
+                if titles_to_print > 0:
+                    print(f'{rawline} -> {title_parts}')
+                    titles_to_print -= 1
                 last_title = current_id
             else:
                 last_title = None
@@ -49,7 +54,7 @@ def remove_from_fasta(fasta_path, to_remove, output_path, id_pos = 0):
     for name, seq in keep:
         output.write('>'+name+'\n')
         output.write(seq+'\n')
-
+    print(f'Kept: {len(keep)}')
     return [n for n, seq in keep]
 
 def ids_from_fasta(fasta_path):
@@ -121,6 +126,8 @@ def fasta_equal_split_by_len(fasta_path, n_fastas: int):
           'into', n_fastas, 'fastas with', subfasta_len, 'each')
     
     fastas = []
+    n_seqs = 0
+    n_seqs_by_fasta = []
     current_total = 0
     seq = ""
     last_title = None
@@ -131,10 +138,14 @@ def fasta_equal_split_by_len(fasta_path, n_fastas: int):
             if last_title:
                 current_fasta.write('>'+last_title+'\n')
                 current_fasta.write(seq+'\n')
+                n_seqs += 1
                 current_total += len(seq)
                 if current_total >= subfasta_len:
                     current_fasta.close()
                     fastas.append(current_fasta_path)
+                    n_seqs_by_fasta.append(n_seqs)
+                    n_seqs = 0
+                    print(f'Created {current_fasta_path} with {current_total} aa')
                     current_fasta_path = fasta_path + '.'+str(len(fastas)+1)+'.fasta'
                     current_fasta = open(current_fasta_path, 'w')
                     current_total = 0
@@ -142,9 +153,21 @@ def fasta_equal_split_by_len(fasta_path, n_fastas: int):
             seq = ""
         else:
             seq += rawline.rstrip('\n')
-    current_fasta.write('>'+last_title+'\n')
-    current_fasta.write(seq+'\n')
-    current_fasta.close()
-    fastas.append(current_fasta_path)
-
+    if current_total > 0:
+        current_fasta.write('>'+last_title+'\n')
+        current_fasta.write(seq+'\n')
+        n_seqs += 1
+        current_fasta.close()
+        fastas.append(current_fasta_path)
+        n_seqs_by_fasta.append(n_seqs)
+        n_seqs = 0
+        print(f'Created {current_fasta_path} with {current_total} aa')
+    else:
+        current_fasta.close()
+        print(f'No more sequences to write')
+    n_seqs = sum(n_seqs_by_fasta)
+    print(f'Created {len(fastas)} fastas with {n_seqs} sequences')
+    for name, n in zip(fastas, n_seqs_by_fasta):
+        print(f'{name}: {n} sequences')
+    
     return fastas

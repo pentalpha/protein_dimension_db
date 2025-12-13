@@ -122,12 +122,25 @@ if __name__ == "__main__":
     
     print('Counting n annotations of taxa')
     gos_by_species = {t: 0 for t in uniprot2taxid.values()}
-    for rawline in gzip.open(go_experimental_mf_path, 'rt'):
+    print('Counting n annotations of taxa')
+    gos_by_species = {t: 0 for t in uniprot2taxid.values()}
+    
+    opener = gzip.open if go_experimental_mf_path.endswith('.gz') else open
+    mode = 'rt' if go_experimental_mf_path.endswith('.gz') else 'r'
+    for rawline in opener(go_experimental_mf_path, mode):
         cells = rawline.rstrip("\n").split('\t')
         if len(cells) == 2:
             uniprot_id = cells[0]
-            taxid = uniprot2taxid[uniprot_id]
-            gos_by_species[taxid] += len(cells[1].split(','))
+            if uniprot_id in uniprot2taxid:
+                taxid = uniprot2taxid[uniprot_id]
+                gos_by_species[taxid] += len(cells[1].split(','))
+        elif len(cells) == 3:
+            # CAFA format
+            if cells[0] == 'EntryID': continue
+            uniprot_id = cells[0]
+            if uniprot_id in uniprot2taxid:
+                taxid = uniprot2taxid[uniprot_id]
+                gos_by_species[taxid] += 1
 
     print('Sorting according to number of annotations')
     most_annotated_taxids = [(t, n_gos) for t, n_gos in gos_by_species.items()]
@@ -137,25 +150,45 @@ if __name__ == "__main__":
         print(x, y)
     
     print('Creating models')
+    print('Creating models')
     taxa_graph_nx = None
-    for profile_len in profile_lengths:
-        if len(most_annotated_taxids) > profile_len:
-            taxids_to_use = [t for t, n_gos in most_annotated_taxids][:profile_len]
-        else:
-            taxids_to_use = [t for t, n_gos in most_annotated_taxids]
+    
+    top_taxa_dir = None
+    if len(sys.argv) > 4:
+        top_taxa_dir = sys.argv[4]
+        
+    output_suffix = ""
+    if len(sys.argv) > 5:
+        output_suffix = sys.argv[5]
 
-        tops_savepath = release_dir + '/top_taxa_'+str(profile_len)+'.txt'
-        open(tops_savepath, 'w').write('\n'.join([str(x) for x  in taxids_to_use]))
+    for profile_len in profile_lengths:
+        if top_taxa_dir and top_taxa_dir != 'None':
+            # Load from existing file
+            tops_loadpath = path.join(top_taxa_dir, 'top_taxa_'+str(profile_len)+'.txt')
+            if not path.exists(tops_loadpath):
+                # Try finding it in the current dir if not in subdir
+                tops_loadpath = 'top_taxa_'+str(profile_len)+'.txt'
+            
+            print('Loading top taxa from', tops_loadpath)
+            taxids_to_use = [float(x) for x in open(tops_loadpath, 'r').read().split('\n') if len(x) > 0]
+        else:
+            if len(most_annotated_taxids) > profile_len:
+                taxids_to_use = [t for t, n_gos in most_annotated_taxids][:profile_len]
+            else:
+                taxids_to_use = [t for t, n_gos in most_annotated_taxids]
+
+            tops_savepath = release_dir + '/top_taxa_'+str(profile_len)+'.txt'
+            open(tops_savepath, 'w').write('\n'.join([str(x) for x  in taxids_to_use]))
 
         profile_model = TaxaProfileModel(taxids_to_use, taxallnomy_df_path=taxallnomy_df_path)
         profile_model.find_missing_taxids(taxids)
         #quit(1)
         profiled = np.asarray([profile_model.calc(taxid) for taxid in tqdm(taxids)])
-        save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.parquet'
+        save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+output_suffix+'.parquet'
         pl.DataFrame({'id': uniprots, 'emb': profiled}).write_parquet(save_path)
         
         onehot = np.asarray([profile_model.calc_onehot(taxid) for taxid in tqdm(taxids)])
-        save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+'.parquet'
+        save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+output_suffix+'.parquet'
         pl.DataFrame({'id': uniprots, 'emb': onehot}).write_parquet(save_path2)
         
         del profile_model
