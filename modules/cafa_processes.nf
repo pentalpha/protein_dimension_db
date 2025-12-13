@@ -13,6 +13,23 @@ process create_caches {
     """
 }
 
+process process_cafa_annotations {
+    publishDir params.release_dir, mode: 'copy'
+    
+    input:
+        path train_terms
+    
+    output:
+        path "go.experimental.mf.tsv", emit: mf
+        path "go.experimental.bp.tsv", emit: bp
+        path "go.experimental.cc.tsv", emit: cc
+
+    script:
+    """
+    python $projectDir/src/format_cafa_terms.py $train_terms go.experimental
+    """
+}
+
 process download_gocheck_do_not_annotate {
     //publishDir "databases", mode: 'copy'
     

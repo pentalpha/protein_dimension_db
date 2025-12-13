@@ -18,6 +18,7 @@ include {
     calc_ankh_embeddings as calc_ankh_embeddings_test;
     calc_esm_embeddings as calc_esm_embeddings_train;
     calc_esm_embeddings as calc_esm_embeddings_test;
+    process_cafa_annotations;
 } from './modules/cafa_processes.nf'
 
 params.mode = "release"
@@ -71,7 +72,7 @@ workflow {
                 filter_large_proteins_train.out.ids, 
                 create_caches.out.ankh_cache,
                 src_dir,
-                "_train"
+                ".train"
             )
             // Test
             calc_ankh_embeddings_test(
@@ -79,7 +80,7 @@ workflow {
                 filter_large_proteins_test.out.ids, 
                 create_caches.out.ankh_cache,
                 src_dir,
-                "_test"
+                ".test"
             )
         }
         
@@ -94,7 +95,7 @@ workflow {
                 esm_dir, 
                 params.others_dir,
                 src_dir,
-                "_train"
+                ".train"
             )
             
             // Test
@@ -105,7 +106,7 @@ workflow {
                 esm_dir, 
                 params.others_dir,
                 src_dir,
-                "_test"
+                ".test"
             )
         }
     }
@@ -118,7 +119,8 @@ workflow {
         train_taxonomy = Channel.fromPath("databases/cafa6/Train/train_taxonomy.tsv")
         
         // Train Profiles
-        taxa_profiles_train(train_terms, train_taxonomy, taxallnomy_tsv_path, src_dir)
+        process_cafa_annotations(train_terms)
+        taxa_profiles_train(process_cafa_annotations.out.mf, train_taxonomy, taxallnomy_tsv_path, src_dir)
         
         // Test Profiles
         // Need to extract taxids for test set first
