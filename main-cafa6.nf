@@ -8,12 +8,12 @@ include {
     download_taxallnomy;
     filter_large_proteins as filter_large_proteins_train;
     filter_large_proteins as filter_large_proteins_test;
-    list_taxids;
+    list_taxids_test;
+    list_taxids_train;
     process_train_terms;
     index_go_by_term;
     taxa_profiles_train;
     taxa_profiles_test;
-    list_taxids_simple;
     calc_ankh_embeddings as calc_ankh_embeddings_train;
     calc_ankh_embeddings as calc_ankh_embeddings_test;
     calc_esm_embeddings as calc_esm_embeddings_train;
@@ -54,10 +54,10 @@ workflow {
     test_fasta = Channel.fromPath("databases/cafa6/Test/testsuperset.fasta")
     
     // Filter Train
-    filter_large_proteins_train(train_fasta, params.max_protein_len, "train_filtered")
+    filter_large_proteins_train(train_fasta, params.max_protein_len, "train")
     
     // Filter Test
-    filter_large_proteins_test(test_fasta, params.max_protein_len, "test_filtered")
+    filter_large_proteins_test(test_fasta, params.max_protein_len, "test")
     
     
     if(create_ankh_embeddings || create_esm_embeddings){
@@ -72,7 +72,7 @@ workflow {
                 filter_large_proteins_train.out.ids, 
                 create_caches.out.ankh_cache,
                 src_dir,
-                ".train"
+                "train"
             )
             // Test
             calc_ankh_embeddings_test(
@@ -80,7 +80,7 @@ workflow {
                 filter_large_proteins_test.out.ids, 
                 create_caches.out.ankh_cache,
                 src_dir,
-                ".test"
+                "test"
             )
         }
         
@@ -95,7 +95,7 @@ workflow {
                 esm_dir, 
                 params.others_dir,
                 src_dir,
-                ".train"
+                "train"
             )
             
             // Test
@@ -106,28 +106,25 @@ workflow {
                 esm_dir, 
                 params.others_dir,
                 src_dir,
-                ".test"
+                "test"
             )
         }
     }
 
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
-    
+    train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
+    process_cafa_annotations(train_terms)
+    list_taxids_test(filter_large_proteins_test.out.fasta, filter_large_proteins_test.out.ids)
+    list_taxids_train(filter_large_proteins_train.out.fasta, filter_large_proteins_train.out.ids)
 
     if(params.create_taxon_profiles){
-        train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
         train_taxonomy = Channel.fromPath("databases/cafa6/Train/train_taxonomy.tsv")
         
         // Train Profiles
-        process_cafa_annotations(train_terms)
         taxa_profiles_train(process_cafa_annotations.out.mf, train_taxonomy, taxallnomy_tsv_path, src_dir)
         
-        // Test Profiles
-        // Need to extract taxids for test set first
-        list_taxids_simple(filter_large_proteins_test.out.fasta, filter_large_proteins_test.out.ids)
-        
         taxa_profiles_test(
-            list_taxids_simple.out.taxids, 
+            list_taxids_test.out.taxids, 
             taxallnomy_tsv_path, 
             src_dir,
             taxa_profiles_train.out.top_taxa_256,

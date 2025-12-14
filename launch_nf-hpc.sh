@@ -10,4 +10,4 @@ eval "$(conda shell.bash hook)" # inclua esta linha antes executar o conda
 conda activate /home/pdaasobrinho/.conda/envs/nextflow
 module load singularity/3.7.1
 
-nextflow -C nextflow-slurm.config run main-cafa6.nf -resume --release_dir /home/pdaasobrinho/data/pddb_cafa6
+nextflow -C nextflow-slurm.config run main-cafa6.nf -resume --release_dir /home/pdaasobrinho/data/dimension_db/cafa6

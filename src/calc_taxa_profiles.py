@@ -152,14 +152,14 @@ if __name__ == "__main__":
     print('Creating models')
     print('Creating models')
     taxa_graph_nx = None
-    
-    top_taxa_dir = None
-    if len(sys.argv) > 4:
-        top_taxa_dir = sys.argv[4]
         
     output_suffix = ""
+    if len(sys.argv) > 4:
+        output_suffix = sys.argv[4]
+    
+    top_taxa_dir = None
     if len(sys.argv) > 5:
-        output_suffix = sys.argv[5]
+        top_taxa_dir = sys.argv[5]
 
     for profile_len in profile_lengths:
         if top_taxa_dir and top_taxa_dir != 'None':
@@ -184,11 +184,17 @@ if __name__ == "__main__":
         profile_model.find_missing_taxids(taxids)
         #quit(1)
         profiled = np.asarray([profile_model.calc(taxid) for taxid in tqdm(taxids)])
-        save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+output_suffix+'.parquet'
+        if output_suffix == "":
+            save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.parquet'
+        else:
+            save_path = release_dir + '/emb.taxa_profile_'+str(profile_len)+'.'+output_suffix+'.parquet'
         pl.DataFrame({'id': uniprots, 'emb': profiled}).write_parquet(save_path)
         
         onehot = np.asarray([profile_model.calc_onehot(taxid) for taxid in tqdm(taxids)])
-        save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+output_suffix+'.parquet'
+        if output_suffix == "":
+            save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+'.parquet'
+        else:
+            save_path2 = release_dir + '/onehot.taxa_'+str(profile_len)+'.'+output_suffix+'.parquet'
         pl.DataFrame({'id': uniprots, 'emb': onehot}).write_parquet(save_path2)
         
         del profile_model

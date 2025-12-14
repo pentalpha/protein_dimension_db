@@ -194,14 +194,13 @@ if __name__ == "__main__":
     nonetype = type(None)
 
     for is_large in [False]:
-        if is_large:
-            output_pq = 'emb.ankh_large'+output_suffix+'.parquet'
+        size_str = 'large' if is_large else 'base'
+        if output_suffix == '':
+            output_pq = 'emb.ankh_'+size_str+'.parquet'
         else:
-            output_pq = 'emb.ankh_base'+output_suffix+'.parquet'
-        
+            output_pq = 'emb.ankh_'+size_str+'.'+output_suffix+'.parquet'
         seq_names, embeddings = embed_sequences(is_large, fasta_path, caches_path)
 
-        
         emb_shape = embeddings[0].shape
 
         print('Embeddings shapes:')

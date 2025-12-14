@@ -113,32 +113,32 @@ process filter_large_proteins{
     input:
         path input_fastas
         val max_protein_len
-        val output_name
+        val output_suffix
     
     output:
-        path "${output_name}.fasta", emit: fasta
-        path "${output_name}_ids.txt", emit: ids
+        path "sequences.${output_suffix}.fasta", emit: fasta
+        path "ids.${output_suffix}.txt", emit: ids
 
     script:
     """
-    python $projectDir/src/filter_fasta_by_len.py $input_fastas ${output_name}.fasta ${output_name}_ids.txt $max_protein_len
+    python $projectDir/src/filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
     """
 }
 
-process list_taxids{
+process list_taxids_train{
     publishDir params.release_dir, mode: 'copy'
     
     input:
         path swissprot_fasta
-        path trembl_fasta
         path sorted_ids
     
     output:
-        path "taxid.tsv", emit: taxids
+        path "taxid.train.tsv", emit: taxids
 
     script:
     """
-    python $projectDir/src/list_uniprot_taxids.py $swissprot_fasta $trembl_fasta $sorted_ids taxid.tsv
+    touch dummy.fasta
+    python $projectDir/src/list_uniprot_taxids.py $swissprot_fasta dummy.fasta $sorted_ids taxid.train.tsv
     """
 }
 
@@ -194,18 +194,18 @@ process taxa_profiles_train{
         path src_dir
 
     output:
-        path "onehot.taxa_256.parquet"
-        path "emb.taxa_profile_256.parquet"
-        path "top_taxa_256.txt", emit: top_taxa_256
-        path "onehot.taxa_128.parquet"
-        path "emb.taxa_profile_128.parquet"
+        path "onehot.taxa_128.train.parquet"
+        path "onehot.taxa_256.train.parquet"
+        path "emb.taxa_profile_128.train.parquet"
+        path "emb.taxa_profile_256.train.parquet"
         path "top_taxa_128.txt", emit: top_taxa_128
+        path "top_taxa_256.txt", emit: top_taxa_256
 
     script:
     //singularity exec --bind $projectDir/src:/src --bind $taxallnomy_tsv_path:/$taxallnomy_tsv_path --bind $go_experimental_mf:/$go_experimental_mf --bind $taxids_path:/$taxids_path \\
     //$projectDir/$params.basic_env_container \\ 
     """
-    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path
+    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path train
     """
 }
 
@@ -220,10 +220,10 @@ process taxa_profiles_test{
         path top_taxa_128
 
     output:
-        path "onehot.taxa_256_test.parquet"
-        path "emb.taxa_profile_256_test.parquet"
-        path "onehot.taxa_128_test.parquet"
-        path "emb.taxa_profile_128_test.parquet"
+        path "emb.taxa_profile_128.test.parquet"
+        path "emb.taxa_profile_256.test.parquet"
+        path "onehot.taxa_128.test.parquet"
+        path "onehot.taxa_256.test.parquet"
 
     script:
     """
@@ -235,11 +235,11 @@ process taxa_profiles_test{
     # We pass a dummy file for go_experimental_mf since it won't be used (we provide top taxa)
     touch dummy_go.tsv
     
-    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path dummy_go.tsv $taxids_path top_taxa_dir "_test"
+    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path dummy_go.tsv $taxids_path test top_taxa_dir
     """
 }
 
-process list_taxids_simple{
+process list_taxids_test{
     publishDir params.release_dir, mode: 'copy'
     
     input:
@@ -247,15 +247,12 @@ process list_taxids_simple{
         path ids_list
     
     output:
-        path "taxid_test.tsv", emit: taxids
+        path "taxid.test.tsv", emit: taxids
 
     script:
     """
-    # We pass the same fasta twice because the script expects 2 inputs before ids output etc
-    # Usage: python list_uniprot_taxids.py <fasta1> <fasta2> <ids> <output>
-    # Actually wait, the script takes fasta1, fasta2. I can pass a dummy empty file for fasta2.
     touch dummy.fasta
-    python $projectDir/src/list_uniprot_taxids.py $input_fasta dummy.fasta $ids_list taxid_test.tsv
+    python $projectDir/src/list_uniprot_taxids.py $input_fasta dummy.fasta $ids_list taxid.test.tsv
     """
 }
 
@@ -272,7 +269,7 @@ process calc_ankh_embeddings{
         val output_suffix
     
     output:
-        path "emb.ankh_base${output_suffix}.parquet"
+        path "emb.ankh_base.${output_suffix}.parquet"
 
     script:
     """
@@ -296,7 +293,7 @@ process calc_esm_embeddings{
         val output_suffix
     
     output:
-        path "emb.esm2_t33${output_suffix}.parquet"
+        path "emb.esm2_t33.${output_suffix}.parquet"
 
     script:
     """

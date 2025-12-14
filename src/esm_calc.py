@@ -217,7 +217,10 @@ if __name__ == "__main__":
     for model_full_name, short_name in facebook_models:
         embedder = ESM_Embedder(cache_dir, model_full_name)
         embedder.calc_embeddings(fasta_input_path)
-        output_path = 'emb.'+short_name+output_suffix+'.parquet'
+        if output_suffix == '':
+            output_path = 'emb.'+short_name+'.parquet'
+        else:
+            output_path = 'emb.'+short_name+'.'+output_suffix+'.parquet'
         if not 'esm2_t' in output_path:
             output_path = output_path.replace('esm2_', 'esm2_t')
         embedder.export_embeddings(all_ids, output_path)
