@@ -17,7 +17,10 @@ process process_cafa_annotations {
     publishDir params.release_dir, mode: 'copy'
     
     input:
+        path format_cafa_script
         path train_terms
+        path go_basic
+        path go_not_use
     
     output:
         path "go.experimental.mf.tsv", emit: mf
@@ -26,7 +29,9 @@ process process_cafa_annotations {
 
     script:
     """
-    python $projectDir/src/format_cafa_terms.py $train_terms go.experimental
+    ls ./
+    echo $projectDir
+    python $format_cafa_script $train_terms go.experimental $go_not_use $go_basic
     """
 }
 
@@ -298,5 +303,23 @@ process calc_esm_embeddings{
     script:
     """
     python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
+    """
+}
+
+process copy_additional_files {
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path go_basic, stageAs: 'go-basic.source.obo'
+    path ia_tsv
+
+    output:
+    path "go-basic.obo"
+    path "information_acc.tsv"
+
+    script:
+    """
+    cp $go_basic go-basic.obo
+    cp $ia_tsv information_acc.tsv
     """
 }

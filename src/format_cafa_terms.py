@@ -1,8 +1,9 @@
 import sys
 import gzip
 from collections import defaultdict
+from gene_ontology import expand_go_set, load_go_graph, gos_not_to_use
 
-def format_cafa_terms(input_path, output_prefix):
+def format_cafa_terms(input_path, output_prefix, go_not_use_path, go_basic_path):
     # EntryID	term	aspect
     # Q5W0B1	GO:0000785	C
     
@@ -12,6 +13,9 @@ def format_cafa_terms(input_path, output_prefix):
         'P': defaultdict(set), # BP
         'C': defaultdict(set)  # CC
     }
+    
+    go_graph = load_go_graph(go_basic_path)
+    not_use = gos_not_to_use(go_not_use_path)
     
     print(f"Reading {input_path}")
     opener = gzip.open if input_path.endswith('.gz') else open
@@ -39,7 +43,11 @@ def format_cafa_terms(input_path, output_prefix):
         print(f"Writing {output_file}")
         with open(output_file, 'w') as f:
             for entry_id, terms in annotations[aspect_char].items():
-                terms_str = ','.join(sorted(list(terms)))
+                terms_updated = set(terms)
+                for term in terms:
+                    expanded_terms = expand_go_set(term, go_graph, not_use)
+                    terms_updated.update(expanded_terms)
+                terms_str = ','.join(sorted(list(terms_updated)))
                 f.write(f"{entry_id}\t{terms_str}\n")
 
 if __name__ == "__main__":
@@ -49,5 +57,7 @@ if __name__ == "__main__":
         
     input_terms = sys.argv[1]
     output_prefix = sys.argv[2] # e.g. "go.experimental"
+    go_not_use_path = sys.argv[3]
+    go_basic_path = sys.argv[4]
     
-    format_cafa_terms(input_terms, output_prefix)
+    format_cafa_terms(input_terms, output_prefix, go_not_use_path, go_basic_path)

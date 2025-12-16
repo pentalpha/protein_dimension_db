@@ -19,6 +19,7 @@ include {
     calc_esm_embeddings as calc_esm_embeddings_train;
     calc_esm_embeddings as calc_esm_embeddings_test;
     process_cafa_annotations;
+    copy_additional_files;
 } from './modules/cafa_processes.nf'
 
 params.mode = "release"
@@ -112,8 +113,11 @@ workflow {
     }
 
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
+    gocheck_do_not_annotate = download_gocheck_do_not_annotate(params.gocheck_url)
     train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
-    process_cafa_annotations(train_terms)
+    go_basic = Channel.fromPath("databases/cafa6/Train/go-basic.obo")
+    format_cafa_terms_script = Channel.fromPath("src/format_cafa_terms.py")
+    process_cafa_annotations(format_cafa_terms_script, train_terms, go_basic, gocheck_do_not_annotate)
     list_taxids_test(filter_large_proteins_test.out.fasta, filter_large_proteins_test.out.ids)
     list_taxids_train(filter_large_proteins_train.out.fasta, filter_large_proteins_train.out.ids)
 
@@ -130,5 +134,9 @@ workflow {
             taxa_profiles_train.out.top_taxa_256,
             taxa_profiles_train.out.top_taxa_128
         )
+
     }
+
+    ia_tsv = Channel.fromPath("databases/cafa6/IA.tsv")
+    copy_additional_files(go_basic, ia_tsv)
 }
