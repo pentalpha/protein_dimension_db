@@ -119,6 +119,7 @@ process filter_large_proteins{
         path input_fastas
         val max_protein_len
         val output_suffix
+        path src_dir
     
     output:
         path "sequences.${output_suffix}.fasta", emit: fasta
@@ -126,7 +127,7 @@ process filter_large_proteins{
 
     script:
     """
-    python $projectDir/src/filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
+    python ${src_dir}/filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
     """
 }
 
@@ -283,6 +284,29 @@ process calc_ankh_embeddings{
     """
 }
 
+process calc_ankh_v1{
+    //conda 'conda_envs/ankh_wsl.yml'
+    publishDir params.release_dir, mode: 'copy'
+    label 'long'
+    
+    input:
+        path sorted_uniprot_not_large
+        path all_uniprot_ids
+        path ankh_cache_path
+        path src_dir
+        path previous_embs_dir
+    
+    output:
+        path "emb.ankh_base.parquet"
+        path "emb.ankh_large.parquet"
+
+    script:
+    """
+    ls -la ./
+    python $src_dir/ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids . $previous_embs_dir
+    """
+}
+
 process calc_esm_embeddings{
     //conda 'conda_envs/pytorch2.yml'
     publishDir params.release_dir, mode: 'copy'
@@ -303,6 +327,31 @@ process calc_esm_embeddings{
     script:
     """
     python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
+    """
+}
+
+process calc_esm2{
+    //conda 'conda_envs/pytorch2.yml'
+    publishDir params.release_dir, mode: 'copy'
+    label 'long'
+    
+    input:
+        path sorted_uniprot_not_large
+        path all_uniprot_ids
+        path esm_cache_path
+        path esm_dir
+        path others_dir
+        path src_dir
+        path previous_embs_dir
+    
+    output:
+        path "emb.esm2_t30.parquet"
+        path "emb.esm2_t33.parquet"
+        path "emb.esm2_t36.parquet"
+
+    script:
+    """
+    python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids . $previous_embs_dir
     """
 }
 

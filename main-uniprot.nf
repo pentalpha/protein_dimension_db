@@ -66,21 +66,6 @@ process download_gocheck_do_not_annotate {
     """
 }
 
-process download_esm{
-    //publishDir "libs/", mode: 'copy'
-    
-    input:
-    val esm_git
-
-    output:
-    path "esm", emit: esm_dir
-    
-    script:
-    """
-    git clone $esm_git
-    """
-}
-
 process download_uniprot{
     //publishDir "databases", mode: 'copy'
 
@@ -89,19 +74,6 @@ process download_uniprot{
 
     output:
     path "uniprot_sprot.fasta.gz", emit: uniprot_fasta
-
-    script:
-    """
-    wget $url
-    """
-}
-
-process download_trembl{
-    input:
-    val url
-
-    output:
-    path "uniprot_trembl.fasta.gz", emit: uniprot_fasta
 
     script:
     """
@@ -153,6 +125,36 @@ process download_taxallnomy{
     wget $url
     """
 }
+
+process download_esm{
+    //publishDir "libs/", mode: 'copy'
+    
+    input:
+    val esm_git
+
+    output:
+    path "esm", emit: esm_dir
+    
+    script:
+    """
+    git clone $esm_git
+    """
+}
+
+process download_trembl{
+    input:
+    val url
+
+    output:
+    path "uniprot_trembl.fasta.gz", emit: uniprot_fasta
+
+    script:
+    """
+    wget $url
+    """
+}
+
+
 
 process sort_swissprot{
     publishDir params.release_dir, mode: 'copy'

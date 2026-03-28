@@ -1,0 +1,1 @@
+nextflow -C nextflow-bioinfo3.config run main-uniprot2026.nf -resume --release_dir /data/home/pitagoras/data/dimension_db/release_2 --old_release_paths_str /data/home/pitagoras/data/dimension_db/cafa6,/data/home/pitagoras/data/dimension_db/release_1
