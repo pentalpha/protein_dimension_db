@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def parse_interpro_raw(input_file: str, output_file: str):
     """Raw interpro tsv format:
     1. Protein accession (e.g. P51587)
@@ -36,15 +39,26 @@ def parse_interpro_raw(input_file: str, output_file: str):
     ]
 
     interpro_annotations = {}
-    for rawline in open(input_file, "r"):
-        line = rawline.strip().split("\t")
-        row = {col_names[i]: line[i] for i in range(len(col_names))}
-        if not row["protein_accession"] in interpro_annotations:
-            interpro_annotations[row["protein_accession"]] = set()
-        if len(row["accession"]) > 4:
-            interpro_annotations[row["protein_accession"]].add(row["accession"])
+    all_input_files = input_file.split(",")
+    for input_file_path in all_input_files:
+        for rawline in open(input_file_path, "r"):
+            line = rawline.strip().split("\t")
+            row = {col_names[i]: line[i] for i in range(len(col_names))}
+            if not row["protein_accession"] in interpro_annotations:
+                interpro_annotations[row["protein_accession"]] = set()
+            if len(row["accession"]) > 4:
+                interpro_annotations[row["protein_accession"]].add(row["accession"])
 
     with open(output_file, "w") as out_file:
         for protein_accession, annotations in interpro_annotations.items():
             annots_list = ";".join(sorted(annotations))
             out_file.write(f"{protein_accession}\t{annots_list}\n")
+
+
+def parsed_interpro_to_data(input_file: str):
+    df = pd.read_csv(input_file, sep="\t", header=None)
+    # Convert semicolon string to lists
+    ids_list = df[0].values
+    raw_data = [str(row).split(";") for row in df[1].values]
+    clean_data = [[f.strip() for f in sublist if f.strip()] for sublist in raw_data]
+    return ids_list, clean_data

@@ -150,6 +150,30 @@ process train_interpro_autoencoder {
     """
 }
 
+process make_interpro_onehotencoder {
+    input:
+    path interpro_tsvs
+    path src_dir
+
+    output:
+    path "model_800", emit: model_800_dir
+    path "model_1600", emit: model_1600_dir
+    path "model_3200", emit: model_3200_dir
+    path "model_6400", emit: model_6400_dir
+
+    script:
+    """
+    mkdir -p model_800
+    mkdir -p model_1600
+    mkdir -p model_3200
+    mkdir -p model_6400
+    python -u ${src_dir}/interpro_onehot.py 800 model_800 ${interpro_tsvs} > model_800/stdout.log 2> model_800/stderr.log
+    python -u ${src_dir}/interpro_onehot.py 1600 model_1600 ${interpro_tsvs} > model_1600/stdout.log 2> model_1600/stderr.log
+    python -u ${src_dir}/interpro_onehot.py 3200 model_3200 ${interpro_tsvs} > model_3200/stdout.log 2> model_3200/stderr.log
+    python -u ${src_dir}/interpro_onehot.py 6400 model_6400 ${interpro_tsvs} > model_6400/stdout.log 2> model_6400/stderr.log
+    """
+}
+
 
 params.mode = "release"
 //params.esm_script_path = "esm/scripts/extract.py"
