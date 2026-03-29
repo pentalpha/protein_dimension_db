@@ -89,10 +89,19 @@ process run_interproscan_pipeline {
 
     script:
     """
-    mkdir -p interpro_out
+    # 1. Capture the absolute path of the input fasta and current work dir
+    # We must do this before changing directories so we don't lose the files!
+    FASTA_ABS_PATH=\$(readlink -f ${input_fasta})
+    OUTER_WORKDIR=\$(pwd)
+    
+    # 2. Define and move to a permanent execution directory
+    PERSISTENT_DIR="${interpro_data_dir}/interproscan_persistent_run"
+    mkdir -p \$PERSISTENT_DIR
+    cd \$PERSISTENT_DIR
+
     
     # Isolate the inner pipeline's work directory to prevent conflicts
-    export NXF_WORK=\$(pwd)/inner_nxf_work
+    export NXF_WORK=${interpro_data_dir}/interproscan_nxf_work
     export NXF_SINGULARITY_CACHEDIR="${projectDir}/singularity/sif"
     
     # Run the EBI pipeline. It will automatically chunk your Swissprot fasta 
@@ -102,12 +111,18 @@ process run_interproscan_pipeline {
         -profile singularity \\
         --formats tsv \\
         --datadir ${interpro_data_dir} \\
-        --input ${input_fasta} \\
-        --cpus 16 \\
+        --input \$FASTA_ABS_PATH \\
+        --cpus ${params.interproscan_cpus} \\
         --maxWorkers 5 \\
         --outdir interpro_out \\
         --outprefix swissprot_interpro \\
-        --batch-size 10000
+        --batch-size 5000
+    # 5. Return to the outer pipeline's working directory
+    cd \$OUTER_WORKDIR
+    mkdir -p interpro_out
+    
+    # 6. Copy the outputs back so the outer pipeline can emit them
+    cp \$PERSISTENT_DIR/interpro_out/*.tsv interpro_out/
     """
 }
 
@@ -118,20 +133,20 @@ process train_interpro_autoencoder {
 
     output:
     path "model_512", emit: model_512_dir
-    path "model_678", emit: model_678_dir
+    path "model_640", emit: model_640_dir
     path "model_896", emit: model_896_dir
     path "model_1280", emit: model_1280_dir
 
     script:
     """
     mkdir -p model_512
-    mkdir -p model_678
+    mkdir -p model_640
     mkdir -p model_896
     mkdir -p model_1280
-    python -u ${src_dir}/interpro_autoencoder.py 512 model_512 ${interpro_tsvs} > model_512.log
-    python -u ${src_dir}/interpro_autoencoder.py 678 model_678 ${interpro_tsvs} > model_678.log
-    python -u ${src_dir}/interpro_autoencoder.py 896 model_896 ${interpro_tsvs} > model_896.log
-    python -u ${src_dir}/interpro_autoencoder.py 1280 model_1280 ${interpro_tsvs} > model_1280.log
+    python -u ${src_dir}/interpro_autoencoder.py 512 model_512 ${interpro_tsvs} > model_512/stdout.log 2> model_512/stderr.log
+    python -u ${src_dir}/interpro_autoencoder.py 640 model_640 ${interpro_tsvs} > model_640/stdout.log 2> model_640/stderr.log
+    python -u ${src_dir}/interpro_autoencoder.py 896 model_896 ${interpro_tsvs} > model_896/stdout.log 2> model_896/stderr.log
+    python -u ${src_dir}/interpro_autoencoder.py 1280 model_1280 ${interpro_tsvs} > model_1280/stdout.log 2> model_1280/stderr.log
     """
 }
 
