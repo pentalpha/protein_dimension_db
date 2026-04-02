@@ -79,7 +79,55 @@ process join_old_releases {
     """
 }
 
+process split_fasta {
+    input:
+    path fasta_path
+    val max_tokens
+    path src_dir
+
+    output:
+    path "uniprot.*.fasta", emit: fasta_files
+
+    script:
+    """
+    python ${src_dir}/split_fasta.py ${fasta_path} ${max_tokens} uniprot
+    """
+}
+
+process consult_interpro {
+    input:
+    path fasta_file
+    path src_dir
+
+    output:
+    path "${fasta_file.baseName}_interpro.tsv", emit: interpro_tsv
+
+    script:
+    """
+    python ${src_dir}/request_interpros.py ${fasta_file} ${fasta_file.baseName}_interpro.tsv
+    """
+}
+
+process join_interpro_consults {
+    input:
+    path tsv_files
+
+    output:
+    path "concatenated.tsv", emit: concatenated_tsv
+
+    script:
+    """
+    cat ${tsv_files} > concatenated.tsv
+    """
+}
+
+//#TODO: Make run_interproscan_pipeline succeed always, even when it fails
+//#TODO: Join run_interproscan_pipeline results and convert to same tsv format as consult_interpro
+//#TODO: Pass both results to the train_interpro_autoencoder process
+
 process run_interproscan_pipeline {
+    maxForks 1
+
     input:
     path input_fasta
     val interpro_data_dir
@@ -125,6 +173,8 @@ process run_interproscan_pipeline {
     cp \$PERSISTENT_DIR/interpro_out/*.tsv interpro_out/
     """
 }
+
+
 
 process train_interpro_autoencoder {
     input:
@@ -182,6 +232,7 @@ params.esm_git_url = "https://github.com/facebookresearch/esm.git"
 params.gocheck_url = "https://current.geneontology.org/ontology/subsets/gocheck_do_not_annotate.json"
 params.taxallnomy_tsv_url = "https://huggingface.co/datasets/pitagoras-alves/taxallnomy/resolve/main/taxallnomy.tsv.gz"
 params.max_protein_len = 1800
+params.max_tokens_for_interproscan = 200000
 params.evi_not_use_path = projectDir + '/evi_not_to_use.txt'
 params.others_dir = projectDir + '/others'
 params.old_release_paths_str = ""
@@ -230,27 +281,31 @@ workflow {
 
 
     src_dir = file(projectDir + '/src')
+    split_fasta(swissprot_path, params.max_tokens_for_interproscan, src_dir)
+    ch_split_fastas = split_fasta.out.fasta_files.flatten()
+    consult_interpro(ch_split_fastas, src_dir)
+    ch_all_tsvs = consult_interpro.out.interpro_tsv.collect()
+    join_interpro_consults(ch_all_tsvs)
+
+    run_interproscan_pipeline(
+        ch_split_fastas,
+        params.interpro_data_dir,
+    )
     // Filter Train
 
     filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot", src_dir)
 
-    run_interproscan_pipeline(
-        filter_large_proteins.out.fasta,
-        params.interpro_data_dir,
-    )
-
-    train_interpro_autoencoder(
-        run_interproscan_pipeline.out.interpro_tsvs,
-        src_dir,
-    )
-
-    join_old_releases(
+    '''join_old_releases(
         filter_large_proteins.out.ids,
         old_release_files,
         src_dir,
-    )
+    )'''
 
-    if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
+    '''if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
+        train_interpro_autoencoder(
+            run_interproscan_pipeline.out.interpro_tsvs,
+            src_dir,
+        )
         parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         if (create_ankh_embeddings) {
@@ -278,7 +333,7 @@ workflow {
         }
     }
 
-    '''train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
+    train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
     go_basic = Channel.fromPath("databases/cafa6/Train/go-basic.obo")
     format_cafa_terms_script = Channel.fromPath("src/format_cafa_terms.py")
     process_cafa_annotations(format_cafa_terms_script, train_terms, go_basic, gocheck_do_not_annotate)
