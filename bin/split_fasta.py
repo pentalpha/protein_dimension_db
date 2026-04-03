@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 
 from bioinfo_utils.fasta import split_fasta_simple, read_fasta, write_fasta

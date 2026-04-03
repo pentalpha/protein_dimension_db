@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from os import mkdir, path
 from glob import glob
 from pickle import dump

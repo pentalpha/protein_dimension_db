@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Usage: python encode_proteins.py <encoder_type:interpro_autoencoder|interpro_onehot>
 #   <model_dir> <output_parquet> <protein_ids_sorted> <input_files...>
 

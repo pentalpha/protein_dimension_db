@@ -119,7 +119,6 @@ process filter_large_proteins{
         path input_fastas
         val max_protein_len
         val output_suffix
-        path src_dir
     
     output:
         path "sequences.${output_suffix}.fasta", emit: fasta
@@ -127,7 +126,7 @@ process filter_large_proteins{
 
     script:
     """
-    python ${src_dir}/filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
+    filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
     """
 }
 

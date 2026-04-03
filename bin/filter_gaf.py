@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import gzip
 from os import path
 import sys

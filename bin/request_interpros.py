@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 from data.interpro_api.consult_interpro import consult_uniprot_ids
 from bioinfo_utils.fasta import read_fasta

@@ -7,15 +7,9 @@ include {
     download_uniprot ;
     download_taxallnomy ;
     filter_large_proteins ;
-    list_taxids_test ;
-    list_taxids_train ;
-    process_train_terms ;
     index_go_by_term ;
-    taxa_profiles_train ;
-    taxa_profiles_test ;
     calc_ankh_v1 ;
     calc_esm2 ;
-    process_cafa_annotations ;
     copy_additional_files
 } from './modules/cafa_processes.nf'
 
@@ -62,7 +56,6 @@ process join_old_releases {
     input:
     path protein_ids_path
     path "releases/*"
-    path src_dir
 
     output:
     path "joins_dir/emb.prottrans.parquet"
@@ -75,7 +68,7 @@ process join_old_releases {
 
     script:
     """
-    python -u ${src_dir}/map_releases.py ${protein_ids_path} joins_dir releases/*
+    map_releases.py ${protein_ids_path} joins_dir releases/*
     """
 }
 
@@ -83,28 +76,26 @@ process split_fasta {
     input:
     path fasta_path
     val max_tokens
-    path src_dir
 
     output:
     path "uniprot.*.fasta", emit: fasta_files
 
     script:
     """
-    python ${src_dir}/split_fasta.py ${fasta_path} ${max_tokens} uniprot
+    split_fasta.py ${fasta_path} ${max_tokens} uniprot
     """
 }
 
 process consult_interpro {
     input:
     path fasta_file
-    path src_dir
 
     output:
     path "${fasta_file.baseName}_interpro.tsv", emit: interpro_tsv
 
     script:
     """
-    python ${src_dir}/request_interpros.py ${fasta_file} ${fasta_file.baseName}_interpro.tsv
+    request_interpros.py ${fasta_file} ${fasta_file.baseName}_interpro.tsv
     """
 }
 
@@ -131,9 +122,10 @@ process run_interproscan_pipeline {
     input:
     path input_fasta
     val interpro_data_dir
+    val interproscan_tmp_dir
 
     output:
-    path "interpro_out/*.tsv", emit: interpro_tsvs
+    path "interpro_out/${input_fasta.baseName}_interpro.tsv", emit: interpro_tsv
 
     script:
     """
@@ -143,13 +135,13 @@ process run_interproscan_pipeline {
     OUTER_WORKDIR=\$(pwd)
     
     # 2. Define and move to a permanent execution directory
-    PERSISTENT_DIR="${interpro_data_dir}/interproscan_persistent_run"
+    PERSISTENT_DIR="${interproscan_tmp_dir}/interproscan_persistent_run"
     mkdir -p \$PERSISTENT_DIR
     cd \$PERSISTENT_DIR
 
     
     # Isolate the inner pipeline's work directory to prevent conflicts
-    export NXF_WORK=${interpro_data_dir}/interproscan_nxf_work
+    export NXF_WORK=${interproscan_tmp_dir}/interproscan_nxf_work
     export NXF_SINGULARITY_CACHEDIR="${projectDir}/singularity/sif"
     
     # Run the EBI pipeline. It will automatically chunk your Swissprot fasta 
@@ -163,7 +155,7 @@ process run_interproscan_pipeline {
         --cpus ${params.interproscan_cpus} \\
         --maxWorkers 5 \\
         --outdir interpro_out \\
-        --outprefix swissprot_interpro \\
+        --outprefix ${input_fasta.baseName}_interpro\\
         --batch-size 5000
     # 5. Return to the outer pipeline's working directory
     cd \$OUTER_WORKDIR
@@ -174,12 +166,23 @@ process run_interproscan_pipeline {
     """
 }
 
+process parse_interpro_raw {
+    input:
+    path interpro_tsvs
 
+    output:
+    path "interpro_parsed.tsv", emit: interpro_parsed_tsv
+
+    script:
+    """
+    interpro_parse.py interpro_parsed.tsv ${interpro_tsvs}
+    """
+}
 
 process train_interpro_autoencoder {
     input:
-    path interpro_tsvs
-    path src_dir
+    path interpro_tsv_local
+    path interpro_tsv_consult
 
     output:
     path "model_512", emit: model_512_dir
@@ -193,17 +196,17 @@ process train_interpro_autoencoder {
     mkdir -p model_640
     mkdir -p model_896
     mkdir -p model_1280
-    python -u ${src_dir}/interpro_autoencoder.py 512 model_512 ${interpro_tsvs} > model_512/stdout.log 2> model_512/stderr.log
-    python -u ${src_dir}/interpro_autoencoder.py 640 model_640 ${interpro_tsvs} > model_640/stdout.log 2> model_640/stderr.log
-    python -u ${src_dir}/interpro_autoencoder.py 896 model_896 ${interpro_tsvs} > model_896/stdout.log 2> model_896/stderr.log
-    python -u ${src_dir}/interpro_autoencoder.py 1280 model_1280 ${interpro_tsvs} > model_1280/stdout.log 2> model_1280/stderr.log
+    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_local} ${interpro_tsv_consult} > model_512/stdout.log 2> model_512/stderr.log
+    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_local} ${interpro_tsv_consult} > model_640/stdout.log 2> model_640/stderr.log
+    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_local} ${interpro_tsv_consult} > model_896/stdout.log 2> model_896/stderr.log
+    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1280/stdout.log 2> model_1280/stderr.log
     """
 }
 
 process make_interpro_onehotencoder {
     input:
-    path interpro_tsvs
-    path src_dir
+    path interpro_tsv_local
+    path interpro_tsv_consult
 
     output:
     path "model_800", emit: model_800_dir
@@ -217,10 +220,10 @@ process make_interpro_onehotencoder {
     mkdir -p model_1600
     mkdir -p model_3200
     mkdir -p model_6400
-    python -u ${src_dir}/interpro_onehot.py 800 model_800 ${interpro_tsvs} > model_800/stdout.log 2> model_800/stderr.log
-    python -u ${src_dir}/interpro_onehot.py 1600 model_1600 ${interpro_tsvs} > model_1600/stdout.log 2> model_1600/stderr.log
-    python -u ${src_dir}/interpro_onehot.py 3200 model_3200 ${interpro_tsvs} > model_3200/stdout.log 2> model_3200/stderr.log
-    python -u ${src_dir}/interpro_onehot.py 6400 model_6400 ${interpro_tsvs} > model_6400/stdout.log 2> model_6400/stderr.log
+    interpro_onehot.py 800 model_800 ${interpro_tsv_local} ${interpro_tsv_consult} > model_800/stdout.log 2> model_800/stderr.log
+    interpro_onehot.py 1600 model_1600 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1600/stdout.log 2> model_1600/stderr.log
+    interpro_onehot.py 3200 model_3200 ${interpro_tsv_local} ${interpro_tsv_consult} > model_3200/stdout.log 2> model_3200/stderr.log
+    interpro_onehot.py 6400 model_6400 ${interpro_tsv_local} ${interpro_tsv_consult} > model_6400/stdout.log 2> model_6400/stderr.log
     """
 }
 
@@ -279,33 +282,41 @@ workflow {
     gocheck_do_not_annotate = download_gocheck_do_not_annotate(params.gocheck_url)
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
 
-
     src_dir = file(projectDir + '/src')
-    split_fasta(swissprot_path, params.max_tokens_for_interproscan, src_dir)
+    split_fasta(swissprot_path, params.max_tokens_for_interproscan)
     ch_split_fastas = split_fasta.out.fasta_files.flatten()
-    consult_interpro(ch_split_fastas, src_dir)
+    consult_interpro(ch_split_fastas)
     ch_all_tsvs = consult_interpro.out.interpro_tsv.collect()
     join_interpro_consults(ch_all_tsvs)
 
     run_interproscan_pipeline(
         ch_split_fastas,
         params.interpro_data_dir,
+        params.interproscan_tmp_dir,
     )
+
+    all_interpro_raws = run_interproscan_pipeline.out.interpro_tsv.collect()
+
+    parse_interpro_raw(all_interpro_raws)
     // Filter Train
 
-    filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot", src_dir)
+    filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
 
+    train_interpro_autoencoder(
+        parse_interpro_raw.out.interpro_parsed_tsv,
+        join_interpro_consults.out.concatenated_tsv,
+    )
+    make_interpro_onehotencoder(
+        parse_interpro_raw.out.interpro_parsed_tsv,
+        join_interpro_consults.out.concatenated_tsv,
+    )
     '''join_old_releases(
         filter_large_proteins.out.ids,
-        old_release_files,
-        src_dir,
+        old_release_files
     )'''
 
     '''if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
-        train_interpro_autoencoder(
-            run_interproscan_pipeline.out.interpro_tsvs,
-            src_dir,
-        )
+        
         parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
         if (create_ankh_embeddings) {
