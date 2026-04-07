@@ -14,6 +14,8 @@ include {
 } from './modules/cafa_processes.nf'
 
 process download_go {
+    storeDir "${params.raw_data_dir}/go"
+
     input:
     val url
 
@@ -27,6 +29,8 @@ process download_go {
 }
 
 process download_prot5 {
+    storeDir "${params.raw_data_dir}/prot5"
+
     input:
     val url
 
@@ -40,6 +44,8 @@ process download_prot5 {
 }
 
 process download_goa {
+    storeDir "${params.raw_data_dir}/goa"
+
     input:
     val url
 
@@ -176,6 +182,37 @@ process parse_interpro_raw {
     script:
     """
     interpro_parse.py interpro_parsed.tsv ${interpro_tsvs}
+    """
+}
+
+process join_interpro_tsvs {
+    input:
+    path tsv_a
+    path tsv_b
+
+    output:
+    path "interpro_parsed.tsv", emit: interpro_parsed_tsv
+
+    script:
+    """
+    cat ${tsv_a} ${tsv_b} > interpro_parsed.tsv
+    """
+}
+
+process make_interpro_vocab {
+    input:
+    path interpro_parsed_tsv
+
+    output:
+    path "interpro_vocab_ic.tsv", emit: interpro_vocab_ic_tests_tsv
+    path "interpro_vocab_ic.json", emit: interpro_vocab_ic_json
+    path "interpro_vocab_top_k.tsv", emit: interpro_vocab_top_k_tests_tsv
+    path "interpro_vocab_top_k.json", emit: interpro_vocab_top_k_json
+
+    script:
+    """
+    make_vocab.py interpro interpro_vocab 64 32000 0.95 ic_rich ${interpro_parsed_tsv}
+    make_vocab.py interpro interpro_vocab 64 32000 0.95 top_k ${interpro_parsed_tsv}
     """
 }
 

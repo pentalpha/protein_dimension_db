@@ -37,6 +37,7 @@ process process_cafa_annotations {
 
 process download_gocheck_do_not_annotate {
     //publishDir "databases", mode: 'copy'
+    storeDir "${params.raw_data_dir}/gocheck"
     
     input:
     val url
@@ -52,6 +53,7 @@ process download_gocheck_do_not_annotate {
 
 process download_esm{
     //publishDir "libs/", mode: 'copy'
+    storeDir "${params.raw_data_dir}/esm"
     
     input:
     val esm_git
@@ -66,6 +68,7 @@ process download_esm{
 }
 
 process download_uniprot{
+    storeDir "${params.raw_data_dir}/uniprot"
     //publishDir "databases", mode: 'copy'
 
     input:
@@ -82,6 +85,7 @@ process download_uniprot{
 
 
 process download_taxallnomy{
+    storeDir "${params.raw_data_dir}/taxallnomy"
     //publishDir "libs/", mode: 'copy'
 
     input:
