@@ -51,7 +51,9 @@ def format_cafa_terms(input_path, output_prefix, go_not_use_path, go_basic_path)
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python format_cafa_terms.py <input_train_terms> <output_prefix>")
+        print(
+            "Usage: python go_format_cafa_terms.py <input_train_terms> <output_prefix>"
+        )
         sys.exit(1)
 
     input_terms = sys.argv[1]

@@ -61,7 +61,7 @@ def filter_by_len(input_fastas, fasta_out_path, ids_path, maxlen):
 
 
 if __name__ == "__main__":
-    # Usage: python filter_fasta_by_len.py <input_fasta1> ... <input_fastaN> <output_fasta> <ids_path> <maxlen>
+    # Usage: python fasta_filter_by_len.py <input_fasta1> ... <input_fastaN> <output_fasta> <ids_path> <maxlen>
     inputs = sys.argv[1:-3]
     output_fasta = sys.argv[-3]
     ids_path = sys.argv[-2]

@@ -13,6 +13,48 @@ include {
     copy_additional_files
 } from './modules/cafa_processes.nf'
 
+include {
+    consult_interpro ;
+    join_interpro_consults ;
+    run_interproscan_pipeline ;
+    parse_interpro_raw ;
+    join_interpro_tsvs ;
+    make_interpro_obo ;
+    calc_interpro_ia ;
+    make_interpro_vocab
+} from './modules/interpro_processes.nf'
+
+process make_taxallnomy_parquet {
+    input:
+    path taxallnomy_tsv_path
+
+    output:
+    path "taxallnomy.parquet", emit: taxallnomy_parquet
+
+    script:
+    """
+    taxo_taxallnomy_parquet.py ${taxallnomy_tsv_path} taxallnomy.parquet
+    """
+}
+
+process list_taxids {
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path swissprot_fasta
+    path taxallnomy_parquet
+    path protein_ids_path
+
+    output:
+    path "taxid.tsv", emit: taxids
+
+    script:
+    """
+    export HOME=\$PWD
+    taxo_list_uniprot_taxids.py ${swissprot_fasta} ${protein_ids_path} ${taxallnomy_parquet} taxid.tsv
+    """
+}
+
 process download_go {
     storeDir "${params.raw_data_dir}/go"
 
@@ -58,7 +100,11 @@ process download_goa {
     """
 }
 
+
+
 process join_old_releases {
+    storeDir "${params.raw_data_dir}/joins"
+
     input:
     path protein_ids_path
     path "releases/*"
@@ -74,7 +120,7 @@ process join_old_releases {
 
     script:
     """
-    map_releases.py ${protein_ids_path} joins_dir releases/*
+    plm_map_releases.py ${protein_ids_path} joins_dir releases/*
     """
 }
 
@@ -88,181 +134,11 @@ process split_fasta {
 
     script:
     """
-    split_fasta.py ${fasta_path} ${max_tokens} uniprot
+    fasta_split.py ${fasta_path} ${max_tokens} uniprot
     """
 }
 
-process consult_interpro {
-    input:
-    path fasta_file
 
-    output:
-    path "${fasta_file.baseName}_interpro.tsv", emit: interpro_tsv
-
-    script:
-    """
-    request_interpros.py ${fasta_file} ${fasta_file.baseName}_interpro.tsv
-    """
-}
-
-process join_interpro_consults {
-    input:
-    path tsv_files
-
-    output:
-    path "concatenated.tsv", emit: concatenated_tsv
-
-    script:
-    """
-    cat ${tsv_files} > concatenated.tsv
-    """
-}
-
-//#TODO: Make run_interproscan_pipeline succeed always, even when it fails
-//#TODO: Join run_interproscan_pipeline results and convert to same tsv format as consult_interpro
-//#TODO: Pass both results to the train_interpro_autoencoder process
-
-process run_interproscan_pipeline {
-    maxForks 1
-
-    input:
-    path input_fasta
-    val interpro_data_dir
-    val interproscan_tmp_dir
-
-    output:
-    path "interpro_out/${input_fasta.baseName}_interpro.tsv", emit: interpro_tsv
-
-    script:
-    """
-    # 1. Capture the absolute path of the input fasta and current work dir
-    # We must do this before changing directories so we don't lose the files!
-    FASTA_ABS_PATH=\$(readlink -f ${input_fasta})
-    OUTER_WORKDIR=\$(pwd)
-    
-    # 2. Define and move to a permanent execution directory
-    PERSISTENT_DIR="${interproscan_tmp_dir}/interproscan_persistent_run"
-    mkdir -p \$PERSISTENT_DIR
-    cd \$PERSISTENT_DIR
-
-    
-    # Isolate the inner pipeline's work directory to prevent conflicts
-    export NXF_WORK=${interproscan_tmp_dir}/interproscan_nxf_work
-    export NXF_SINGULARITY_CACHEDIR="${projectDir}/singularity/sif"
-    
-    # Run the EBI pipeline. It will automatically chunk your Swissprot fasta 
-    # based on the --batch-size parameter
-    nextflow run ebi-pf-team/interproscan6 -resume \\
-        -r 6.0.0 \\
-        -profile singularity \\
-        --formats tsv \\
-        --datadir ${interpro_data_dir} \\
-        --input \$FASTA_ABS_PATH \\
-        --cpus ${params.interproscan_cpus} \\
-        --maxWorkers 5 \\
-        --outdir interpro_out \\
-        --outprefix ${input_fasta.baseName}_interpro\\
-        --batch-size 5000
-    # 5. Return to the outer pipeline's working directory
-    cd \$OUTER_WORKDIR
-    mkdir -p interpro_out
-    
-    # 6. Copy the outputs back so the outer pipeline can emit them
-    cp \$PERSISTENT_DIR/interpro_out/*.tsv interpro_out/
-    """
-}
-
-process parse_interpro_raw {
-    input:
-    path interpro_tsvs
-
-    output:
-    path "interpro_parsed.tsv", emit: interpro_parsed_tsv
-
-    script:
-    """
-    interpro_parse.py interpro_parsed.tsv ${interpro_tsvs}
-    """
-}
-
-process join_interpro_tsvs {
-    input:
-    path tsv_a
-    path tsv_b
-
-    output:
-    path "interpro_parsed.tsv", emit: interpro_parsed_tsv
-
-    script:
-    """
-    cat ${tsv_a} ${tsv_b} > interpro_parsed.tsv
-    """
-}
-
-process make_interpro_vocab {
-    input:
-    path interpro_parsed_tsv
-
-    output:
-    path "interpro_vocab_ic.tsv", emit: interpro_vocab_ic_tests_tsv
-    path "interpro_vocab_ic.json", emit: interpro_vocab_ic_json
-    path "interpro_vocab_top_k.tsv", emit: interpro_vocab_top_k_tests_tsv
-    path "interpro_vocab_top_k.json", emit: interpro_vocab_top_k_json
-
-    script:
-    """
-    make_vocab.py interpro interpro_vocab 64 32000 0.95 ic_rich ${interpro_parsed_tsv}
-    make_vocab.py interpro interpro_vocab 64 32000 0.95 top_k ${interpro_parsed_tsv}
-    """
-}
-
-process train_interpro_autoencoder {
-    input:
-    path interpro_tsv_local
-    path interpro_tsv_consult
-
-    output:
-    path "model_512", emit: model_512_dir
-    path "model_640", emit: model_640_dir
-    path "model_896", emit: model_896_dir
-    path "model_1280", emit: model_1280_dir
-
-    script:
-    """
-    mkdir -p model_512
-    mkdir -p model_640
-    mkdir -p model_896
-    mkdir -p model_1280
-    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_local} ${interpro_tsv_consult} > model_512/stdout.log 2> model_512/stderr.log
-    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_local} ${interpro_tsv_consult} > model_640/stdout.log 2> model_640/stderr.log
-    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_local} ${interpro_tsv_consult} > model_896/stdout.log 2> model_896/stderr.log
-    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1280/stdout.log 2> model_1280/stderr.log
-    """
-}
-
-process make_interpro_onehotencoder {
-    input:
-    path interpro_tsv_local
-    path interpro_tsv_consult
-
-    output:
-    path "model_800", emit: model_800_dir
-    path "model_1600", emit: model_1600_dir
-    path "model_3200", emit: model_3200_dir
-    path "model_6400", emit: model_6400_dir
-
-    script:
-    """
-    mkdir -p model_800
-    mkdir -p model_1600
-    mkdir -p model_3200
-    mkdir -p model_6400
-    interpro_onehot.py 800 model_800 ${interpro_tsv_local} ${interpro_tsv_consult} > model_800/stdout.log 2> model_800/stderr.log
-    interpro_onehot.py 1600 model_1600 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1600/stdout.log 2> model_1600/stderr.log
-    interpro_onehot.py 3200 model_3200 ${interpro_tsv_local} ${interpro_tsv_consult} > model_3200/stdout.log 2> model_3200/stderr.log
-    interpro_onehot.py 6400 model_6400 ${interpro_tsv_local} ${interpro_tsv_consult} > model_6400/stdout.log 2> model_6400/stderr.log
-    """
-}
 
 
 params.mode = "release"
@@ -319,6 +195,8 @@ workflow {
     gocheck_do_not_annotate = download_gocheck_do_not_annotate(params.gocheck_url)
     taxallnomy_tsv_path = download_taxallnomy(params.taxallnomy_tsv_url)
 
+    make_taxallnomy_parquet(taxallnomy_tsv_path)
+
     src_dir = file(projectDir + '/src')
     split_fasta(swissprot_path, params.max_tokens_for_interproscan)
     ch_split_fastas = split_fasta.out.fasta_files.flatten()
@@ -326,7 +204,28 @@ workflow {
     ch_all_tsvs = consult_interpro.out.interpro_tsv.collect()
     join_interpro_consults(ch_all_tsvs)
 
-    run_interproscan_pipeline(
+    make_interpro_obo(join_interpro_consults.out.concatenated_tsv)
+    calc_interpro_ia(
+        make_interpro_obo.out.interpro_obo,
+        join_interpro_consults.out.concatenated_tsv,
+    )
+
+    make_interpro_vocab(
+        join_interpro_consults.out.concatenated_tsv,
+        calc_interpro_ia.out.interpro_ia_tsv,
+    )
+    // Filter Train
+
+    filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
+
+    list_taxids(
+        swissprot_path,
+        make_taxallnomy_parquet.out.taxallnomy_parquet,
+        filter_large_proteins.out.ids,
+    )
+
+
+    /*run_interproscan_pipeline(
         ch_split_fastas,
         params.interpro_data_dir,
         params.interproscan_tmp_dir,
@@ -335,19 +234,19 @@ workflow {
     all_interpro_raws = run_interproscan_pipeline.out.interpro_tsv.collect()
 
     parse_interpro_raw(all_interpro_raws)
-    // Filter Train
 
-    filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
-
-    train_interpro_autoencoder(
+    join_interpro_tsvs(
         parse_interpro_raw.out.interpro_parsed_tsv,
         join_interpro_consults.out.concatenated_tsv,
+    )*/
+    '''train_interpro_autoencoder(
+        join_interpro_tsvs
     )
     make_interpro_onehotencoder(
         parse_interpro_raw.out.interpro_parsed_tsv,
         join_interpro_consults.out.concatenated_tsv,
     )
-    '''join_old_releases(
+    join_old_releases(
         filter_large_proteins.out.ids,
         old_release_files
     )'''
@@ -383,7 +282,7 @@ workflow {
 
     train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
     go_basic = Channel.fromPath("databases/cafa6/Train/go-basic.obo")
-    format_cafa_terms_script = Channel.fromPath("src/format_cafa_terms.py")
+    format_cafa_terms_script = Channel.fromPath("src/go_format_cafa_terms.py")
     process_cafa_annotations(format_cafa_terms_script, train_terms, go_basic, gocheck_do_not_annotate)
     list_taxids_test(filter_large_proteins_test.out.fasta, filter_large_proteins_test.out.ids)
     list_taxids_train(filter_large_proteins_train.out.fasta, filter_large_proteins_train.out.ids)

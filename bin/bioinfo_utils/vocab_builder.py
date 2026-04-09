@@ -113,23 +113,25 @@ def select_vocab_ic_weighted(
     alpha=0.1,  # How much to value adding IC depth to already-covered proteins
     max_vocab_size=24000,
     verbose=True,
+    ic_map=None,
 ):
     """
     Greedy selection targeting 'Average Total IC Retained'.
 
-    Score(c) = IC(c) * [new_proteins + (alpha * already_covered_proteins)]
+    Score(c) = IA(c) * [new_proteins + (alpha * already_covered_proteins)]
     """
 
-    print("IC Weighted Parameters:")
+    print("IA Weighted Parameters:")
     print("target_ic_retained:", target_ic_retained)
     print("alpha:", alpha)
     print("max_vocab_size:", max_vocab_size)
     print("verbose:", verbose)
 
     N_total = len(all_uniprots)
-    ic_map = build_ic_map(annots_by_class, all_uniprots)
+    if ic_map is None:
+        ic_map = build_ic_map(annots_by_class, all_uniprots)
 
-    # 1. Precompute original IC sums per protein for O(1) tracking
+    # 1. Precompute original IA sums per protein for O(1) tracking
     protein_orig_ic_sum = {}
     for c, prots in annots_by_class.items():
         for p in prots:
@@ -329,6 +331,7 @@ class ICRichVocabulary:
         max_vocab_size=24000,
         enrich_ic=True,
         vocab_method="ic_rich",
+        ic_map=None,
     ):
         if annots_by_class is not None:
             self.target_ic_retained = target_ic_retained
@@ -342,27 +345,17 @@ class ICRichVocabulary:
                 self.instance_ids.update(annots_by_class[c])
 
             if enrich_ic:
-                if vocab_method == "dmu":
-                    self.vocab, self.covered, self.ic_map, self.retained_ic = (
-                        select_vocab_jaccard_filtered(
-                            annots_by_class=self.annots_by_class,
-                            all_uniprots=self.instance_ids,
-                            target_coverage=target_ic_retained,
-                            max_vocab_size=max_vocab_size,
-                            verbose=True,
-                        )
+                self.vocab, self.covered, self.ic_map, self.retained_ic = (
+                    select_vocab_ic_weighted(
+                        annots_by_class=self.annots_by_class,
+                        all_uniprots=self.instance_ids,
+                        target_ic_retained=target_ic_retained,
+                        alpha=alpha,
+                        max_vocab_size=max_vocab_size,
+                        verbose=True,
+                        ic_map=ic_map,
                     )
-                elif vocab_method == "ic_rich":
-                    self.vocab, self.covered, self.ic_map, self.retained_ic = (
-                        select_vocab_ic_weighted(
-                            annots_by_class=self.annots_by_class,
-                            all_uniprots=self.instance_ids,
-                            target_ic_retained=target_ic_retained,
-                            alpha=alpha,
-                            max_vocab_size=max_vocab_size,
-                            verbose=True,
-                        )
-                    )
+                )
 
             else:
                 # Make vocab with max_k
@@ -378,7 +371,10 @@ class ICRichVocabulary:
                 self.covered = set()
                 for c in self.vocab:
                     self.covered.update(self.annots_by_class[c])
-                self.ic_map = build_ic_map(self.annots_by_class, self.instance_ids)
+                if ic_map is None:
+                    self.ic_map = build_ic_map(self.annots_by_class, self.instance_ids)
+                else:
+                    self.ic_map = ic_map
                 self.retained_ic, _ = evaluate_annotation_quality(
                     self.instance_ids,
                     self.annots_by_class,

@@ -23,7 +23,7 @@ def calc_embedding_process(params: str):
         run_command(["rm", embedding_path])
     cmd = [
         "python",
-        prj_dir + "/src/embedding_calculation.py",
+        prj_dir + "/src/plm_embedding_calculation.py",
         model_name,
         fasta_path,
         cache_dir,

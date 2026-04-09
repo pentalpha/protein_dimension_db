@@ -112,7 +112,7 @@ process sort_train_fasta{
 
     script:
     """
-    python $projectDir/src/sort_uniprot.py $original_uniprot swissprot.txt swissprot_sorted.fasta.gz
+    python $projectDir/src/fasta_sort.py $original_uniprot swissprot.txt swissprot_sorted.fasta.gz
     """
 }
 
@@ -130,7 +130,7 @@ process filter_large_proteins{
 
     script:
     """
-    filter_fasta_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
+    fasta_filter_by_len.py $input_fastas sequences.${output_suffix}.fasta ids.${output_suffix}.txt $max_protein_len
     """
 }
 
@@ -147,7 +147,7 @@ process list_taxids_train{
     script:
     """
     touch dummy.fasta
-    python $projectDir/src/list_uniprot_taxids.py $swissprot_fasta dummy.fasta $sorted_ids taxid.train.tsv
+    python $projectDir/src/taxo_list_uniprot_taxids.py $swissprot_fasta dummy.fasta $sorted_ids taxid.train.tsv
     """
 }
 
@@ -189,7 +189,7 @@ process index_go_by_term{
 
     script:
     """
-    python $projectDir/src/ann_by_term.py $go_by_uniprot
+    python $projectDir/src/go_ann_by_term.py $go_by_uniprot
     """
 }
 
@@ -214,7 +214,7 @@ process taxa_profiles_train{
     //singularity exec --bind $projectDir/src:/src --bind $taxallnomy_tsv_path:/$taxallnomy_tsv_path --bind $go_experimental_mf:/$go_experimental_mf --bind $taxids_path:/$taxids_path \\
     //$projectDir/$params.basic_env_container \\ 
     """
-    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path train
+    python3 src/taxo_calc_taxa_profiles.py $taxallnomy_tsv_path $go_experimental_mf $taxids_path train
     """
 }
 
@@ -244,7 +244,7 @@ process taxa_profiles_test{
     # We pass a dummy file for go_experimental_mf since it won't be used (we provide top taxa)
     touch dummy_go.tsv
     
-    python3 src/calc_taxa_profiles.py $taxallnomy_tsv_path dummy_go.tsv $taxids_path test top_taxa_dir
+    python3 src/taxo_calc_taxa_profiles.py $taxallnomy_tsv_path dummy_go.tsv $taxids_path test top_taxa_dir
     """
 }
 
@@ -261,7 +261,7 @@ process list_taxids_test{
     script:
     """
     touch dummy.fasta
-    python $projectDir/src/list_uniprot_taxids.py $input_fasta dummy.fasta $ids_list taxid.test.tsv
+    python $projectDir/src/taxo_list_uniprot_taxids.py $input_fasta dummy.fasta $ids_list taxid.test.tsv
     """
 }
 
@@ -283,7 +283,7 @@ process calc_ankh_embeddings{
     script:
     """
     ls -la ./
-    python $src_dir/ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids $output_suffix
+    python $src_dir/plm_ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids $output_suffix
     """
 }
 
@@ -306,7 +306,7 @@ process calc_ankh_v1{
     script:
     """
     ls -la ./
-    python $src_dir/ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids . $previous_embs_dir
+    python $src_dir/plm_ankh_calc.py $sorted_uniprot_not_large $ankh_cache_path $all_uniprot_ids . $previous_embs_dir
     """
 }
 
@@ -329,7 +329,7 @@ process calc_esm_embeddings{
 
     script:
     """
-    python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
+    python $src_dir/plm_esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids $output_suffix
     """
 }
 
@@ -354,7 +354,7 @@ process calc_esm2{
 
     script:
     """
-    python $src_dir/esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids . $previous_embs_dir
+    python $src_dir/plm_esm_calc.py $sorted_uniprot_not_large $esm_cache_path $all_uniprot_ids . $previous_embs_dir
     """
 }
 
