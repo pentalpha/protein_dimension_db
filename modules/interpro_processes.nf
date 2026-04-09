@@ -147,8 +147,8 @@ process calc_interpro_ia {
     script:
     """
     interpro_ann_to_ia_format.py ${interpro_parsed_tsv} ia_format_ann.tsv
-    wget https://raw.githubusercontent.com/pentalpha/InformationAccretion-Interpro/9bc1c31c40d1388bc85f161c957563cfff0ad7e2/ia.py -O ia.py
-    python ia.py --annot ia_format_ann.tsv --graph ${interpro_obo} --prop
+    git clone https://github.com/pentalpha/InformationAccretion-Interpro.git
+    python InformationAccretion-Interpro/ia.py --annot ia_format_ann.tsv --graph ${interpro_obo} --prop
     """
 }
 

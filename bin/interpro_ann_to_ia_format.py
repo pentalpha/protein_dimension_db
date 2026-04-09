@@ -29,17 +29,21 @@ import sys
 if __name__ == "__main__":
     ann_path = sys.argv[1]
     ia_path = sys.argv[2]
+    if len(sys.argv) > 3:
+        aspect = sys.argv[3]
+    else:
+        aspect = "interpro"
 
     output_stream = open(ia_path, "w")
     output_stream.write("EntryID\tterm\taspect\n")
 
     for ann_line in open(ann_path, "r"):
         parts = ann_line.strip().split("\t")
-        if len(parts) < 2:
+        if len(parts) < 2 or "uniprot_id" in ann_line:
             continue
         entry_id = parts[0]
-        terms = parts[1].split(";")
+        terms = parts[-1].split(";")
         for term in terms:
-            output_stream.write(f"{entry_id}\t{term}\tinterpro\n")
+            output_stream.write(f"{entry_id}\t{term}\t{aspect}\n")
 
     output_stream.close()

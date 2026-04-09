@@ -114,6 +114,7 @@ def select_vocab_ic_weighted(
     max_vocab_size=24000,
     verbose=True,
     ic_map=None,
+    total_ic_method="sum",
 ):
     """
     Greedy selection targeting 'Average Total IC Retained'.
@@ -135,7 +136,10 @@ def select_vocab_ic_weighted(
     protein_orig_ic_sum = {}
     for c, prots in annots_by_class.items():
         for p in prots:
-            protein_orig_ic_sum[p] = protein_orig_ic_sum.get(p, 0.0) + ic_map[c]
+            if total_ic_method == "max":
+                protein_orig_ic_sum[p] = max(protein_orig_ic_sum.get(p, 0.0), ic_map[c])
+            else:
+                protein_orig_ic_sum[p] = protein_orig_ic_sum.get(p, 0.0) + ic_map[c]
 
     # Count how many proteins actually have annotations
     N_annotated = sum(1 for v in protein_orig_ic_sum.values() if v > 0)
@@ -188,13 +192,25 @@ def select_vocab_ic_weighted(
         selected_set.add(c)
         covered.update(annots_by_class[c])
 
-        # Update incremental Average Total IC
+        """# Update incremental Average Total IC
         for p in annots_by_class[c]:
             if p in protein_orig_ic_sum and protein_orig_ic_sum[p] > 0:
                 # The exact fractional increase this class provides to this protein
                 delta = ic_map[c] / protein_orig_ic_sum[p]
-                current_retained_ratio_sum += delta
-
+                current_retained_ratio_sum += delta"""
+        current_retained_ics = {}
+        for c2 in selected:
+            for p in annots_by_class[c2]:
+                if p in covered:
+                    if total_ic_method == "max":
+                        current_retained_ics[p] = max(
+                            current_retained_ics.get(p, 0.0), ic_map[c2]
+                        )
+                    else:
+                        current_retained_ics[p] = (
+                            current_retained_ics.get(p, 0.0) + ic_map[c2]
+                        )
+        current_retained_ratio_sum = sum(current_retained_ics.values())
         avg_total_ic_retained = current_retained_ratio_sum / N_annotated
 
         if verbose and (
@@ -214,113 +230,6 @@ def select_vocab_ic_weighted(
     return selected, covered, ic_map, avg_total_ic_retained
 
 
-def select_vocab_ic_weighted_dmu(
-    annots_by_class,
-    all_uniprots,
-    target_ic_retained=0.95,
-    decay_rate=0.5,  # Beta: utility = decay_rate ^ count. 0.5 means each added term is 50% as useful as the last.
-    max_vocab_size=24000,
-    verbose=True,
-):
-    """
-    Greedy selection using Diminishing Marginal Utility (DMU).
-    Optimizes for Average Total IC Retained while penalizing redundant facet coverage.
-
-    Score(c) = IC(c) * sum(decay_rate ** cover_count[p])
-    """
-
-    print("DMU Parameters:")
-    print("target_ic_retained:", target_ic_retained)
-    print("decay_rate:", decay_rate)
-    print("max_vocab_size:", max_vocab_size)
-    print("verbose:", verbose)
-
-    N_total = len(all_uniprots)
-    ic_map = build_ic_map(annots_by_class, all_uniprots)
-
-    # 1. Precompute original IC sums per protein for O(1) tracking
-    protein_orig_ic_sum = {}
-    for c, prots in annots_by_class.items():
-        for p in prots:
-            protein_orig_ic_sum[p] = protein_orig_ic_sum.get(p, 0.0) + ic_map[c]
-
-    N_annotated = sum(1 for v in protein_orig_ic_sum.values() if v > 0)
-
-    # 2. Track multi-facet coverage
-    # cover_count[p] stores how many times a protein has been 'represented' in the vocab
-    cover_count = {p: 0 for p in protein_orig_ic_sum}
-
-    # 3. Setup max-heap (Lazy-greedy/CELF)
-    heap = []
-    for c, prots in annots_by_class.items():
-        if not prots:
-            continue
-        # Initial score: all counts are 0, so decay_rate^0 = 1.0 per protein
-        initial_score = ic_map[c] * len(prots)
-        heapq.heappush(heap, (-initial_score, c))
-
-    selected = []
-    selected_set = set()
-    current_retained_ratio_sum = 0.0
-    avg_total_ic_retained = 0.0
-    binary_covered_set = set()  # For reporting binary coverage stats
-
-    while heap and avg_total_ic_retained < target_ic_retained:
-        if max_vocab_size is not None and len(selected) >= max_vocab_size:
-            break
-
-        neg_upper_score, c = heapq.heappop(heap)
-        if c in selected_set:
-            continue
-
-        # 4. Calculate exact DMU score
-        # Instead of binary 'new vs already_covered', we sum the marginal utility
-        exact_score = 0.0
-        for p in annots_by_class[c]:
-            marginal_utility = decay_rate ** cover_count[p]
-            exact_score += marginal_utility
-
-        exact_score *= ic_map[c]
-
-        # Lazy greedy step: check if still the best candidate
-        if heap and exact_score < -heap[0][0]:
-            heapq.heappush(heap, (-exact_score, c))
-            continue
-
-        # 5. Accept this class
-        selected.append(c)
-        selected_set.add(c)
-
-        # 6. Update state and incremental IC tracker
-        for p in annots_by_class[c]:
-            # Increment multi-facet count
-            cover_count[p] += 1
-            binary_covered_set.add(p)
-
-            # Update literal information retention metric
-            if p in protein_orig_ic_sum and protein_orig_ic_sum[p] > 0:
-                delta = ic_map[c] / protein_orig_ic_sum[p]
-                current_retained_ratio_sum += delta
-
-        avg_total_ic_retained = current_retained_ratio_sum / N_annotated
-
-        if verbose and (
-            len(selected) <= 10
-            or len(selected) % 500 == 0
-            or avg_total_ic_retained >= target_ic_retained
-        ):
-            print(
-                f"selected={len(selected):6d}  "
-                f"ic_retained={avg_total_ic_retained:.4f}  "
-                f"bin_coverage={len(binary_covered_set)/N_total:.4f}  "
-                f"last={c}  "
-                f"score={exact_score:.2f} "
-                f"ic={ic_map[c]:.2f}"
-            )
-
-    return selected, binary_covered_set, ic_map, avg_total_ic_retained
-
-
 class ICRichVocabulary:
     def __init__(
         self,
@@ -332,6 +241,7 @@ class ICRichVocabulary:
         enrich_ic=True,
         vocab_method="ic_rich",
         ic_map=None,
+        total_ic_method="sum",
     ):
         if annots_by_class is not None:
             self.target_ic_retained = target_ic_retained
@@ -354,6 +264,7 @@ class ICRichVocabulary:
                         max_vocab_size=max_vocab_size,
                         verbose=True,
                         ic_map=ic_map,
+                        total_ic_method=total_ic_method,
                     )
                 )
 

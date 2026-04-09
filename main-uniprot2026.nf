@@ -55,6 +55,35 @@ process list_taxids {
     """
 }
 
+process make_taxid_obo {
+    input:
+    path taxid_tsv
+
+    output:
+    path "taxid.obo", emit: taxid_obo
+
+    script:
+    """
+    taxo_tree_to_obo.py ${taxid_tsv} taxid.obo
+    """
+}
+
+process calc_taxid_ia {
+    input:
+    path taxid_tsv
+    path taxid_obo
+
+    output:
+    path "taxid_IA.tsv", emit: taxid_ia_tsv
+
+    script:
+    """
+    interpro_ann_to_ia_format.py ${taxid_tsv} taxid_ann_format.tsv ncbi_taxid
+    git clone https://github.com/pentalpha/InformationAccretion-Interpro.git
+    python InformationAccretion-Interpro/ia.py --outfile taxid_IA.tsv --annot taxid_ann_format.tsv --graph ${taxid_obo} --prop
+    """
+}
+
 process download_go {
     storeDir "${params.raw_data_dir}/go"
 
@@ -224,6 +253,11 @@ workflow {
         filter_large_proteins.out.ids,
     )
 
+    make_taxid_obo(list_taxids.out.taxids)
+    calc_taxid_ia(
+        list_taxids.out.taxids,
+        make_taxid_obo.out.taxid_obo,
+    )
 
     /*run_interproscan_pipeline(
         ch_split_fastas,
