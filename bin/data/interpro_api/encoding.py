@@ -7,6 +7,7 @@ import numpy as np
 import sys
 import os
 import pickle
+import json
 from collections import Counter
 
 # ==========================================
@@ -64,8 +65,9 @@ class AutoEncoderWrapper:
         self.model = None
         if predefined_vocab is not None:
             if type(predefined_vocab) == list:
-                self.vocab_map = {token: i for i, (token, count) in enumerate(predefined_vocab)}
+                self.vocab_map = {token: i for i, token in enumerate(predefined_vocab)}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.history = []
 
     def _build_vocab(self, family_lists):
         """Creates a mapping for the top N most frequent InterPro families."""
@@ -92,10 +94,17 @@ class AutoEncoderWrapper:
         # Update input_dim if data is smaller than 20k
         self.actual_input_dim = len(self.vocab_map)
 
-    def fit(self, family_lists, epochs=10, batch_size=64, lr=1e-3):
+    def fit(
+        self,
+        family_lists,
+        epochs=10,
+        batch_size=64,
+        lr=8e-4,
+        max_epochs_no_improve=4,
+        directory=None,
+    ):
         """Trains the model on a list of lists of InterPro families."""
-        if self.vocab_map is None:
-            self._build_vocab(family_lists)
+        self._build_vocab(family_lists)
 
         self.model = InterProAutoencoder(self.actual_input_dim, self.embedding_dim).to(
             self.device
@@ -107,6 +116,10 @@ class AutoEncoderWrapper:
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
+
+        best_loss = float("inf")
+        best_loss_epoch = 0
+
         for epoch in range(epochs):
             total_loss = 0
             for batch in dataloader:
@@ -120,6 +133,25 @@ class AutoEncoderWrapper:
                 total_loss += loss.item()
 
             print(f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(dataloader):.6f}")
+            loss_rounded = round(total_loss, 6)
+            self.history.append(
+                {"epoch": epoch, "loss": loss_rounded, "best_loss": best_loss}
+            )
+            if loss_rounded < best_loss:
+                best_loss = loss_rounded
+                best_loss_epoch = epoch
+
+                # save model
+                if directory:
+                    if os.path.exists(directory):
+                        self.save(directory)
+
+            elif epoch - best_loss_epoch > max_epochs_no_improve:
+                print(f"Early stopping at epoch {epoch+1}")
+                print(
+                    f"Last improvement: epoch {best_loss_epoch} with loss {best_loss}"
+                )
+                break
 
     def predict(self, family_lists):
         """Encodes a list of lists into embedding vectors (Latent Space)."""
@@ -155,6 +187,11 @@ class AutoEncoderWrapper:
             pickle.dump(meta, f)
         print(f"Model and metadata saved to {directory}")
 
+        # Save history as json
+        with open(os.path.join(directory, "history.json"), "w") as f:
+            json.dump(self.history, f, indent=4)
+        print(f"History saved to {directory}")
+
     @classmethod
     def load(cls, directory):
         """Loads a saved instance."""
@@ -175,4 +212,8 @@ class AutoEncoderWrapper:
         )
         instance.model.to(instance.device)
         instance.model.eval()
+
+        # Load history
+        with open(os.path.join(directory, "history.json"), "r") as f:
+            instance.history = json.load(f)
         return instance

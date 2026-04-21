@@ -12,11 +12,11 @@ class OneHotEncoder:
         self.vocab_map = None
         if predefined_vocab is not None:
             if type(predefined_vocab) == list:
-                self.vocab_map = {token: i for i, (token, count) in enumerate(predefined_vocab)}
+                self.vocab_map = {token: i for i, token in enumerate(predefined_vocab)}
 
     def _build_vocab(self, family_lists):
         """Creates a mapping for the top N most frequent InterPro families."""
-        
+
         if self.vocab_map is None:
             print(f"Building vocabulary for top {self.max_families} families...")
             all_fams = [f for sublist in family_lists for f in sublist]
@@ -52,8 +52,7 @@ class OneHotEncoder:
 
     def fit(self, family_lists):
         """Builds vocabulary based on family lists, mirroring the fit interface."""
-        if self.vocab_map is None:
-            self._build_vocab(family_lists)
+        self._build_vocab(family_lists)
         return self
 
     def predict(self, family_lists):

@@ -43,7 +43,19 @@ if __name__ == "__main__":
                     if a not in annots_by_class:
                         annots_by_class[a] = set()
                     annots_by_class[a].add(uniprot)
+    elif input_type == "taxallnomy":
+        taxids_path = input_files[0]
+        annots_by_class = {}
+        for rawline in open(taxids_path, "r"):
+            cells = rawline.strip().split("\t")
+            if len(cells) == 3 and not "uniprot_id" in rawline:
+                uniprot = cells[0]
+                full_lineage = cells[2].split(";")
 
+                for a in full_lineage:
+                    if a not in annots_by_class:
+                        annots_by_class[a] = set()
+                    annots_by_class[a].add(uniprot)
     else:
         raise ValueError(f"Unknown input type: {input_type}")
 

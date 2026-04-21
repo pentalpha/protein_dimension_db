@@ -12,7 +12,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import EsmTokenizer, EsmModel
 
-from sort_uniprot import read_uniprot_fasta
+from fasta_sort import read_uniprot_fasta
 from bioinfo_utils.util_base import chunks, run_command
 
 

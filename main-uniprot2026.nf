@@ -21,8 +21,15 @@ include {
     join_interpro_tsvs ;
     make_interpro_obo ;
     calc_interpro_ia ;
-    make_interpro_vocab
+    make_interpro_vocab ;
+    train_interpro_autoencoder
 } from './modules/interpro_processes.nf'
+
+include {
+    download_prot5 ;
+    prottrans_embs ;
+    calc_ankh
+} from './modules/embedders.nf'
 
 process make_taxallnomy_parquet {
     input:
@@ -84,6 +91,21 @@ process calc_taxid_ia {
     """
 }
 
+process make_taxid_vocab {
+    input:
+    path taxids
+    path taxid_ia_tsv
+
+    output:
+    path "taxid_vocab_ia.tsv", emit: taxid_vocab_ia_tests_tsv
+    path "taxid_vocab_ia.json", emit: taxid_vocab_ia_json
+
+    script:
+    """
+    interpro_make_vocab.py taxallnomy taxid_vocab_ia 64 29000 0.95 ia_rich ${taxids} ${taxid_ia_tsv}
+    """
+}
+
 process download_go {
     storeDir "${params.raw_data_dir}/go"
 
@@ -92,21 +114,6 @@ process download_go {
 
     output:
     path "go-basic.obo", emit: go_basic
-
-    script:
-    """
-    wget ${url}
-    """
-}
-
-process download_prot5 {
-    storeDir "${params.raw_data_dir}/prot5"
-
-    input:
-    val url
-
-    output:
-    path "per-protein.h5", emit: prot5_embs_h5
 
     script:
     """
@@ -139,16 +146,17 @@ process join_old_releases {
     path "releases/*"
 
     output:
-    path "joins_dir/emb.prottrans.parquet"
-    path "joins_dir/emb.ankh_large.parquet"
-    path "joins_dir/emb.ankh_base.parquet"
-    path "joins_dir/emb.esm2_t30.parquet"
-    path "joins_dir/emb.esm2_t33.parquet"
-    path "joins_dir/emb.esm2_t36.parquet"
+    path "joins_dir/emb.prottrans.parquet", emit: emb_prottrans
+    path "joins_dir/emb.ankh_large.parquet", emit: emb_ankh_large
+    path "joins_dir/emb.ankh_base.parquet", emit: emb_ankh_base
+    path "joins_dir/emb.esm2_t30.parquet", emit: emb_esm2_t30
+    path "joins_dir/emb.esm2_t33.parquet", emit: emb_esm2_t33
+    path "joins_dir/emb.esm2_t36.parquet", emit: emb_esm2_t36
     path "joins_dir", emit: joined_dfs_output_dir
 
     script:
     """
+    mkdir -p joins_dir
     plm_map_releases.py ${protein_ids_path} joins_dir releases/*
     """
 }
@@ -176,6 +184,8 @@ params.go_basic_url = "https://purl.obolibrary.org/obo/go/go-basic.obo"
 params.esm_git_url = "https://github.com/facebookresearch/esm.git"
 params.gocheck_url = "https://current.geneontology.org/ontology/subsets/gocheck_do_not_annotate.json"
 params.taxallnomy_tsv_url = "https://huggingface.co/datasets/pitagoras-alves/taxallnomy/resolve/main/taxallnomy.tsv.gz"
+params.prot_t5_embs_url = "https://ftp.ebi.ac.uk/pub/databases/uniprot/current_release/knowledgebase/embeddings/uniprot_sprot/per-protein.h5"
+
 params.max_protein_len = 1800
 params.max_tokens_for_interproscan = 200000
 params.evi_not_use_path = projectDir + '/evi_not_to_use.txt'
@@ -183,10 +193,11 @@ params.others_dir = projectDir + '/others'
 params.old_release_paths_str = ""
 
 params.create_taxon_profiles = false
-params.create_plm_embeddings = false
+params.create_plm_embeddings = true
 params.create_esm_embeddings = true
 params.create_ankh_embeddings = true
 params.create_fast_embeddings = true
+params.create_prottrans_embeddings = true
 //params.basic_env_container = "singularity_images/basic_env.sif"
 //params.env2_container = "singularity_images/env2.sif"
 
@@ -194,6 +205,10 @@ workflow {
     create_esm_embeddings = params.create_esm_embeddings
     create_ankh_embeddings = params.create_ankh_embeddings
     create_fast_embeddings = params.create_fast_embeddings
+    create_prottrans_embeddings = params.create_prottrans_embeddings
+
+    joins_dir_path = params.release_dir + "/raw_data/joins/joins_dir"
+
     def old_release_files = params.old_release_paths_str
         ? params.old_release_paths_str.split(',').collect { file(it) }
         : []
@@ -246,9 +261,9 @@ workflow {
 
     train_interpro_autoencoder(
         join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.interpro_vocab_ia_json
+        make_interpro_vocab.out.interpro_vocab_ia_json,
     )
-    
+
     // Filter Train
 
     filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
@@ -265,7 +280,35 @@ workflow {
         make_taxid_obo.out.taxid_obo,
     )
 
-    /*run_interproscan_pipeline(
+    make_taxid_vocab(
+        list_taxids.out.taxids,
+        calc_taxid_ia.out.taxid_ia_tsv,
+    )
+
+    if (create_prottrans_embeddings) {
+        download_prot5(params.prot_t5_embs_url)
+        prottrans_embs(download_prot5.out.prot5_embs_h5, filter_large_proteins.out.ids)
+    }
+
+    /*join_old_releases(
+        filter_large_proteins.out.ids,
+        old_release_files,
+    )*/
+
+    if (create_ankh_embeddings || create_esm_embeddings) {
+        parent_dir = file(params.release_dir).getParent()
+        create_caches(parent_dir)
+        if (create_ankh_embeddings) {
+            calc_ankh(
+                filter_large_proteins.out.fasta,
+                filter_large_proteins.out.ids,
+                create_caches.out.ankh_cache,
+                joins_dir_path,
+            )
+        }
+    }
+
+    '''run_interproscan_pipeline(
         ch_split_fastas,
         params.interpro_data_dir,
         params.interproscan_tmp_dir,
@@ -278,32 +321,13 @@ workflow {
     join_interpro_tsvs(
         parse_interpro_raw.out.interpro_parsed_tsv,
         join_interpro_consults.out.concatenated_tsv,
-    )*/
-    '''train_interpro_autoencoder(
-        join_interpro_tsvs
     )
-    make_interpro_onehotencoder(
-        parse_interpro_raw.out.interpro_parsed_tsv,
-        join_interpro_consults.out.concatenated_tsv,
-    )
-    join_old_releases(
-        filter_large_proteins.out.ids,
-        old_release_files
-    )'''
 
-    '''if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
+    if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
         
         parent_dir = file(params.release_dir).getParent()
         caches_tp = create_caches(parent_dir)
-        if (create_ankh_embeddings) {
-            calc_ankh_v1(
-                filter_large_proteins.out.fasta,
-                filter_large_proteins.out.ids,
-                create_caches.out.ankh_cache,
-                src_dir,
-                join_old_releases.out.joined_dfs_output_dir,
-            )
-        }
+        
 
         if (create_esm_embeddings) {
             esm_dir = download_esm(params.esm_git_url)

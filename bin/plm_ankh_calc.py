@@ -14,7 +14,7 @@ import ankh
 import torch
 import polars as pl
 
-from sort_uniprot import read_uniprot_fasta
+from fasta_sort import read_uniprot_fasta
 from bioinfo_utils.util_base import chunks, run_command, split_list_by_maxtokens
 
 
@@ -188,10 +188,13 @@ class Embedder:
         return embeddings_list, elapsed
 
 
-def embed_sequences(is_large, fasta_path, caches_path):
+def embed_sequences(is_large, fasta_path, caches_path, not_calc=set()):
     fasta = read_uniprot_fasta(fasta_path)
-    seq_names = [h.replace("|", " ").split(" ")[0] for h, x in fasta]
-    seqs = [s for h, s in fasta]
+    all_seq_names = [h.replace("|", " ").split(" ")[0] for h, x in fasta]
+    all_seqs = [s for h, s in fasta]
+
+    seq_names = [s for s in all_seq_names if s not in not_calc]
+    seqs = [s for s in all_seqs if s not in not_calc]
 
     print("embedding on", len(seqs), "sequences with", file=sys.stderr)
     model = Embedder(is_large, caches_path)
@@ -200,6 +203,22 @@ def embed_sequences(is_large, fasta_path, caches_path):
     embeddings, total_time = model.calc_embeddings_batched(seqs, use_cache=True)
 
     print(model.model_name, total_time)
+    return seq_names, embeddings
+
+
+def load_valid_previous(previous_emb_path, all_ids):
+    df = pl.read_parquet(previous_emb_path)
+
+    seq_names = []
+    embeddings = []
+
+    for row in df.iter_rows(named=True):
+        if row["id"] in all_ids and row["emb"] is not None:
+            if row["emb"] == row["emb"]:
+                if row["emb"][0] == row["emb"][0]:
+                    seq_names.append(row["id"])
+                    embeddings.append(row["emb"])
+
     return seq_names, embeddings
 
 
@@ -213,15 +232,40 @@ if __name__ == "__main__":
     if len(sys.argv) > 4:
         output_suffix = sys.argv[4]
 
+    if len(sys.argv) > 5:
+        previous_embs_dir = sys.argv[5]
+    else:
+        previous_embs_dir = None
+
     nonetype = type(None)
 
-    for is_large in [False]:
+    for is_large in [False, True]:
         size_str = "large" if is_large else "base"
-        if output_suffix == "":
+        if output_suffix == "" or output_suffix == ".":
             output_pq = "emb.ankh_" + size_str + ".parquet"
         else:
             output_pq = "emb.ankh_" + size_str + "." + output_suffix + ".parquet"
-        seq_names, embeddings = embed_sequences(is_large, fasta_path, caches_path)
+
+        not_calc = set()
+        prev_seqnames, prev_embeddings = [], []
+        if previous_embs_dir:
+            previous_emb_path = previous_embs_dir + "/" + output_pq
+            if path.exists(previous_emb_path):
+                print("Previous embeddings found at", previous_emb_path)
+                prev_seqnames, prev_embeddings = load_valid_previous(
+                    previous_emb_path, all_ids
+                )
+                not_calc = set(prev_seqnames)
+
+                print(
+                    f"Loaded {len(prev_seqnames)} embeddings from {previous_emb_path}"
+                )
+
+        seq_names, embeddings = embed_sequences(
+            is_large, fasta_path, caches_path, not_calc=not_calc
+        )
+        embeddings = prev_embeddings + embeddings
+        seq_names = prev_seqnames + seq_names
 
         emb_shape = embeddings[0].shape
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from sort_uniprot import read_uniprot_fasta
+from fasta_sort import read_uniprot_fasta
 import sys
 
 if __name__ == "__main__":

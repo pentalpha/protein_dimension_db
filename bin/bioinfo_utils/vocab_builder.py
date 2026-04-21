@@ -190,32 +190,35 @@ def select_vocab_ic_weighted(
         # Accept this class
         selected.append(c)
         selected_set.add(c)
-        covered.update(annots_by_class[c])
+        current_retained_ics = {}
 
-        """# Update incremental Average Total IC
         for p in annots_by_class[c]:
             if p in protein_orig_ic_sum and protein_orig_ic_sum[p] > 0:
-                # The exact fractional increase this class provides to this protein
-                delta = ic_map[c] / protein_orig_ic_sum[p]
-                current_retained_ratio_sum += delta"""
-        current_retained_ics = {}
-        for c2 in selected:
-            for p in annots_by_class[c2]:
-                if p in covered:
-                    if total_ic_method == "max":
-                        current_retained_ics[p] = max(
-                            current_retained_ics.get(p, 0.0), ic_map[c2]
-                        )
-                    else:
-                        current_retained_ics[p] = (
-                            current_retained_ics.get(p, 0.0) + ic_map[c2]
-                        )
-        current_retained_ratio_sum = sum(current_retained_ics.values())
+                # 1. Remove the old contribution of this protein to the global ratio
+                old_ratio = current_retained_ics.get(p, 0.0) / protein_orig_ic_sum[p]
+                current_retained_ratio_sum -= old_ratio
+
+                # 2. Update the protein's captured IC
+                if total_ic_method == "max":
+                    current_retained_ics[p] = max(
+                        current_retained_ics.get(p, 0.0), ic_map[c]
+                    )
+                else:
+                    current_retained_ics[p] = (
+                        current_retained_ics.get(p, 0.0) + ic_map[c]
+                    )
+
+                # 3. Add the new contribution
+                new_ratio = current_retained_ics[p] / protein_orig_ic_sum[p]
+                current_retained_ratio_sum += new_ratio
+
+            covered.add(p)
+
         avg_total_ic_retained = current_retained_ratio_sum / N_annotated
 
         if verbose and (
             len(selected) <= 10
-            or len(selected) % 500 == 0
+            or len(selected) % 250 == 0
             or avg_total_ic_retained >= target_ic_retained
         ):
             print(

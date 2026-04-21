@@ -20,6 +20,9 @@ allowed_models = [
 
 def make_joined_df(emb_paths, id_sets, original_order_ids, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    assert os.path.exists(os.path.dirname(output_path))
+
     print("Joining dataframes:", emb_paths, "to", output_path)
 
     print("Mapping from which emb file to load proteins")
@@ -74,6 +77,8 @@ def make_joined_df(emb_paths, id_sets, original_order_ids, output_path):
     df = pl.DataFrame(schema)
     print(df)
     df.write_parquet(output_path)
+
+    assert os.path.exists(output_path)
 
 
 if __name__ == "__main__":
