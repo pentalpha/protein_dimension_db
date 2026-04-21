@@ -7,32 +7,37 @@ from collections import Counter
 class OneHotEncoder:
     # Similar structure to the autoencoder, but simply builds a vocab and returns one-hot vectors of a certain max-length
     # Does not use torch, any machine learning or other heavy dependencies, just simple data structures
-    def __init__(self, max_families=10000):
+    def __init__(self, max_families=10000, predefined_vocab=None):
         self.max_families = max_families
         self.vocab_map = None
+        if predefined_vocab is not None:
+            if type(predefined_vocab) == list:
+                self.vocab_map = {token: i for i, (token, count) in enumerate(predefined_vocab)}
 
     def _build_vocab(self, family_lists):
         """Creates a mapping for the top N most frequent InterPro families."""
-        print(f"Building vocabulary for top {self.max_families} families...")
-        all_fams = [f for sublist in family_lists for f in sublist]
-        counter = Counter(all_fams)
-        print(f"Found {len(counter)} unique families.")
+        
+        if self.vocab_map is None:
+            print(f"Building vocabulary for top {self.max_families} families...")
+            all_fams = [f for sublist in family_lists for f in sublist]
+            counter = Counter(all_fams)
+            print(f"Found {len(counter)} unique families.")
 
-        most_common = counter.most_common(self.max_families)
-        print(f"Using top {len(most_common)} families.")
+            most_common = counter.most_common(self.max_families)
+            print(f"Using top {len(most_common)} families.")
 
-        # Sort families alphabetically for deterministic saving/loading
-        top_families = sorted([token for token, count in most_common])
+            # Sort families alphabetically for deterministic saving/loading
+            top_families = sorted([token for token, count in most_common])
 
-        if len(top_families) > 0:
-            print(
-                f"First 5 families (alphabetical): {top_families[:min(5, len(top_families))]}"
-            )
-            print(
-                f"Last 5 families (alphabetical): {top_families[-min(5, len(top_families)):]}"
-            )
+            if len(top_families) > 0:
+                print(
+                    f"First 5 families (alphabetical): {top_families[:min(5, len(top_families))]}"
+                )
+                print(
+                    f"Last 5 families (alphabetical): {top_families[-min(5, len(top_families)):]}"
+                )
 
-        self.vocab_map = {token: i for i, token in enumerate(top_families)}
+            self.vocab_map = {token: i for i, token in enumerate(top_families)}
 
         fams_set = set(self.vocab_map.keys())
         fams_count = sum(

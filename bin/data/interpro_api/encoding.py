@@ -57,24 +57,28 @@ class InterProDataset(Dataset):
 
 
 class AutoEncoderWrapper:
-    def __init__(self, input_dim=20000, embedding_dim=2000):
+    def __init__(self, input_dim=20000, embedding_dim=2000, predefined_vocab=None):
         self.input_dim = input_dim
         self.embedding_dim = embedding_dim
         self.vocab_map = None
         self.model = None
+        if predefined_vocab is not None:
+            if type(predefined_vocab) == list:
+                self.vocab_map = {token: i for i, (token, count) in enumerate(predefined_vocab)}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def _build_vocab(self, family_lists):
         """Creates a mapping for the top N most frequent InterPro families."""
-        print(f"Building vocabulary for top {self.input_dim} families...")
-        all_fams = [f for sublist in family_lists for f in sublist]
-        counter = Counter(all_fams)
-        print(f"Found {len(counter)} unique families.")
-        most_common = counter.most_common(self.input_dim)
-        print(f"Using top {self.input_dim} families.")
-        print(f"Top 5 families: {most_common[:5]}")
-        print(f"Bottom 5 families: {most_common[-5:]}")
-        self.vocab_map = {token: i for i, (token, count) in enumerate(most_common)}
+        if self.vocab_map is None:
+            print(f"Building vocabulary for top {self.input_dim} families...")
+            all_fams = [f for sublist in family_lists for f in sublist]
+            counter = Counter(all_fams)
+            print(f"Found {len(counter)} unique families.")
+            most_common = counter.most_common(self.input_dim)
+            print(f"Using top {self.input_dim} families.")
+            print(f"Top 5 families: {most_common[:5]}")
+            print(f"Bottom 5 families: {most_common[-5:]}")
+            self.vocab_map = {token: i for i, (token, count) in enumerate(most_common)}
         fams_set = set(self.vocab_map.keys())
         # calculate percentage of proteins with at least one family in the vocabulary
         fams_count = 0

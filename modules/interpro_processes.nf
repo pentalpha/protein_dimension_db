@@ -172,8 +172,8 @@ process make_interpro_vocab {
 
 process train_interpro_autoencoder {
     input:
-    path interpro_tsv_local
     path interpro_tsv_consult
+    path sorted_vocab_json
 
     output:
     path "model_512", emit: model_512_dir
@@ -187,17 +187,17 @@ process train_interpro_autoencoder {
     mkdir -p model_640
     mkdir -p model_896
     mkdir -p model_1280
-    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_local} ${interpro_tsv_consult} > model_512/stdout.log 2> model_512/stderr.log
-    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_local} ${interpro_tsv_consult} > model_640/stdout.log 2> model_640/stderr.log
-    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_local} ${interpro_tsv_consult} > model_896/stdout.log 2> model_896/stderr.log
-    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1280/stdout.log 2> model_1280/stderr.log
+    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_consult} ${sorted_vocab_json} > model_512/stdout.log 2> model_512/stderr.log
+    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_consult} ${sorted_vocab_json} > model_640/stdout.log 2> model_640/stderr.log
+    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_consult} ${sorted_vocab_json} > model_896/stdout.log 2> model_896/stderr.log
+    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_consult} ${sorted_vocab_json} > model_1280/stdout.log 2> model_1280/stderr.log
     """
 }
 
 process make_interpro_onehotencoder {
     input:
-    path interpro_tsv_local
     path interpro_tsv_consult
+    path sorted_vocab_json
 
     output:
     path "model_800", emit: model_800_dir
@@ -211,9 +211,9 @@ process make_interpro_onehotencoder {
     mkdir -p model_1600
     mkdir -p model_3200
     mkdir -p model_6400
-    interpro_onehot.py 800 model_800 ${interpro_tsv_local} ${interpro_tsv_consult} > model_800/stdout.log 2> model_800/stderr.log
-    interpro_onehot.py 1600 model_1600 ${interpro_tsv_local} ${interpro_tsv_consult} > model_1600/stdout.log 2> model_1600/stderr.log
-    interpro_onehot.py 3200 model_3200 ${interpro_tsv_local} ${interpro_tsv_consult} > model_3200/stdout.log 2> model_3200/stderr.log
-    interpro_onehot.py 6400 model_6400 ${interpro_tsv_local} ${interpro_tsv_consult} > model_6400/stdout.log 2> model_6400/stderr.log
+    interpro_onehot.py 800 model_800 ${interpro_tsv_consult} ${sorted_vocab_json} > model_800/stdout.log 2> model_800/stderr.log
+    interpro_onehot.py 1600 model_1600 ${interpro_tsv_consult} ${sorted_vocab_json} > model_1600/stdout.log 2> model_1600/stderr.log
+    interpro_onehot.py 3200 model_3200 ${interpro_tsv_consult} ${sorted_vocab_json} > model_3200/stdout.log 2> model_3200/stderr.log
+    interpro_onehot.py 6400 model_6400 ${interpro_tsv_consult} ${sorted_vocab_json} > model_6400/stdout.log 2> model_6400/stderr.log
     """
 }

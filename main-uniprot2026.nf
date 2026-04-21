@@ -243,6 +243,12 @@ workflow {
         join_interpro_consults.out.concatenated_tsv,
         calc_interpro_ia.out.interpro_ia_tsv,
     )
+
+    train_interpro_autoencoder(
+        join_interpro_consults.out.concatenated_tsv,
+        make_interpro_vocab.interpro_vocab_ia_json
+    )
+    
     // Filter Train
 
     filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
