@@ -170,35 +170,83 @@ process make_interpro_vocab {
     """
 }
 
-process train_interpro_autoencoder {
+process train_interpro_autoencoder_256 {
     input:
     path interpro_tsv_consult
     path sorted_vocab_json
 
     output:
     path "model_256", emit: model_256_dir
-    path "model_512", emit: model_512_dir
-    path "model_640", emit: model_640_dir
-    path "model_896", emit: model_896_dir
-    path "model_1280", emit: model_1280_dir
     path "model_256/model.pth", emit: model_256_obj
-    path "model_512/model.pth", emit: model_512_obj
-    path "model_640/model.pth", emit: model_640_obj
-    path "model_896/model.pth", emit: model_896_obj
-    path "model_1280/model.pth", emit: model_1280_obj
 
     script:
     """
     mkdir -p model_256
+    interpro_make_model.py autoencoder 256 model_256 ${interpro_tsv_consult} ${sorted_vocab_json} 16 7e-4 > model_256/stdout.log 2> model_256/stderr.log
+    """
+}
+
+process train_interpro_autoencoder_512 {
+    input:
+    path interpro_tsv_consult
+    path sorted_vocab_json
+
+    output:
+    path "model_512", emit: model_512_dir
+    path "model_512/model.pth", emit: model_512_obj
+
+    script:
+    """
     mkdir -p model_512
+    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_consult} ${sorted_vocab_json} 16 7e-4 > model_512/stdout.log 2> model_512/stderr.log
+    """
+}
+
+process train_interpro_autoencoder_640 {
+    input:
+    path interpro_tsv_consult
+    path sorted_vocab_json
+
+    output:
+    path "model_640", emit: model_640_dir
+    path "model_640/model.pth", emit: model_640_obj
+
+    script:
+    """
     mkdir -p model_640
+    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_consult} ${sorted_vocab_json} 16 7e-4 > model_640/stdout.log 2> model_640/stderr.log
+    """
+}
+
+process train_interpro_autoencoder_896 {
+    input:
+    path interpro_tsv_consult
+    path sorted_vocab_json
+
+    output:
+    path "model_896", emit: model_896_dir
+    path "model_896/model.pth", emit: model_896_obj
+
+    script:
+    """
     mkdir -p model_896
+    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_consult} ${sorted_vocab_json} 16 7e-4 > model_896/stdout.log 2> model_896/stderr.log
+    """
+}
+
+process train_interpro_autoencoder_1280 {
+    input:
+    path interpro_tsv_consult
+    path sorted_vocab_json
+
+    output:
+    path "model_1280", emit: model_1280_dir
+    path "model_1280/model.pth", emit: model_1280_obj
+
+    script:
+    """
     mkdir -p model_1280
-    interpro_make_model.py autoencoder 256 model_256 ${interpro_tsv_consult} ${sorted_vocab_json} 20 1e-3 > model_256/stdout.log 2> model_256/stderr.log
-    interpro_make_model.py autoencoder 512 model_512 ${interpro_tsv_consult} ${sorted_vocab_json} 20 8e-4 > model_512/stdout.log 2> model_512/stderr.log
-    interpro_make_model.py autoencoder 640 model_640 ${interpro_tsv_consult} ${sorted_vocab_json} 20 8e-4 > model_640/stdout.log 2> model_640/stderr.log
-    interpro_make_model.py autoencoder 896 model_896 ${interpro_tsv_consult} ${sorted_vocab_json} 20 8e-4 > model_896/stdout.log 2> model_896/stderr.log
-    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_consult} ${sorted_vocab_json} 20 8e-4 > model_1280/stdout.log 2> model_1280/stderr.log
+    interpro_make_model.py autoencoder 1280 model_1280 ${interpro_tsv_consult} ${sorted_vocab_json} 16 7e-4 > model_1280/stdout.log 2> model_1280/stderr.log
     """
 }
 

@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+
+
+from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import sys
@@ -9,10 +12,24 @@ import os
 import pickle
 import json
 from collections import Counter
+import multiprocessing
+
+import torch.multiprocessing as mp
+
+# Force PyTorch to use spawn instead of fork to prevent UCX segfaults
+try:
+    mp.set_start_method("spawn", force=True)
+except RuntimeError:
+    pass
 
 # ==========================================
 # 1. THE MODEL ARCHITECTURE
 # ==========================================
+
+home_dir = os.path.expanduser("~")
+cache_dir = os.path.join(home_dir, ".cache")
+os.environ["TRITON_CACHE_DIR"] = cache_dir + "/triton"
+os.environ["TORCH_HOME"] = cache_dir + "/torch"
 
 
 class InterProAutoencoder(nn.Module):
@@ -42,18 +59,23 @@ class InterProAutoencoder(nn.Module):
 
 class InterProDataset(Dataset):
     def __init__(self, family_lists, vocab_map, input_dim):
-        self.data = family_lists
-        self.vocab_map = vocab_map
         self.input_dim = input_dim
+        # Pre-compute integer indices once to avoid dictionary lookups in the training loop
+        print("Pre-mapping dataset to integer indices...")
+        self.data_indices = [
+            [vocab_map[f] for f in fam_list if f in vocab_map]
+            for fam_list in family_lists
+        ]
 
     def __len__(self):
-        return len(self.data)
+        return len(self.data_indices)
 
     def __getitem__(self, idx):
+        # Use fast tensor indexing instead of a Python for-loop
         vector = torch.zeros(self.input_dim, dtype=torch.float32)
-        for f in self.data[idx]:
-            if f in self.vocab_map:
-                vector[self.vocab_map[f]] = 1.0
+        indices = self.data_indices[idx]
+        if indices:
+            vector[indices] = 1.0
         return vector
 
 
@@ -68,6 +90,14 @@ class AutoEncoderWrapper:
                 self.vocab_map = {token: i for i, token in enumerate(predefined_vocab)}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.history = []
+        self.actual_input_dim = None
+
+        self.loader_procs = multiprocessing.cpu_count() // 3
+        self.processing_procs = round(multiprocessing.cpu_count() * 0.6)
+        torch.set_num_threads(self.processing_procs)
+        print(
+            f"Using {self.loader_procs} loader cores and {self.processing_procs} processing cores"
+        )
 
     def _build_vocab(self, family_lists):
         """Creates a mapping for the top N most frequent InterPro families."""
@@ -102,35 +132,84 @@ class AutoEncoderWrapper:
         lr=8e-4,
         max_epochs_no_improve=4,
         directory=None,
+        optimize_cpu=False,
     ):
-        """Trains the model on a list of lists of InterPro families."""
-        self._build_vocab(family_lists)
+        # torch.set_num_threads(self.processing_procs)
+        if optimize_cpu:
+            import os
 
+            # Force PyTorch to use the system C++ compiler instead of the broken Conda one
+            os.environ["CXX"] = "/usr/bin/g++"
+            os.environ["CC"] = "/usr/bin/gcc"
+        """Trains the model on a list of lists of InterPro families."""
+        bar = tqdm(total=epochs + 5)
+
+        print("Building Vocab")
+        self._build_vocab(family_lists)
+        bar.update(1)
+
+        print("Initializing Model", file=sys.stderr)
         self.model = InterProAutoencoder(self.actual_input_dim, self.embedding_dim).to(
             self.device
         )
-        dataset = InterProDataset(family_lists, self.vocab_map, self.actual_input_dim)
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+        # Tell PyTorch to optimize the execution graph for the CPU
+        """if optimize_cpu:
+            try:
+                compiled = torch.compile(self.model)
+                self.model = compiled
+            except Exception as e:
+                print(f"Could not compile model: {e}", file=sys.stderr)"""
+        bar.update(1)
 
+        print("Creating Dataset", file=sys.stderr)
+        dataset = InterProDataset(family_lists, self.vocab_map, self.actual_input_dim)
+        bar.update(1)
+
+        print("Creating DataLoader", file=sys.stderr)
+        if optimize_cpu:
+            dataloader = DataLoader(
+                dataset,
+                batch_size=batch_size,
+                shuffle=True,
+                num_workers=0,  # Avoid seg fault
+                pin_memory=False,  # Disable pinning for pure CPU execution
+                # prefetch_factor=2,
+            )
+        else:
+            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+        bar.update(1)
+
+        print("Initializing training", file=sys.stderr)
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
+        bar.update(1)
 
         best_loss = float("inf")
         best_loss_epoch = 0
 
+        print("Training Autoencoder", file=sys.stderr)
         for epoch in range(epochs):
             total_loss = 0
+            batch_n = 0
             for batch in dataloader:
                 batch = batch.to(self.device)
+                print(f"Epoch {epoch} - Batch {batch_n} - Allocated", file=sys.stderr)
                 reconstruction, _ = self.model(batch)
+                print(
+                    f"Epoch {epoch} - Batch {batch_n} - Runned model", file=sys.stderr
+                )
                 loss = criterion(reconstruction, batch)
+                print(f"Epoch {epoch} - Batch {batch_n} - Criterion", file=sys.stderr)
 
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
+                print(f"Epoch {epoch} - Batch {batch_n} - Step", file=sys.stderr)
                 total_loss += loss.item()
+                batch_n += 1
 
             print(f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(dataloader):.6f}")
             loss_rounded = round(total_loss, 6)
@@ -152,6 +231,8 @@ class AutoEncoderWrapper:
                     f"Last improvement: epoch {best_loss_epoch} with loss {best_loss}"
                 )
                 break
+            bar.update(1)
+        bar.close()
 
     def predict(self, family_lists):
         """Encodes a list of lists into embedding vectors (Latent Space)."""
@@ -205,11 +286,20 @@ class AutoEncoderWrapper:
         instance.model = InterProAutoencoder(
             instance.actual_input_dim, instance.embedding_dim
         )
-        instance.model.load_state_dict(
-            torch.load(
-                os.path.join(directory, "model.pth"), map_location=instance.device
-            )
+        # Load the raw state dictionary from disk
+        raw_state_dict = torch.load(
+            os.path.join(directory, "model.pth"), map_location=instance.device
         )
+
+        # Strip out the '_orig_mod.' prefix added by torch.compile()
+        clean_state_dict = {
+            key.replace("_orig_mod.", ""): value
+            for key, value in raw_state_dict.items()
+        }
+
+        # Load the cleaned dictionary into the standard model
+        instance.model.load_state_dict(clean_state_dict)
+
         instance.model.to(instance.device)
         instance.model.eval()
 

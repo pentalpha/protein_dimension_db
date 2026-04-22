@@ -22,7 +22,11 @@ include {
     make_interpro_obo ;
     calc_interpro_ia ;
     make_interpro_vocab ;
-    train_interpro_autoencoder
+    train_interpro_autoencoder_256 ;
+    train_interpro_autoencoder_512 ;
+    train_interpro_autoencoder_640 ;
+    train_interpro_autoencoder_896 ;
+    train_interpro_autoencoder_1280
 } from './modules/interpro_processes.nf'
 
 include {
@@ -193,7 +197,7 @@ params.others_dir = projectDir + '/others'
 params.old_release_paths_str = ""
 
 params.create_taxon_profiles = false
-params.create_plm_embeddings = true
+params.create_plm_embeddings = false
 params.create_esm_embeddings = true
 params.create_ankh_embeddings = true
 params.create_fast_embeddings = true
@@ -259,7 +263,27 @@ workflow {
         calc_interpro_ia.out.interpro_ia_tsv,
     )
 
-    train_interpro_autoencoder(
+    train_interpro_autoencoder_256(
+        join_interpro_consults.out.concatenated_tsv,
+        make_interpro_vocab.out.interpro_vocab_ia_json,
+    )
+
+    train_interpro_autoencoder_512(
+        join_interpro_consults.out.concatenated_tsv,
+        make_interpro_vocab.out.interpro_vocab_ia_json,
+    )
+
+    train_interpro_autoencoder_640(
+        join_interpro_consults.out.concatenated_tsv,
+        make_interpro_vocab.out.interpro_vocab_ia_json,
+    )
+
+    train_interpro_autoencoder_896(
+        join_interpro_consults.out.concatenated_tsv,
+        make_interpro_vocab.out.interpro_vocab_ia_json,
+    )
+
+    train_interpro_autoencoder_1280(
         join_interpro_consults.out.concatenated_tsv,
         make_interpro_vocab.out.interpro_vocab_ia_json,
     )

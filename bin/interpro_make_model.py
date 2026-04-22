@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env -S python3 -u
 import sys
 import os
 import pandas as pd
 import json
+import numpy as np
+import multiprocessing
 
 if __name__ == "__main__":
     if len(sys.argv) < 6:
@@ -27,23 +29,55 @@ if __name__ == "__main__":
     else:
         lr = 8e-4
 
+    input_dim_max = 22000
+    max_samples = 600000
+    batch_size = 12000
+
+    low_cpu_mode = multiprocessing.cpu_count() <= 60
+    if low_cpu_mode:
+        max_samples = 600000
+        input_dim_max = 17000
+        batch_size = 50000
+
     vocab = json.load(open(vocab_json, "r"))["vocab"]
-    sorted_terms = vocab[:embedding_size]
+    print(f"Vocab size: {len(vocab)}")
+    if len(vocab) > input_dim_max:
+        print(f"Vocab size is greater than {input_dim_max}, truncating...")
+        sorted_terms = vocab[:input_dim_max]
+    else:
+        print(f"Vocab size is less than {input_dim_max}, using all terms...")
+        sorted_terms = vocab
+        input_dim_max = len(vocab)
 
     df = pd.read_csv(interproscan_tsv, sep="\t", header=None)
     # Convert semicolon string to lists
     raw_data = [str(row).split(";") for row in df[1].values]
     clean_data = [[f.strip() for f in sublist if f.strip()] for sublist in raw_data]
+    if max_samples is not None:
+        if len(clean_data) > max_samples:
+            random_indexes = np.random.choice(
+                len(clean_data), max_samples, replace=False
+            )
+            clean_data = [clean_data[i] for i in random_indexes]
+    print(f"Proteins: {len(clean_data)}")
 
     # Initialize and Train
     if model_type == "autoencoder":
         from data.interpro_api.encoding import AutoEncoderWrapper
 
         wrapper = AutoEncoderWrapper(
-            input_dim=22000, embedding_dim=embedding_size, predefined_vocab=sorted_terms
+            input_dim=input_dim_max,
+            embedding_dim=embedding_size,
+            predefined_vocab=sorted_terms,
         )
         os.makedirs(model_dir, exist_ok=True)
-        wrapper.fit(clean_data, epochs=12, directory=model_dir)
+        wrapper.fit(
+            clean_data,
+            epochs=12,
+            directory=model_dir,
+            batch_size=batch_size,
+            optimize_cpu=low_cpu_mode,
+        )
     elif model_type == "onehot":
         from data.interpro_api.onehot_encoder import OneHotEncoder
 
