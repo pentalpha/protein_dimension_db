@@ -8,8 +8,6 @@ include {
     download_taxallnomy ;
     filter_large_proteins ;
     index_go_by_term ;
-    calc_ankh_v1 ;
-    calc_esm2 ;
     copy_additional_files
 } from './modules/cafa_processes.nf'
 
@@ -21,21 +19,16 @@ include {
     join_interpro_tsvs ;
     make_interpro_obo ;
     calc_interpro_ia ;
-    make_interpro_vocab ;
-    train_interpro_autoencoder_256 ;
-    train_interpro_autoencoder_512 ;
-    train_interpro_autoencoder_640 ;
-    train_interpro_autoencoder_896 ;
-    train_interpro_autoencoder_1280
+    make_interpro_vocab
 } from './modules/interpro_processes.nf'
 
 include {
-    download_prot5 ;
-    prottrans_embs ;
-    calc_ankh
+    download_prot5
 } from './modules/embedders.nf'
 
 process make_taxallnomy_parquet {
+    publishDir params.release_dir, mode: 'copy'
+
     input:
     path taxallnomy_tsv_path
 
@@ -67,6 +60,8 @@ process list_taxids {
 }
 
 process make_taxid_obo {
+    publishDir params.release_dir, mode: 'copy'
+
     input:
     path taxid_tsv
 
@@ -80,6 +75,9 @@ process make_taxid_obo {
 }
 
 process calc_taxid_ia {
+    storeDir "${params.raw_data_dir}/taxid_ia"
+    publishDir params.release_dir, mode: 'copy'
+
     input:
     path taxid_tsv
     path taxid_obo
@@ -96,6 +94,9 @@ process calc_taxid_ia {
 }
 
 process make_taxid_vocab {
+    storeDir "${params.raw_data_dir}/taxid_vocab"
+    publishDir params.release_dir, mode: 'copy'
+
     input:
     path taxids
     path taxid_ia_tsv
@@ -112,6 +113,7 @@ process make_taxid_vocab {
 
 process download_go {
     storeDir "${params.raw_data_dir}/go"
+    publishDir params.release_dir, mode: 'copy'
 
     input:
     val url
@@ -166,6 +168,8 @@ process join_old_releases {
 }
 
 process split_fasta {
+    storeDir "${params.raw_data_dir}/splitted_fastas"
+
     input:
     path fasta_path
     val max_tokens
@@ -263,31 +267,6 @@ workflow {
         calc_interpro_ia.out.interpro_ia_tsv,
     )
 
-    train_interpro_autoencoder_256(
-        join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.out.interpro_vocab_ia_json,
-    )
-
-    train_interpro_autoencoder_512(
-        join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.out.interpro_vocab_ia_json,
-    )
-
-    train_interpro_autoencoder_640(
-        join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.out.interpro_vocab_ia_json,
-    )
-
-    train_interpro_autoencoder_896(
-        join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.out.interpro_vocab_ia_json,
-    )
-
-    train_interpro_autoencoder_1280(
-        join_interpro_consults.out.concatenated_tsv,
-        make_interpro_vocab.out.interpro_vocab_ia_json,
-    )
-
     // Filter Train
 
     filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
@@ -308,89 +287,4 @@ workflow {
         list_taxids.out.taxids,
         calc_taxid_ia.out.taxid_ia_tsv,
     )
-
-    if (create_prottrans_embeddings) {
-        download_prot5(params.prot_t5_embs_url)
-        prottrans_embs(download_prot5.out.prot5_embs_h5, filter_large_proteins.out.ids)
-    }
-
-    /*join_old_releases(
-        filter_large_proteins.out.ids,
-        old_release_files,
-    )*/
-
-    if (create_ankh_embeddings || create_esm_embeddings) {
-        parent_dir = file(params.release_dir).getParent()
-        create_caches(parent_dir)
-        if (create_ankh_embeddings) {
-            calc_ankh(
-                filter_large_proteins.out.fasta,
-                filter_large_proteins.out.ids,
-                create_caches.out.ankh_cache,
-                joins_dir_path,
-            )
-        }
-    }
-
-    '''run_interproscan_pipeline(
-        ch_split_fastas,
-        params.interpro_data_dir,
-        params.interproscan_tmp_dir,
-    )
-
-    all_interpro_raws = run_interproscan_pipeline.out.interpro_tsv.collect()
-
-    parse_interpro_raw(all_interpro_raws)
-
-    join_interpro_tsvs(
-        parse_interpro_raw.out.interpro_parsed_tsv,
-        join_interpro_consults.out.concatenated_tsv,
-    )
-
-    if (create_ankh_embeddings || create_esm_embeddings || create_fast_embeddings) {
-        
-        parent_dir = file(params.release_dir).getParent()
-        caches_tp = create_caches(parent_dir)
-        
-
-        if (create_esm_embeddings) {
-            esm_dir = download_esm(params.esm_git_url)
-
-            calc_esm2(
-                filter_large_proteins.out.fasta,
-                filter_large_proteins.out.ids,
-                create_caches.out.fairesm_cache,
-                esm_dir,
-                params.others_dir,
-                src_dir,
-                join_old_releases.out.joined_dfs_output_dir,
-            )
-        }
-    }
-
-    train_terms = Channel.fromPath("databases/cafa6/Train/train_terms.tsv")
-    go_basic = Channel.fromPath("databases/cafa6/Train/go-basic.obo")
-    format_cafa_terms_script = Channel.fromPath("src/go_format_cafa_terms.py")
-    process_cafa_annotations(format_cafa_terms_script, train_terms, go_basic, gocheck_do_not_annotate)
-    list_taxids_test(filter_large_proteins_test.out.fasta, filter_large_proteins_test.out.ids)
-    list_taxids_train(filter_large_proteins_train.out.fasta, filter_large_proteins_train.out.ids)
-
-    if(params.create_taxon_profiles){
-        train_taxonomy = Channel.fromPath("databases/cafa6/Train/train_taxonomy.tsv")
-        
-        // Train Profiles
-        taxa_profiles_train(process_cafa_annotations.out.mf, train_taxonomy, taxallnomy_tsv_path, src_dir)
-        
-        taxa_profiles_test(
-            list_taxids_test.out.taxids, 
-            taxallnomy_tsv_path, 
-            src_dir,
-            taxa_profiles_train.out.top_taxa_256,
-            taxa_profiles_train.out.top_taxa_128
-        )
-
-    }
-
-    ia_tsv = Channel.fromPath("databases/cafa6/IA.tsv")
-    copy_additional_files(go_basic, ia_tsv)'''
 }

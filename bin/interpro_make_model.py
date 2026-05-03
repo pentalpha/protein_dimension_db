@@ -51,10 +51,21 @@ if __name__ == "__main__":
 
     df = pd.read_csv(interproscan_tsv, sep="\t", header=None)
     # Convert semicolon string to lists
+
+    print("Splitting raw data")
     raw_data = [str(row).split(";") for row in df[1].values]
-    clean_data = [[f.strip() for f in sublist if f.strip()] for sublist in raw_data]
+    print(f"Cleaning {len(raw_data)} lines raw data")
+    clean_data = [
+        ";".join(sorted([f.strip() for f in sublist if f.strip()]))
+        for sublist in raw_data
+    ]
+    print(f"Removing duplicates from {len(clean_data)} lines")
+    clean_data = set(clean_data)
+    print(f"Converting to list of {len(clean_data)} lines")
+    clean_data = [s.split(";") for s in clean_data]
     if max_samples is not None:
         if len(clean_data) > max_samples:
+            print(f"Taking {max_samples} random samples from {len(clean_data)} lines")
             random_indexes = np.random.choice(
                 len(clean_data), max_samples, replace=False
             )
@@ -71,9 +82,13 @@ if __name__ == "__main__":
             predefined_vocab=sorted_terms,
         )
         os.makedirs(model_dir, exist_ok=True)
+        if not wrapper.using_cpu:
+            batch_size = 5000
+            low_cpu_mode = False
         wrapper.fit(
             clean_data,
-            epochs=12,
+            epochs=epochs,
+            lr=lr,
             directory=model_dir,
             batch_size=batch_size,
             optimize_cpu=low_cpu_mode,

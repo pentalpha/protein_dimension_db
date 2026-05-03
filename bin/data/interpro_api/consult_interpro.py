@@ -155,7 +155,7 @@ def get_interpro_families(uniprot_id: str):
 
 
 def consult_uniprot_ids(
-    ids: list, cache_path: str, n_per_chunk: int = 150, info_type="mf"
+    ids: list, cache_path: str, n_per_chunk: int = 175, info_type="mf"
 ):
     ids_consulted = set()
     if path.exists(cache_path):
@@ -184,12 +184,12 @@ def consult_uniprot_ids(
     for i, chunk in enumerate(chunk_list):
         perc = (i + 1) / len(chunk_list) * n_per_chunk
         print(f"Processing at {perc:.2f}% ({i+1}/{len(chunk_list)})...")
-        with Pool(processes=10) as pool:
+        with Pool(processes=12) as pool:
             results_list = pool.map(consult_func, chunk)
         results = {
             uniprot_id: annots for uniprot_id, annots in zip(chunk, results_list)
         }
-        sleep(0.5)
+        sleep(10)
 
         output, lock_path = open_locked_file(cache_path)
         for uniprot_id, annots in results.items():

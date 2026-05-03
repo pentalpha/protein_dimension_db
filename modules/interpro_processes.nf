@@ -12,6 +12,8 @@ process consult_interpro {
 }
 
 process join_interpro_consults {
+    storeDir "${params.raw_data_dir}/interpro_consults"
+
     input:
     path tsv_files
 
@@ -90,6 +92,8 @@ process run_interproscan_pipeline {
 }
 
 process parse_interpro_raw {
+    storeDir "${params.raw_data_dir}/interpro_parsed"
+
     input:
     path interpro_tsvs
 
@@ -120,6 +124,7 @@ process join_interpro_tsvs {
 
 process make_interpro_obo {
     storeDir "${params.raw_data_dir}/interpro_obo"
+    publishDir params.release_dir, mode: 'copy'
 
     input:
     path interpro_parsed_tsv
@@ -136,13 +141,14 @@ process make_interpro_obo {
 
 process calc_interpro_ia {
     storeDir "${params.raw_data_dir}/interpro_ia"
+    publishDir params.release_dir, mode: 'copy'
 
     input:
     path interpro_obo
     path interpro_parsed_tsv
 
     output:
-    path "IA.txt", emit: interpro_ia_tsv
+    path "interpro_IA.txt", emit: interpro_ia_tsv
 
     script:
     """
@@ -153,6 +159,9 @@ process calc_interpro_ia {
 }
 
 process make_interpro_vocab {
+    storeDir "${params.raw_data_dir}/interpro_vocab"
+    publishDir params.release_dir, mode: 'copy'
+
     input:
     path interpro_parsed_tsv
     path interpro_ia_tsv

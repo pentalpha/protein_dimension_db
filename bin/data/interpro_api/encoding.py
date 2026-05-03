@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-
+import os
 
 from tqdm import tqdm
 import pandas as pd
@@ -31,19 +31,25 @@ cache_dir = os.path.join(home_dir, ".cache")
 os.environ["TRITON_CACHE_DIR"] = cache_dir + "/triton"
 os.environ["TORCH_HOME"] = cache_dir + "/torch"
 
+intermediary_len = 4096
+
 
 class InterProAutoencoder(nn.Module):
-    def __init__(self, input_dim, embedding_dim):
+    def __init__(self, input_dim, embedding_dim, dropout_rate=0.2):
         super(InterProAutoencoder, self).__init__()
-        # 20k -> 4096 -> 2000
+        # 16k -> intermediary_len -> 1200-256
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 4096),
+            nn.Linear(input_dim, intermediary_len),
             nn.ReLU(),
-            nn.Linear(4096, embedding_dim),
+            nn.Dropout(dropout_rate),
+            nn.Linear(intermediary_len, embedding_dim),
         )
-        # 2000 -> 4096 -> 20k
+        # 16k -> intermediary_len -> 1200-256
         self.decoder = nn.Sequential(
-            nn.Linear(embedding_dim, 4096), nn.ReLU(), nn.Linear(4096, input_dim)
+            nn.Linear(embedding_dim, intermediary_len),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(intermediary_len, input_dim),
         )
 
     def forward(self, x):
@@ -89,6 +95,8 @@ class AutoEncoderWrapper:
             if type(predefined_vocab) == list:
                 self.vocab_map = {token: i for i, token in enumerate(predefined_vocab)}
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.using_cpu = not torch.cuda.is_available()
+        print(f"Using device: {self.device}")
         self.history = []
         self.actual_input_dim = None
 
@@ -130,10 +138,12 @@ class AutoEncoderWrapper:
         epochs=10,
         batch_size=64,
         lr=8e-4,
-        max_epochs_no_improve=4,
+        max_epochs_no_improve=5,
         directory=None,
         optimize_cpu=False,
+        eval_perc=0.05,
     ):
+        pos_weight_value = 250.0
         # torch.set_num_threads(self.processing_procs)
         if optimize_cpu:
             import os
@@ -142,6 +152,11 @@ class AutoEncoderWrapper:
             os.environ["CXX"] = "/usr/bin/g++"
             os.environ["CC"] = "/usr/bin/gcc"
         """Trains the model on a list of lists of InterPro families."""
+        print(
+            f"Training params: epochs={epochs}, batch_size={batch_size}, "
+            f"lr={lr}, max_epochs_no_improve={max_epochs_no_improve}, "
+            f"optimize_cpu={optimize_cpu}, pos_weight={pos_weight_value}"
+        )
         bar = tqdm(total=epochs + 5)
 
         print("Building Vocab")
@@ -149,9 +164,9 @@ class AutoEncoderWrapper:
         bar.update(1)
 
         print("Initializing Model", file=sys.stderr)
-        self.model = InterProAutoencoder(self.actual_input_dim, self.embedding_dim).to(
-            self.device
-        )
+        self.model = InterProAutoencoder(
+            self.actual_input_dim, self.embedding_dim, dropout_rate=0.2
+        ).to(self.device)
         # Tell PyTorch to optimize the execution graph for the CPU
         """if optimize_cpu:
             try:
@@ -161,8 +176,25 @@ class AutoEncoderWrapper:
                 print(f"Could not compile model: {e}", file=sys.stderr)"""
         bar.update(1)
 
+        if eval_perc > 0:
+            n_eval = int(len(family_lists) * eval_perc)
+            eval_indexes = np.random.choice(len(family_lists), n_eval, replace=False)
+            eval_data = [family_lists[i] for i in eval_indexes]
+
+        else:
+
+            eval_data = None
+        train_data = family_lists
+
         print("Creating Dataset", file=sys.stderr)
-        dataset = InterProDataset(family_lists, self.vocab_map, self.actual_input_dim)
+        dataset = InterProDataset(train_data, self.vocab_map, self.actual_input_dim)
+
+        if eval_data is not None:
+            eval_dataset = InterProDataset(
+                eval_data, self.vocab_map, self.actual_input_dim
+            )
+        else:
+            eval_dataset = None
         bar.update(1)
 
         print("Creating DataLoader", file=sys.stderr)
@@ -176,12 +208,27 @@ class AutoEncoderWrapper:
                 # prefetch_factor=2,
             )
         else:
-            dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+            dataloader = DataLoader(
+                dataset, batch_size=batch_size, shuffle=True, pin_memory=True
+            )
+
+        if eval_dataset is not None:
+            eval_dataloader = DataLoader(
+                eval_dataset,
+                batch_size=1600,
+                shuffle=False,
+                num_workers=0,
+                pin_memory=False,
+            )
+        else:
+            eval_dataloader = None
 
         bar.update(1)
 
         print("Initializing training", file=sys.stderr)
-        criterion = nn.BCEWithLogitsLoss()
+        pos_weight = torch.tensor([pos_weight_value]).to(self.device)
+
+        criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
@@ -190,31 +237,123 @@ class AutoEncoderWrapper:
         best_loss = float("inf")
         best_loss_epoch = 0
 
+        n_batchs = len(dataset) // batch_size
+
         print("Training Autoencoder", file=sys.stderr)
         for epoch in range(epochs):
             total_loss = 0
             batch_n = 0
+            sub_bar = tqdm(total=n_batchs)
             for batch in dataloader:
                 batch = batch.to(self.device)
-                print(f"Epoch {epoch} - Batch {batch_n} - Allocated", file=sys.stderr)
+                # print(f"Epoch {epoch} - Batch {batch_n} - Allocated", file=sys.stderr)
                 reconstruction, _ = self.model(batch)
-                print(
-                    f"Epoch {epoch} - Batch {batch_n} - Runned model", file=sys.stderr
-                )
+                # print(
+                #    f"Epoch {epoch} - Batch {batch_n} - Runned model", file=sys.stderr
+                # )
                 loss = criterion(reconstruction, batch)
-                print(f"Epoch {epoch} - Batch {batch_n} - Criterion", file=sys.stderr)
+                # print(f"Epoch {epoch} - Batch {batch_n} - Criterion", file=sys.stderr)
 
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                print(f"Epoch {epoch} - Batch {batch_n} - Step", file=sys.stderr)
+                # print(f"Epoch {epoch} - Batch {batch_n} - Step", file=sys.stderr)
                 total_loss += loss.item()
                 batch_n += 1
+                sub_bar.update(1)
+            sub_bar.close()
+            # Flush the lingering training tensors from VRAM
+            if self.device.type == "cuda":
+                torch.cuda.empty_cache()
 
-            print(f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(dataloader):.6f}")
+            if eval_dataloader is not None:
+                """The dataset lines are binary vectors, so we can calculate
+                the precision and recall of the reconstruction. We dont need eval_loss
+                """
+
+                self.model.eval()
+                with torch.no_grad():
+                    num_thresholds = 30
+                    thresholds = torch.linspace(
+                        0.05, 0.95, steps=num_thresholds, device=self.device
+                    )
+
+                    # Accumulators for each threshold
+                    sum_precision = torch.zeros(num_thresholds, device=self.device)
+                    sum_recall = torch.zeros(num_thresholds, device=self.device)
+
+                    epsilon = 1e-8
+
+                    for batch in eval_dataloader:
+                        batch = batch.to(self.device)
+
+                        # 1. Get raw logits from the model
+                        raw_reconstruction, _ = self.model(batch)
+
+                        probs = torch.sigmoid(raw_reconstruction)
+
+                        actual_pos = batch.sum(dim=1)
+
+                        # Calculate metrics for all 30 thresholds
+                        for i, thresh in enumerate(thresholds):
+                            preds = (probs > thresh).float()
+
+                            tp = (preds * batch).sum(dim=1)
+                            pred_pos = preds.sum(dim=1)
+
+                            # Add the batch mean to our global accumulators
+                            sum_precision[i] += (tp / (pred_pos + epsilon)).mean()
+                            sum_recall[i] += (tp / (actual_pos + epsilon)).mean()
+
+                        # Aggressively clear VRAM for the next batch
+                        del (
+                            batch,
+                            raw_reconstruction,
+                            probs,
+                            preds,
+                            tp,
+                            pred_pos,
+                            actual_pos,
+                        )
+
+                    # 1. Average the accumulated metrics across all batches
+                    avg_precision = sum_precision / len(eval_dataloader)
+                    avg_recall = sum_recall / len(eval_dataloader)
+
+                    # 2. Calculate F1 Score for all thresholds simultaneously
+                    # F1 = 2 * (Precision * Recall) / (Precision + Recall)
+                    f1_scores = (2 * avg_precision * avg_recall) / (
+                        avg_precision + avg_recall + epsilon
+                    )
+
+                    # 3. Find the threshold that produced the absolute best F1 Score
+                    best_idx = torch.argmax(f1_scores)
+
+                    best_f1 = float(f1_scores[best_idx].item())
+                    best_thresh = thresholds[best_idx].item()
+                    best_prec = float(avg_precision[best_idx].item())
+                    best_rec = float(avg_recall[best_idx].item())
+
+                    print(
+                        f"\nEval Fmax: {best_f1:.4f} (at threshold {best_thresh:.2f}) | "
+                        f"Precision: {best_prec:.4f} | Recall: {best_rec:.4f}"
+                    )
+            else:
+                print(
+                    f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(dataloader):.6f}"
+                )
+                best_prec = None
+                best_rec = None
+                best_f1 = None
             loss_rounded = round(total_loss, 6)
             self.history.append(
-                {"epoch": epoch, "loss": loss_rounded, "best_loss": best_loss}
+                {
+                    "epoch": epoch,
+                    "loss": loss_rounded,
+                    "best_loss": best_loss,
+                    "precision": best_prec,
+                    "recall": best_rec,
+                }
             )
             if loss_rounded < best_loss:
                 best_loss = loss_rounded
@@ -222,6 +361,8 @@ class AutoEncoderWrapper:
 
                 # save model
                 if directory:
+                    import os
+
                     if os.path.exists(directory):
                         self.save(directory)
 
@@ -232,6 +373,7 @@ class AutoEncoderWrapper:
                 )
                 break
             bar.update(1)
+
         bar.close()
 
     def predict(self, family_lists):

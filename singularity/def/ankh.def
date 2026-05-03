@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: nvcr.io/nvidia/pytorch:24.12-py3
+From: nvcr.io/nvidia/pytorch:25.11-py3
 
 %post
     export DEBIAN_FRONTEND=noninteractive

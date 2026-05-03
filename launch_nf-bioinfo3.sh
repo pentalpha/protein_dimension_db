@@ -10,4 +10,4 @@ export SINGULARITY_CACHEDIR="${PWD}/.cache/singularity"
 export TMPDIR="${PWD}/.cache/tmp"
 export NXF_TEMP="${PWD}/.cache/tmp"
 
-nextflow -C nextflow-bioinfo3.config run main-uniprot2026.nf -resume --mode full --release_dir /data/home/pitagoras/data/dimension_db/release_2 --old_release_paths_str /data/home/pitagoras/data/dimension_db/cafa6,/data/home/pitagoras/data/dimension_db/release_1
+nextflow -C nextflow-bioinfo3.config run process_inputs.nf -resume --mode full --release_dir /data/home/pitagoras/data/dimension_db/release_2 --old_release_paths_str /data/home/pitagoras/data/dimension_db/cafa6,/data/home/pitagoras/data/dimension_db/release_1

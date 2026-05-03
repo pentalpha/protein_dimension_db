@@ -1,1 +1,1 @@
-nextflow -C nextflow.config run main-cafa6.nf -resume --release_dir /home/pita/data/pddb_cafa
+nextflow -C nextflow.config run train_encoders.nf -resume --release_dir /home/pita/data/dimension_db/release_2
