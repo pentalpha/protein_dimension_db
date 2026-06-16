@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     model_type = sys.argv[1]
     assert model_type in ["autoencoder", "onehot"]
-    embedding_size = int(sys.argv[2])  # current best: 800
+    embedding_size = int(sys.argv[2])  # current best: 64
     model_dir = sys.argv[3]
     interproscan_tsv = sys.argv[4]
     vocab_json = sys.argv[5]

@@ -40,7 +40,7 @@ cache_dir = os.path.join(home_dir, ".cache")
 os.environ["TRITON_CACHE_DIR"] = cache_dir + "/triton"
 os.environ["TORCH_HOME"] = cache_dir + "/torch"
 
-intermediary_len = 3600
+default_intermediary_len = 3600
 
 
 def generate_pca_gif(directory, output_filename="latent_evolution.gif", duration=400):
@@ -99,8 +99,10 @@ def prepare_pca_clusters(eval_data, top_n=14):
     for i, protein in enumerate(eval_data):
         if len(protein) >= 3:
             overlap = top_terms_set.intersection(protein)
-            if len(overlap) == 1:
-                label = list(overlap)[0]
+            if len(overlap) <= 2 and len(overlap) > 0:
+                usable_labels = list(overlap)
+                usable_labels.sort(key=lambda l: term_counts[l])
+                label = usable_labels[0]
                 target_indices.append(i)
                 cluster_labels.append(label)
 
@@ -108,6 +110,78 @@ def prepare_pca_clusters(eval_data, top_n=14):
     different_labels = len(set(cluster_labels))
     print(f"Different labels: {different_labels}")
     return target_indices, cluster_labels, top_terms
+
+
+taxid_pca_labels = {
+    "3193": {"name": "Land Plants", "color": "forestgreen"},
+    "3041": {"name": "Green Algae", "color": "limegreen"},
+    "9263": {"name": "Mammals - Marsupials", "color": "red"},
+    "9347": {"name": "Mammals - Placentals", "color": "darkred"},
+    "8504": {"name": "Lizards and Snakes", "color": "hotpink"},
+    "7898": {"name": "Fishes - Actinopterygii", "color": "darkblue"},
+    "1783272": {"name": "Bacteria - Bacillati", "color": "yellow"},
+    "3379134": {"name": "Bacteria - Pseudomonadati", "color": "gold"},
+    "2": {"name": "Bacteria - Others", "color": "khaki"},
+    "10239": {"name": "Viruses", "color": "black"},
+    "other": {"name": "Other Organisms", "color": "magenta"},
+}
+
+
+def prepare_pca_clusters_taxo(eval_data, top_n=16):
+    """
+    Finds the top N terms in the evaluation set and assigns proteins
+    to strictly mutually exclusive clusters for clean visualization.
+    """
+    print(f"Preparing PCA clusters for top {top_n} terms...")
+
+    # 1. Find the top N most common terms in the eval set
+    all_eval_terms = [term for protein in eval_data for term in protein]
+
+    target_indices = []
+    cluster_labels = []
+
+    other_label = "other"
+
+    for i, protein in enumerate(eval_data):
+        label = "other"
+        for taxid, info in taxid_pca_labels.items():
+            if taxid in protein:
+                label = taxid
+                break
+        # pretty_label = taxid_pca_labels[label]["name"]
+        cluster_labels.append(label)
+        target_indices.append(i)
+
+    undefined_indexes = [i for i in target_indices if cluster_labels[i] == other_label]
+
+    print("Undefined organisms:", len(undefined_indexes) / len(eval_data) * 100, "%")
+
+    print(eval_data[0])
+    print(eval_data[-1])
+    undefined_eval_data = [
+        [x for x in eval_data[i] if x not in taxid_pca_labels] for i in target_indices
+    ]
+
+    term_list_for_freq = []
+    print(undefined_eval_data[0])
+    print(undefined_eval_data[-1])
+    for lineage in undefined_eval_data:
+        for taxid in lineage:
+            term_list_for_freq.append(taxid)
+
+    term_counts = Counter(term_list_for_freq)
+    top_terms = [term for term, _ in term_counts.most_common(32)]
+    print("Top most common terms in undefined organisms:")
+    for x in top_terms:
+        print(x)
+
+    print(f"Selected {len(target_indices)} different lineages for PCA.")
+    different_labels = len(set(cluster_labels))
+    print(f"Different labels: {different_labels}")
+
+    labels_used = list(set(cluster_labels))
+
+    return target_indices, cluster_labels, labels_used
 
 
 def plot_epoch_pca(
@@ -132,9 +206,15 @@ def plot_epoch_pca(
 
     fig, ax = plt.subplots(figsize=(4.2, 4.2), dpi=180)
 
-    # Assign distinct colors using the tab20 colormap
-    cmap = plt.get_cmap("tab20")
-    colors = {term: cmap(i) for i, term in enumerate(top_terms)}
+    # species_labels = [x['name'] for taxid, x in taxid_pca_labels.items()]
+    is_taxid = all([t in taxid_pca_labels for t in cluster_labels])
+    if is_taxid:
+        print("Using predefined species colors")
+        colors = {term: taxid_pca_labels[term]["color"] for term in top_terms}
+    else:
+        print("Assign distinct colors using the tab20 colormap")
+        cmap = plt.get_cmap("tab20")
+        colors = {term: cmap(i) for i, term in enumerate(top_terms)}
 
     # Scatter plot by cluster
     for term in top_terms:
@@ -145,7 +225,7 @@ def plot_epoch_pca(
             ax.scatter(
                 X_pca[term_mask, 0],
                 X_pca[term_mask, 1],
-                label=term,
+                label=taxid_pca_labels[term]["name"] if is_taxid else term,
                 color=colors[term],
                 alpha=0.7,
                 s=8,  # Small point size to prevent overlapping blobs
@@ -153,8 +233,11 @@ def plot_epoch_pca(
             )
 
     # 4. Formatting
+    title = f"Compact Representation of Protein Families - {epoch}"
+    if is_taxid:
+        title = f"Compact Representation of Taxonomy - {epoch}"
     ax.set_title(
-        f"Compact Representation of Protein Families - {epoch}",
+        title,
         fontsize=10,
     )
     # Remove axis ticks for a cleaner look
@@ -258,7 +341,13 @@ def embedding_neighborhood_score(eval_targets, eval_embeddings, k=5):
 
 
 class InterProAutoencoder(nn.Module):
-    def __init__(self, input_dim, embedding_dim, dropout_rate=0.1):
+    def __init__(
+        self,
+        input_dim,
+        embedding_dim,
+        dropout_rate=0.1,
+        intermediary_len=default_intermediary_len,
+    ):
         super(InterProAutoencoder, self).__init__()
         # 16k -> intermediary_len -> 1200-256
         self.encoder = nn.Sequential(
@@ -309,7 +398,16 @@ class InterProDataset(Dataset):
 
 
 class AutoEncoderWrapper:
-    def __init__(self, input_dim=20000, embedding_dim=2000, predefined_vocab=None):
+    def __init__(
+        self,
+        input_dim=20000,
+        embedding_dim=2000,
+        predefined_vocab=None,
+        intermediary_len=default_intermediary_len,
+        data_family="interpro",
+    ):
+        self.data_family = data_family
+        self.intermediary_len = intermediary_len
         self.input_dim = input_dim
         self.embedding_dim = embedding_dim
         self.vocab_map = None
@@ -448,7 +546,7 @@ class AutoEncoderWrapper:
             "optimize_cpu": optimize_cpu,
             "pos_weight": pos_weight_value,
             "eval_perc": eval_perc,
-            "intermediary_len": intermediary_len,
+            "intermediary_len": self.intermediary_len,
             "dropout_rate": dropout_rate,
         }
         print(f"Training params: {self.metaparams_archive}")
@@ -499,7 +597,12 @@ class AutoEncoderWrapper:
             # np.save(ann_sim_matrix_file, ann_sim_matrix)
         print(f"Loaded eval data: {len(eval_data)}")
 
-        pca_indices, pca_labels, pca_terms = prepare_pca_clusters(eval_data, top_n=14)
+        if self.data_family == "interpro":
+            pca_indices, pca_labels, pca_terms = prepare_pca_clusters(
+                eval_data, top_n=14
+            )
+        elif self.data_family == "taxid":
+            pca_indices, pca_labels, pca_terms = prepare_pca_clusters_taxo(eval_data)
 
         # pairs_for_sim_calculation, pair_sims = self._calc_ont_sim_matrix(ann_sim_matrix)
 
