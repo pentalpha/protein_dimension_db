@@ -19,6 +19,7 @@ if __name__ == "__main__":
     model_dir = sys.argv[3]
     interproscan_tsv = sys.argv[4]
     vocab_json = sys.argv[5]
+    obo_path = "interpro.obo"
     if len(sys.argv) > 6:
         epochs = int(sys.argv[6])
     else:
@@ -38,9 +39,11 @@ if __name__ == "__main__":
         max_samples = 600000
         input_dim_max = 17000
         batch_size = 50000
-
-    vocab = json.load(open(vocab_json, "r"))["vocab"]
+    vocab_json = json.load(open(vocab_json, "r"))
+    vocab = vocab_json["vocab"]
+    ia_map = vocab_json["ic_map"]
     print(f"Vocab size: {len(vocab)}")
+    print(f"IA map size: {len(ia_map)}")
     if len(vocab) > input_dim_max:
         print(f"Vocab size is greater than {input_dim_max}, truncating...")
         sorted_terms = vocab[:input_dim_max]
@@ -87,6 +90,8 @@ if __name__ == "__main__":
             low_cpu_mode = False
         wrapper.fit(
             clean_data,
+            ia_map,
+            obo_path,
             epochs=epochs,
             lr=lr,
             directory=model_dir,

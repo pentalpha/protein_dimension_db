@@ -154,7 +154,7 @@ process calc_interpro_ia {
     """
     interpro_ann_to_ia_format.py ${interpro_parsed_tsv} ia_format_ann.tsv
     git clone https://github.com/pentalpha/InformationAccretion-Interpro.git
-    python InformationAccretion-Interpro/ia.py --annot ia_format_ann.tsv --graph ${interpro_obo} --prop
+    python InformationAccretion-Interpro/ia.py --outfile interpro_IA.txt --annot ia_format_ann.tsv --graph ${interpro_obo} --prop
     """
 }
 
@@ -174,8 +174,8 @@ process make_interpro_vocab {
 
     script:
     """
-    interpro_make_vocab.py interpro interpro_vocab_ia 64 41800 0.95 ia_rich ${interpro_parsed_tsv} ${interpro_ia_tsv}
-    interpro_make_vocab.py interpro interpro_vocab_top_k 64 41800 0.95 top_k ${interpro_parsed_tsv} ${interpro_ia_tsv}
+    interpro_make_vocab.py interpro interpro_vocab_ia 512 32000 0.95 ia_rich ${interpro_parsed_tsv} ${interpro_ia_tsv}
+    interpro_make_vocab.py interpro interpro_vocab_top_k 512 32000 0.95 top_k ${interpro_parsed_tsv} ${interpro_ia_tsv}
     """
 }
 
