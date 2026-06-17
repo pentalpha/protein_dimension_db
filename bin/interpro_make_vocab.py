@@ -84,7 +84,7 @@ if __name__ == "__main__":
     )
     print("vocab_method", vocab_method)
 
-    n_test_vocabs = 120
+    n_test_vocabs = 140
     test_sizes = np.linspace(min_vocab_size, max_vocab_size, n_test_vocabs).astype(int)
 
     test_results = []
@@ -109,12 +109,15 @@ if __name__ == "__main__":
                 "coverage": len(attempt.covered) / len(attempt.instance_ids),
             }
         )
-        inf_rounded = round(attempt.retained_ic, 2)
-        cov_rounded = round(len(attempt.covered) / len(attempt.instance_ids), 2)
-        if inf_rounded >= target_ic_retained and cov_rounded >= 0.99:
+        #inf_rounded = round(attempt.retained_ic, 2)
+        cov_rounded = round(len(attempt.covered) / len(attempt.instance_ids), 3)
+        if attempt.retained_ic >= target_ic_retained and cov_rounded >= 0.99:
             if rich_vocab is None:
                 rich_vocab = attempt
                 test_target_ic = 0.9995
+    
+    if rich_vocab is None:
+        rich_vocab = attempt
 
     cols = ["max_vocab_size", "ic_retained", "coverage", "vocab_len", "proteins_n"]
     with open(output_prefix + ".tsv", "w") as f:

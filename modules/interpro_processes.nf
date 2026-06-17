@@ -174,8 +174,8 @@ process make_interpro_vocab {
 
     script:
     """
-    interpro_make_vocab.py interpro interpro_vocab_ia 512 32000 0.95 ia_rich ${interpro_parsed_tsv} ${interpro_ia_tsv}
-    interpro_make_vocab.py interpro interpro_vocab_top_k 512 32000 0.95 top_k ${interpro_parsed_tsv} ${interpro_ia_tsv}
+    interpro_make_vocab.py interpro interpro_vocab_ia 1600 26000 0.95 ia_rich ${interpro_parsed_tsv} ${interpro_ia_tsv}
+    interpro_make_vocab.py interpro interpro_vocab_top_k 1600 26000 0.95 top_k ${interpro_parsed_tsv} ${interpro_ia_tsv}
     """
 }
 

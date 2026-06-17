@@ -107,7 +107,8 @@ process make_taxid_vocab {
 
     script:
     """
-    interpro_make_vocab.py taxallnomy taxid_vocab_ia 64 29000 0.99 ia_rich ${taxids} ${taxid_ia_tsv}
+    interpro_make_vocab.py taxallnomy taxid_vocab_ia 1600 12000 0.99 ia_rich ${taxids} ${taxid_ia_tsv}
+    interpro_make_vocab.py taxallnomy taxid_vocab_ia 1600 12000 0.99 top_k ${taxids} ${taxid_ia_tsv}
     """
 }
 

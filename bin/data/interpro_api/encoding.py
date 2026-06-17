@@ -21,6 +21,11 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from sklearn.metrics import (
+    silhouette_score,
+    davies_bouldin_score,
+    calinski_harabasz_score,
+)
 import glob
 from PIL import Image
 
@@ -41,6 +46,28 @@ os.environ["TRITON_CACHE_DIR"] = cache_dir + "/triton"
 os.environ["TORCH_HOME"] = cache_dir + "/torch"
 
 default_intermediary_len = 3600
+
+
+def plot_history(directory, history_list, output_filename, metric_keys=["fmax"]):
+    x_value = "epoch"
+    epochs = [hist[x_value] for hist in history_list]
+    data_for_plot = {key: [hist[key] for hist in history_list] for key in metric_keys}
+
+    # Create the plot
+    fig, ax1 = plt.subplots(figsize=(12, 6))
+
+    # Plot all metrics, which can be many, but tend to be between 0 and 1.
+    for key in metric_keys:
+        ax1.plot(epochs, data_for_plot[key], "-o", label=key)
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Metric")
+    ax1.legend()
+    plt.title("Training History")
+    output_path = os.path.join(directory, output_filename)
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+    print(f"History plot saved to {output_path}")
 
 
 def generate_pca_gif(directory, output_filename="latent_evolution.gif", duration=400):
@@ -112,7 +139,8 @@ def prepare_pca_clusters(eval_data, top_n=14):
     return target_indices, cluster_labels, top_terms
 
 
-taxid_pca_labels = {
+"""taxid_pca_labels = {
+    "3398": {"name": "Flowering plants", "color": "darkgreen"},
     "3193": {"name": "Land Plants", "color": "forestgreen"},
     "3041": {"name": "Green Algae", "color": "limegreen"},
     "9263": {"name": "Mammals - Marsupials", "color": "red"},
@@ -122,8 +150,82 @@ taxid_pca_labels = {
     "1783272": {"name": "Bacteria - Bacillati", "color": "yellow"},
     "3379134": {"name": "Bacteria - Pseudomonadati", "color": "gold"},
     "2": {"name": "Bacteria - Others", "color": "khaki"},
-    "10239": {"name": "Viruses", "color": "black"},
+    "2732396": {"name": "Viruses - RNA", "color": "darkcyan"},
+    "10239": {"name": "Viruses - Others", "color": "black"},
     "other": {"name": "Other Organisms", "color": "magenta"},
+}"""
+"""taxid_pca_labels = {
+    # --- REINO ANIMAL & EUKARYOTA DA ALTA CIÊNCIA ---
+    "40674": {
+        "name": "Mammals",
+        "color": "#B83B5E",
+    },  # Tom Terracota/Framboesa profundo
+    "7742": {
+        "name": "Other Vertebrates",
+        "color": "#E23E57",
+    },  # Vermelho vivo (Peixes, Aves, Anfíbios, Répteis)
+    "6656": {
+        "name": "Arthropods & Insects",
+        "color": "#FF9A00",
+    },  # Laranja/Ouro (Drosophila, etc.)
+    "4751": {
+        "name": "Fungi",
+        "color": "#6A2C70",
+    },  # Roxo Escuro/Plum (Leveduras e fungos)
+    "33090": {
+        "name": "Plants & Algae",
+        "color": "#227043",
+    },  # Verde Floresta Fechado (Arabidopsis e afins)
+    # --- MUNDO PROCARIOTO (BACTÉRIAS) ---
+    # Focando nas duas super-potências bacterianas do Swiss-Prot
+    "3379134": {
+        "name": "Bacteria - Pseudomonadati",
+        "color": "#005F73",
+    },  # Azul Petróleo (Antiga Proteobacteria / E. coli)
+    "1783272": {
+        "name": "Bacteria - Bacillati",
+        "color": "#0A9396",
+    },  # Verde Água Escuro (Antiga Firmicutes / Bacillus)
+    "2": {
+        "name": "Bacteria - Others",
+        "color": "#94D2BD",
+    },  # Menta Suave (Demais bactérias)
+    # --- VÍRUS ---
+    "10239": {
+        "name": "Viruses",
+        "color": "#2F3E46",
+    },  # Cinza Grafite Escuro (Todos os vírus unificados)
+    # --- RUÍDO / OUTROS ---
+    "other": {
+        "name": "Other Organisms",
+        "color": "#D3D3D3",
+    },  # Cinza Claro Neutro (Evita a poluição visual)
+}"""
+taxid_pca_labels = {
+    # --- EUKARYOTA ---
+    "40674": {"name": "Mammals", "color": "darkred"},
+    "7742": {"name": "Other Vertebrates", "color": "hotpink"},
+    "6656": {"name": "Arthropods & Insects", "color": "#FF9A00"},
+    "6231": {"name": "Nematodes", "color": "#E9C46A"},  # C. elegans & worms
+    "4751": {"name": "Fungi", "color": "magenta"},
+    "33090": {"name": "Plants & Algae", "color": "forestgreen"},
+    "5794": {"name": "Apicomplexans", "color": "#A8DADC"},  # Plasmodium / Parasites
+    # --- BACTERIA ---
+    "3379134": {"name": "Bacteria - Pseudomonadati", "color": "cornflowerblue"},
+    "1783272": {"name": "Bacteria - Bacillati", "color": "dodgerblue"},
+    "201174": {
+        "name": "Bacteria - Actinomycetota",
+        "color": "midnightblue",
+    },  # Mycobacterium, etc.
+    "2": {"name": "Bacteria - Others", "color": "#E0E1DD"},
+    # --- VIRUSES ---
+    "2732396": {"name": "Viruses - RNA", "color": "#457B9D"},  # Distinct cool blue
+    "10239": {
+        "name": "Viruses - DNA & Others",
+        "color": "#1D3557",
+    },  # Deep navy/graphite
+    # --- NOISE ---
+    "other": {"name": "Other Organisms", "color": "silver"},  # Very light gray
 }
 
 
@@ -159,7 +261,8 @@ def prepare_pca_clusters_taxo(eval_data, top_n=16):
     print(eval_data[0])
     print(eval_data[-1])
     undefined_eval_data = [
-        [x for x in eval_data[i] if x not in taxid_pca_labels] for i in target_indices
+        [x for x in eval_data[i] if x not in taxid_pca_labels]
+        for i in undefined_indexes
     ]
 
     term_list_for_freq = []
@@ -173,11 +276,17 @@ def prepare_pca_clusters_taxo(eval_data, top_n=16):
     top_terms = [term for term, _ in term_counts.most_common(32)]
     print("Top most common terms in undefined organisms:")
     for x in top_terms:
-        print(x)
+        print(x, term_counts[x])
 
     print(f"Selected {len(target_indices)} different lineages for PCA.")
     different_labels = len(set(cluster_labels))
     print(f"Different labels: {different_labels}")
+
+    label_counts = Counter(cluster_labels)
+
+    print("Frequencies of used labels:")
+    for label, count in label_counts.items():
+        print(taxid_pca_labels[label]["name"], count)
 
     labels_used = list(set(cluster_labels))
 
@@ -188,74 +297,89 @@ def plot_epoch_pca(
     eval_embeddings, target_indices, cluster_labels, top_terms, epoch, directory
 ):
     """
-    Calculates 2D PCA for the selected embeddings and saves plot.
+    Calculates 2D t-SNE for the selected embeddings and saves a clean, ordered plot.
     """
-    # 1. Subset the embeddings to only our mutually exclusive proteins
+    import matplotlib.lines as mlines
+
     X = eval_embeddings[target_indices]
 
-    # 2. Compute 2D PCA
-    # (PCA on a few thousand rows is virtually instant on CPU)
-    # pca = PCA(n_components=2)
-    # X_pca = pca.fit_transform(X)
-
-    # Use t-SNE for better visualization of local structure
     tsne = TSNE(
         n_components=2, perplexity=30, learning_rate="auto", init="pca", random_state=42
     )
     X_pca = tsne.fit_transform(X)
 
-    fig, ax = plt.subplots(figsize=(4.2, 4.2), dpi=180)
+    fig, ax = plt.subplots(figsize=(4.8, 4.5), dpi=180)  # Slightly wider for the legend
 
-    # species_labels = [x['name'] for taxid, x in taxid_pca_labels.items()]
     is_taxid = all([t in taxid_pca_labels for t in cluster_labels])
     if is_taxid:
-        print("Using predefined species colors")
         colors = {term: taxid_pca_labels[term]["color"] for term in top_terms}
     else:
-        print("Assign distinct colors using the tab20 colormap")
         cmap = plt.get_cmap("tab20")
         colors = {term: cmap(i) for i, term in enumerate(top_terms)}
 
-    # Scatter plot by cluster
+    # 1. Scatter plot by cluster
     for term in top_terms:
-        # Create a boolean mask for the current term
         term_mask = [label == term for label in cluster_labels]
 
         if any(term_mask):
+            # We skip adding the 'label' argument here to prevent default legend creation
             ax.scatter(
                 X_pca[term_mask, 0],
                 X_pca[term_mask, 1],
-                label=taxid_pca_labels[term]["name"] if is_taxid else term,
                 color=colors[term],
-                alpha=0.7,
-                s=8,  # Small point size to prevent overlapping blobs
+                alpha=0.95,
+                s=12,  # Keep the actual plot points small and distinct
                 edgecolors="none",
             )
 
-    # 4. Formatting
-    title = f"Compact Representation of Protein Families - {epoch}"
-    if is_taxid:
-        title = f"Compact Representation of Taxonomy - {epoch}"
-    ax.set_title(
-        title,
-        fontsize=10,
+    # 2. Build Custom Legend
+    legend_handles = []
+
+    # Iterate through the dictionary to maintain exact taxonomic order
+    for taxid, info in taxid_pca_labels.items():
+        # Only add to the legend if the organism actually exists in this evaluation batch
+        if taxid in top_terms or (taxid == "other" and "other" in cluster_labels):
+            handle = mlines.Line2D(
+                [],
+                [],
+                color=info["color"],
+                marker="o",
+                linestyle="None",
+                markersize=9,  # LARGER CIRCLES in the legend
+                label=info["name"],
+            )
+            legend_handles.append(handle)
+
+    # 3. Formatting
+    title = (
+        f"Compact Representation of Taxonomy - {epoch}"
+        if is_taxid
+        else f"Compact Representation of Protein Families - {epoch}"
     )
-    # Remove axis ticks for a cleaner look
+    ax.set_title(title, fontsize=11, pad=10)
     ax.set_xticks([])
     ax.set_yticks([])
 
-    # Place a tiny legend outside the main plot area so it doesn't cover data
-    ax.legend(fontsize=5, loc="center left", bbox_to_anchor=(1, 0.5), frameon=False)
+    # Apply the custom legend
+    ax.legend(
+        handles=legend_handles,
+        fontsize=7,
+        loc="center left",
+        bbox_to_anchor=(1.02, 0.5),  # Push legend entirely outside the plot box
+        frameon=False,
+        title="Taxonomic Clades",
+        title_fontsize=8,
+        labelspacing=0.8,  # Add a little breathing room between items
+    )
 
-    # 5. Save the plot
+    # 4. Save the plot
     if directory is None:
         directory = "."
     os.makedirs(directory, exist_ok=True)
 
-    # bbox_inches='tight' ensures the legend isn't cut off
     filepath = os.path.join(directory, f"pca_epoch_{epoch:03d}.png")
     plt.savefig(filepath, format="png", bbox_inches="tight")
-    plt.close(fig)  # Free memory
+    plt.close(fig)
 
 
 def centroid_correlation_metric(eval_targets, eval_embeddings, term_sim_matrix):
@@ -298,45 +422,68 @@ def centroid_correlation_metric(eval_targets, eval_embeddings, term_sim_matrix):
     return float(spearman_corrected), float(p_value)
 
 
-def embedding_neighborhood_score(eval_targets, eval_embeddings, k=5):
+def embedding_neighborhood_score(
+    eval_targets, eval_embeddings, k=5, min_overlap_ratio=0.6
+):
     """
     Computes the average fraction of k-nearest neighbours that share
-    at least one term with the query protein. Higher is better.
+    at least `min_overlap_ratio` of terms with the query protein.
 
     Args:
         eval_targets: torch.Tensor of shape (N, num_terms), binary.
         eval_embeddings: torch.Tensor of shape (N, dim).
         k: number of neighbours to consider.
+        min_overlap_ratio: float (0.0 to 1.0). The minimum proportion of the query's
+                           terms that the neighbour must also possess to be a "match".
 
     Returns:
         float: average neighbour label agreement.
     """
-    # Normalise embeddings for cosine similarity (optional but often helps)
+    # 1. Normalise embeddings for cosine similarity
     normed_emb = eval_embeddings / (eval_embeddings.norm(dim=1, keepdim=True) + 1e-8)
 
-    # Compute pairwise cosine similarity matrix
+    # 2. Compute pairwise cosine similarity matrix
     sim = torch.mm(normed_emb, normed_emb.t())  # (N, N)
 
-    # For each protein, we want its k nearest neighbours excluding itself.
     # Set diagonal to -inf so the query itself isn't chosen
     sim.fill_diagonal_(-float("inf"))
 
-    # Get top‑k indices for each row
+    # 3. Get top‑k indices for each row
     _, knn_indices = torch.topk(sim, k, dim=1)  # (N, k)
 
-    # For each query, check which neighbours share at least one term.
-    # targets[i] has shape (num_terms,). We need to check if
-    # (targets[i] * targets[neighbour]) sum > 0 for each neighbour.
-    N = eval_targets.size(0)
-    agreement_fracs = torch.zeros(N, device=eval_targets.device)
+    # 4. Fetch the target vectors for all k neighbours of all N queries
+    # Shape: (N, k, num_terms)
+    knn_targets = eval_targets[knn_indices]
 
-    for i in range(N):
-        query = eval_targets[i].unsqueeze(0)  # (1, num_terms)
-        neighbours = eval_targets[knn_indices[i]]  # (k, num_terms)
-        # overlap[i] = 1 if sum(query * neighbour) > 0 else 0
-        overlaps = (torch.sum(query * neighbours, dim=1) > 0).float()
-        agreement_fracs[i] = overlaps.mean()
+    # Prepare query targets for broadcasting
+    # Shape: (N, 1, num_terms)
+    query_targets = eval_targets.unsqueeze(1)
 
+    # 5. Calculate intersection size (number of shared terms)
+    # Shape: (N, k)
+    intersection_sizes = (query_targets * knn_targets).sum(dim=2)
+
+    # 6. Calculate the number of terms the query actually has
+    # Shape: (N, 1)
+    query_sizes = query_targets.sum(dim=2)
+
+    # Prevent division by zero if a query has absolutely no labels
+    # (Though in taxonomic lineages, this shouldn't happen)
+    query_sizes = torch.clamp(query_sizes, min=1.0)
+
+    # 7. Calculate the overlap ratio (Intersection / Query Size)
+    # Shape: (N, k)
+    overlap_ratios = intersection_sizes / query_sizes
+
+    # 8. Check which neighbours meet the minimum threshold
+    # Shape: (N, k) -> boolean mask converted to float (1.0 or 0.0)
+    matches = (overlap_ratios >= min_overlap_ratio).float()
+
+    # 9. Calculate the fraction of the k neighbours that are matches for each query
+    # Shape: (N,)
+    agreement_fracs = matches.mean(dim=1)
+
+    # Return the global mean score
     return agreement_fracs.mean().item()
 
 
@@ -514,6 +661,43 @@ class AutoEncoderWrapper:
 
         return pairs_for_sim_calculation, pair_sims
 
+    def make_sillouette_labels(self, taxa_clusters_for_sillouette, eval_targets):
+        """
+        Receives taxids of different taxonomic levels (e.g. Kingdom, Phylum, etc.)
+        and the one-hot encoded samples. It uses the taxids as clusters and produces
+        several labelings efficiently using PyTorch tensor operations.
+        Assumes all provided taxids are pre-validated against the vocab_map.
+        """
+        label_lists = []
+
+        for level_name, cluster_taxids in taxa_clusters_for_sillouette.items():
+            # 1. Convert set to list to guarantee stable order and allow indexing
+            taxid_list = list(cluster_taxids)
+
+            # 2. Directly map all taxids to their indices using the stable list
+            clusters_indexes = [self.vocab_map[taxid] for taxid in taxid_list]
+
+            # 3. Slice the targets: Shape (N, num_clusters_in_level)
+            level_targets = eval_targets[:, clusters_indexes]
+
+            # 4. Find the max value (1 if present, 0 if not) and its column index for each row
+            max_vals, argmaxes = torch.max(level_targets, dim=1)
+
+            current_labels = [None] * len(eval_targets)
+
+            # 5. Extract rows that actually belong to a cluster at this taxonomic level
+            valid_mask = max_vals > 0
+            valid_row_indices = torch.where(valid_mask)[0].tolist()
+            valid_argmaxes = argmaxes[valid_mask].tolist()
+
+            # 6. Map the valid rows to their actual string taxid labels using the indexable list
+            for row_idx, col_idx in zip(valid_row_indices, valid_argmaxes):
+                current_labels[row_idx] = taxid_list[col_idx]
+
+            label_lists.append((level_name, current_labels))
+
+        return label_lists
+
     def fit(
         self,
         family_lists,
@@ -526,6 +710,7 @@ class AutoEncoderWrapper:
         directory=None,
         optimize_cpu=False,
         eval_perc=0.3333,
+        taxa_clusters_for_sillouette: dict = None,
     ):
         assert eval_perc > 0
         pos_weight_value = 5.0
@@ -551,17 +736,17 @@ class AutoEncoderWrapper:
         }
         print(f"Training params: {self.metaparams_archive}")
 
-        bar = tqdm(total=epochs + 5)
+        bar = tqdm(total=epochs)
 
         print("Building Vocab")
         self._build_vocab(family_lists)
-        bar.update(1)
+        # bar.update(1)
 
         print("Initializing Model", file=sys.stderr)
         self.model = InterProAutoencoder(
             self.actual_input_dim, self.embedding_dim, dropout_rate=dropout_rate
         ).to(self.device)
-        bar.update(1)
+        # bar.update(1)
 
         n_eval = int(len(family_lists) * eval_perc)
         eval_indexes_tmp_file = (
@@ -601,8 +786,12 @@ class AutoEncoderWrapper:
             pca_indices, pca_labels, pca_terms = prepare_pca_clusters(
                 eval_data, top_n=14
             )
+            min_proportion1, min_proportion2 = (0.05, 0.01)
         elif self.data_family == "taxid":
+            min_proportion1, min_proportion2 = (0.65, 0.55)
             pca_indices, pca_labels, pca_terms = prepare_pca_clusters_taxo(eval_data)
+        else:
+            raise Exception("Invalid dta family")
 
         # pairs_for_sim_calculation, pair_sims = self._calc_ont_sim_matrix(ann_sim_matrix)
 
@@ -612,7 +801,7 @@ class AutoEncoderWrapper:
         dataset = InterProDataset(train_data, self.vocab_map, self.actual_input_dim)
 
         eval_dataset = InterProDataset(eval_data, self.vocab_map, self.actual_input_dim)
-        bar.update(1)
+        # bar.update(1)
 
         print("Creating DataLoader", file=sys.stderr)
         if optimize_cpu:
@@ -637,7 +826,7 @@ class AutoEncoderWrapper:
             pin_memory=False,
         )
 
-        bar.update(1)
+        # bar.update(1)
 
         print("Initializing training", file=sys.stderr)
         if pos_weight_value is not None:
@@ -648,7 +837,7 @@ class AutoEncoderWrapper:
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         self.model.train()
-        bar.update(1)
+        # bar.update(1)
 
         # best_loss = float("inf")
         best_score = float("-inf")
@@ -795,6 +984,67 @@ class AutoEncoderWrapper:
                 eval_embeddings = torch.cat(all_embeddings, dim=0)
                 eval_targets = torch.cat(all_targets, dim=0)
 
+                # Make sillouette labels
+                eval_labels_list = self.make_sillouette_labels(
+                    taxa_clusters_for_sillouette, eval_targets
+                )
+
+                silhouette_scores = {}
+                calinski_scores = {}
+                davies_scores = {}
+
+                eval_embeddings_np = eval_embeddings.numpy()
+
+                for tax_level, labeling in eval_labels_list:
+                    # print(f"Calculating silhouette score at level {tax_level}...")
+
+                    # Filter out samples that lack a label at this taxonomic level
+                    non_null_indexes = [
+                        i for i, l in enumerate(labeling) if l is not None
+                    ]
+
+                    if len(non_null_indexes) < 2:
+                        silhouette_scores[tax_level] = 0.0
+                        continue
+
+                    eval_pos = eval_embeddings_np[non_null_indexes]
+                    eval_labels = [labeling[i] for i in non_null_indexes]
+
+                    # Silhouette score strictly requires at least 2 distinct clusters
+                    if len(set(eval_labels)) > 1:
+                        sil_score = (
+                            1.0
+                            + silhouette_score(
+                                eval_pos, eval_labels, metric="euclidean"
+                            )
+                        ) / 2.0
+                        cal_score = (
+                            calinski_harabasz_score(eval_pos, eval_labels) / 700.0
+                        )
+                        dav_score = 1.0 - np.log10(
+                            davies_bouldin_score(eval_pos, eval_labels) + 1
+                        )
+                    else:
+                        sil_score = 0.0
+                        cal_score = 0.0
+                        dav_score = 0.0
+
+                    silhouette_scores[tax_level] = float(sil_score)
+                    calinski_scores[tax_level] = float(cal_score)
+                    davies_scores[tax_level] = float(dav_score)
+
+                # Calculate the mean silhouette score across all valid taxonomic levels
+                if len(silhouette_scores) > 0:
+                    mean_silhouette = sum(silhouette_scores.values()) / len(
+                        silhouette_scores
+                    )
+                    mean_calinski = sum(calinski_scores.values()) / len(calinski_scores)
+                    mean_davies = sum(davies_scores.values()) / len(davies_scores)
+                else:
+                    mean_silhouette = 0.0
+                    mean_calinski = 0.0
+                    mean_davies = 0.0
+
                 if directory:  # Only plot if we have a directory to save to
                     plot_epoch_pca(
                         torch.sigmoid(eval_embeddings).numpy(),
@@ -814,56 +1064,98 @@ class AutoEncoderWrapper:
                     eval_targets, eval_embeddings, sim_calculator.term_sim_matrix
                 )"""
                 knn_value_5 = embedding_neighborhood_score(
-                    eval_targets, eval_embeddings, k=5
+                    eval_targets,
+                    eval_embeddings,
+                    k=5,
+                    min_overlap_ratio=min_proportion2,
                 )
 
                 knn_value_3 = embedding_neighborhood_score(
-                    eval_targets, eval_embeddings, k=3
-                )
-
-                knn_value_15 = embedding_neighborhood_score(
-                    eval_targets, eval_embeddings, k=15
+                    eval_targets,
+                    eval_embeddings,
+                    k=3,
+                    min_overlap_ratio=min_proportion1,
                 )
 
                 loss_rounded = round(total_loss, 6)
+                loss_norm = 1.0 - loss_rounded
+                if loss_norm < 0:
+                    loss_norm = 0.0
 
                 # Update Epoch score to use your new Term-centric metric instead of Instance F1
-                metric_ws = [2, 2, 1, 0.5, 0.5]
+                metric_ws = [
+                    1,
+                    2,
+                    1,
+                    1,
+                ]
                 metric_vals = [
-                    (1.0 - loss_rounded),
-                    mean_term_fmax,
-                    knn_value_5,
-                    knn_value_3,
-                    knn_value_15,
+                    loss_norm,
+                    # mean_term_fmax,
+                    best_f1,
+                    mean_silhouette,
+                    mean_davies,
                 ]
                 epoch_score = float(np.average(metric_vals, weights=metric_ws))
                 score_rounded = round(epoch_score, 4)
-
-                print(
-                    f"\nInst Fmax: {best_f1:.4f} (th={best_thresh:.2f}) | "
-                    f"Term Fmax: {mean_term_fmax:.4f} | "
-                    f"AUPRC: {auprc:.4f} | "
-                    f"Loss: {total_loss/len(dataloader):.6f} | "
-                    f"kNN-sim5: {knn_value_5:.4f} | "
-                    f"kNN-sim3: {knn_value_3:.4f} | "
-                    f"kNN-sim15: {knn_value_15:.4f} | "
-                    f"Epoch Score: {score_rounded:.4f}"
+                s_scores = "; ".join(
+                    f"Level {l}: {round(s, 3)}" for l, s in silhouette_scores.items()
+                )
+                c_scores = "; ".join(
+                    f"Level {l}: {round(s, 3)}" for l, s in calinski_scores.items()
+                )
+                d_scores = "; ".join(
+                    f"Level {l}: {round(s, 3)}" for l, s in davies_scores.items()
                 )
 
+                print(
+                    f"kNN-3: {knn_value_3:.4f} | "
+                    f"kNN-5: {knn_value_5:.4f} | "
+                    f"\nSilhouette Scores: {s_scores} | "
+                    f"\nCalinski Scores: {c_scores} | "
+                    f"\nMean Silh: {mean_silhouette:.4f} | "
+                    f"Mean Calinski: {mean_calinski:.4f} | "
+                    f"Mean Davies: {mean_davies:.4f} | "
+                    f"Term Fmax: {best_f1:.4f} | "
+                    f"Loss: {total_loss/len(dataloader):.6f} | "
+                    f"\nEpoch Score: {score_rounded:.4f}"
+                )
+
+            # Update the history tracker
             self.history.append(
                 {
                     "epoch": epoch,
                     "loss": loss_rounded,
+                    "loss_norm": loss_norm,
                     "best_score": best_score,
                     "auprc": auprc,
                     "f1_max": best_f1,
-                    "term_fmax": mean_term_fmax,
+                    "term_fmax": best_f1,
                     "knn_value_5": knn_value_5,
                     "knn_value_3": knn_value_3,
-                    "knn_value_15": knn_value_15,
+                    "mean_silhouette": mean_silhouette,
+                    "mean_davies": mean_davies,
+                    "mean_calinski": mean_calinski,
                     "score_rounded": score_rounded,
                 }
             )
+
+            if directory:
+                plot_history(
+                    directory,
+                    self.history,
+                    "history.png",
+                    metric_keys=[
+                        "loss_norm",
+                        "term_fmax",
+                        "score_rounded",
+                        "mean_silhouette",
+                        "mean_davies",
+                        "mean_calinski",
+                        "auprc",
+                    ],
+                )
+
             if score_rounded > best_score:
                 best_score = score_rounded
                 best_loss_epoch = epoch

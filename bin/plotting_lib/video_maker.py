@@ -70,7 +70,21 @@ def generate_pca_video(directory, output_filename="latent_evolution.mp4", fps=2.
     video_array = np.array(frames)
 
     # Grava o vídeo já padronizado no formato H.264
-    iio.imwrite(output_path, video_array, fps=fps, extension=".mp4")
+    iio.imwrite(
+        output_path,
+        video_array,
+        fps=fps,
+        extension=".mp4",
+        macro_block_size=1,  # Critical for preserving plot sharpness
+        ffmpeg_params=[
+            "-crf",
+            "17",  # Constant Rate Factor (Quality)
+            "-preset",
+            "slower",  # Encoding effort
+            "-pix_fmt",
+            "yuv420p",  # Broadest compatibility
+        ],
+    )
 
     print(f"Video successfully saved at: {output_path}")
 

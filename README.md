@@ -73,14 +73,22 @@ Requirements to generate the datasets from scratch:
 Test:
 ```
 $ mkdir test
-$ nextflow run main.nf --mode test --release_dir test
+$ nextflow run process_inputs.nf --mode test --release_dir test
+$ nextflow run main-cafa6.nf --mode test --release_dir test
 ```
 
 Full release:
 ```
-$ mkdir <path to generate database at>
-$ nextflow run main.nf --mode release --release_dir <path to generate database at>
+$ mkdir <path_for_release>
+$ nextflow -C <config_file> run process_inputs.nf --mode full --release_dir <path_for_release>
+$ nextflow -C <config_file> run train_encoders.nf --mode full --release_dir <path_for_release>
+$ nextflow -C <config_file> run main.nf --mode full --release_dir <path_for_release>
 ```
+
+The project currently has 3 different run configurations you can use:
+- nextflow-bioinfo3.config: singularity containers on a large memory server
+- nextflow-slurm.config: singularity containers a server with slurm environment
+- nextflow.config: singularity containers and a small local machine
 
 ## Citation
 

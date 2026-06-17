@@ -5,10 +5,10 @@ From: nvcr.io/nvidia/pytorch:24.12-py3
     export DEBIAN_FRONTEND=noninteractive
 
     # Install dev packages to make sure that cmake will be available and any pip package can be build
-    apt update && apt install -y build-essential libssl-dev libffi-dev python3-dev cmake build-essential pkg-config libgoogle-perftools-dev
-
+    apt update && apt install -y build-essential libssl-dev libffi-dev python3-dev cmake build-essential pkg-config libgoogle-perftools-dev ffmpeg
+    
     # Update pip
     pip install --upgrade pip
     
     # Install cmake python package to fix potential python-wrapped cmake issues
-    pip install cmake pandas polars numpy tqdm polars scikit-learn
+    pip install cmake pandas polars numpy tqdm polars scikit-learn imageio[ffmpeg]
