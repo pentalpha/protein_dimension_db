@@ -15,7 +15,7 @@ process train_taxid_autoencoder {
 
     script:
     """
-    taxo_make_model.py taxid.tsv taxid_vocab_ia.json 75 6e-3
+    taxo_make_model.py taxid.tsv taxid_vocab_ia.json 80 6e-3
     mv model_final taxid_autoencoder
     """
 }
@@ -34,7 +34,7 @@ process train_interpro_autoencoder {
 
     script:
     """
-    interpro_make_model.py concatenated.tsv interpro_vocab_ia.json 75 6e-3
+    interpro_make_model.py autoencoder concatenated.tsv interpro_vocab_ia.json 90 8e-3
     mv model_final interpro_autoencoder
     """
 }
@@ -55,6 +55,12 @@ workflow {
         taxid_obo_path,
         taxid_tsv_path,
         taxall_pq_path,
-        taxid_vocab_path
+        taxid_vocab_path,
+    )
+
+    train_interpro_autoencoder(
+        join_interpro_consults_path,
+        interpro_vocab_ia_json_path,
+        interpro_obo_path,
     )
 }

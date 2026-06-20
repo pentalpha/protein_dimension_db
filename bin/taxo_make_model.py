@@ -9,6 +9,7 @@ import polars as pl
 from collections import Counter
 from shutil import copytree, move
 
+from plotting_lib.video_maker import generate_pca_video
 
 def make_model_with_size(embedding_size, model_dir, taxid_tsv, vocab_json, epochs, lr):
     obo_path = "taxid.obo"
@@ -164,6 +165,8 @@ def make_model_with_size(embedding_size, model_dir, taxid_tsv, vocab_json, epoch
     test_sample = [[sorted_terms[0], sorted_terms[1]], [sorted_terms[3]]]
     emb = wrapper.predict(test_sample)
     print(f"Test Prediction Shape: {emb.shape}")
+
+    generate_pca_video(model_dir, output_filename="latent_evolution.mp4", fps=2.5)
 
 
 if __name__ == "__main__":

@@ -61,6 +61,11 @@ def generate_pca_video(directory, output_filename="latent_evolution.mp4", fps=2.
         print("No PCA images found to make a video.")
         return
 
+    print("image_paths", image_paths)
+    print("directory", directory)
+    print("output_filename", output_filename)
+    print("fps", fps)
+
     output_path = os.path.join(directory, output_filename)
 
     # Lê todas as imagens da pasta para a memória
@@ -75,7 +80,7 @@ def generate_pca_video(directory, output_filename="latent_evolution.mp4", fps=2.
         video_array,
         fps=fps,
         extension=".mp4",
-        macro_block_size=1,  # Critical for preserving plot sharpness
+        macro_block_size=2,  # Critical for preserving plot sharpness
         ffmpeg_params=[
             "-crf",
             "17",  # Constant Rate Factor (Quality)
@@ -85,6 +90,8 @@ def generate_pca_video(directory, output_filename="latent_evolution.mp4", fps=2.
             "yuv420p",  # Broadest compatibility
         ],
     )
+
+    assert os.path.exists(output_path)
 
     print(f"Video successfully saved at: {output_path}")
 
