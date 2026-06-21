@@ -47,7 +47,7 @@ process infer_interpro_autoencoder {
 
     script:
     """
-    interpro_encode.py ${model_path} ids interpros ${interpro_annot_path}
+    interpro_encode.py ${model_path} ids terms ${interpro_annot_path}
     """
 }
 
@@ -73,6 +73,10 @@ workflow {
         infer_taxid_autoencoder(
             taxid_autoencoder_model_path,
             taxid_tsv_path,
+        )
+        infer_interpro_autoencoder(
+            interpro_autoencoder_model_path,
+            interpro_tsv_path,
         )
     }
 }
