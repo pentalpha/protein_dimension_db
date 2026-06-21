@@ -19,7 +19,8 @@ include {
     join_interpro_tsvs ;
     make_interpro_obo ;
     calc_interpro_ia ;
-    make_interpro_vocab
+    make_interpro_vocab ;
+    format_interpro_ann
 } from './modules/interpro_processes.nf'
 
 include {
@@ -143,7 +144,43 @@ process download_goa {
     """
 }
 
+process parse_goa {
+    //conda 'conda_envs/env2_wsl.txt'
+    publishDir params.release_dir, mode: 'copy'
 
+    input:
+    path sorted_ids
+    path goa_raw_path
+
+    output:
+    path "goa.uniprot.parquet", emit: go_by_uniprot
+
+    script:
+    """
+    go_parse_gaf.py ${goa_raw_path} ${sorted_ids}
+    """
+}
+
+process make_go_parquets {
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path gocheck_do_not_annotate
+    path go_basic
+    path go_by_uniprot
+    path sorted_ids
+
+    output:
+    path "go.bp.parquet", emit: go_bp
+    path "go.mf.parquet", emit: go_mf
+    path "go.cc.parquet", emit: go_cc
+    path "go.annot_counts.json", emit: go_annot_counts
+
+    script:
+    """
+    go_filter_gaf.py ${gocheck_do_not_annotate} ${go_basic} ${go_by_uniprot} ${sorted_ids}
+    """
+}
 
 process join_old_releases {
     storeDir "${params.raw_data_dir}/joins"
@@ -268,6 +305,8 @@ workflow {
         calc_interpro_ia.out.interpro_ia_tsv,
     )
 
+    format_interpro_ann(join_interpro_consults.out.concatenated_tsv)
+
     // Filter Train
 
     filter_large_proteins(swissprot_path, params.max_protein_len, "swissprot")
@@ -287,5 +326,15 @@ workflow {
     make_taxid_vocab(
         list_taxids.out.taxids,
         calc_taxid_ia.out.taxid_ia_tsv,
+    )
+
+    // GO
+
+    parse_goa(filter_large_proteins.out.ids, goa_raw_path)
+    make_go_parquets(
+        gocheck_do_not_annotate,
+        go_basic_path,
+        parse_goa.out.go_by_uniprot,
+        filter_large_proteins.out.ids,
     )
 }

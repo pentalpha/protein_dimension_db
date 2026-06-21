@@ -1,4 +1,5 @@
 test/*
+go.experimental.parquet
 *.sif
 *.stdout
 file_chunk.gz

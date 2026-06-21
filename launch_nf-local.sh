@@ -1,1 +1,2 @@
 nextflow -C nextflow.config run train_encoders.nf -resume --release_dir /home/pita/data/dimension_db/release_2
+nextflow -C nextflow.config run infer_embeddings.nf -resume --release_dir /home/pita/data/dimension_db/release_2

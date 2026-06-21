@@ -282,3 +282,18 @@ process make_interpro_onehotencoder {
     interpro_onehot.py 6400 model_6400 ${interpro_tsv_consult} ${sorted_vocab_json} > model_6400/stdout.log 2> model_6400/stderr.log
     """
 }
+
+process format_interpro_ann {
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path interpro_tsv_consult
+
+    output:
+    path "interpro.tsv", emit: interpro_tsv
+
+    script:
+    """
+    interpro_format_annots.py ${interpro_tsv_consult} interpro.tsv
+    """
+}
