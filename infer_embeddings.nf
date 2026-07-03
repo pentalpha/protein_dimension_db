@@ -19,7 +19,21 @@ params.create_autoencoder_embeddings = true
 //params.basic_env_container = "singularity_images/basic_env.sif"
 //params.env2_container = "singularity_images/env2.sif"
 
+process create_caches {
+    input:
+    path parent_dir
+
+    output:
+    path "${parent_dir}/fastplms_cache", emit: fastplms_cache
+
+    script:
+    """
+    mkdir -p ${parent_dir}/fastplms_cache
+    """
+}
+
 process infer_taxid_autoencoder {
+    label 'pytorchcpu'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -36,6 +50,7 @@ process infer_taxid_autoencoder {
 }
 
 process infer_interpro_autoencoder {
+    label 'pytorchcpu'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -51,6 +66,91 @@ process infer_interpro_autoencoder {
     """
 }
 
+process infer_ankh_base {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.ankh_base.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH_base emb.ankh_base.parquet
+    """
+}
+
+process infer_ankh_large {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.ankh_large.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH_large emb.ankh_large.parquet
+    """
+}
+
+process infer_ankh2_large {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.ankh2_large.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH2_large emb.ankh2_large.parquet
+    """
+}
+
+process infer_ankh3_large {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.ankh3_large.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_large emb.ankh3_large.parquet
+    """
+}
+
+process infer_ankh3_xl {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.ankh3_xl.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_xl emb.ankh3_xl.parquet
+    """
+}
+
 workflow {
     create_esm_embeddings = params.create_esm_embeddings
     create_ankh_embeddings = params.create_ankh_embeddings
@@ -60,6 +160,10 @@ workflow {
     interpro_autoencoder_model_path = params.release_dir + "/interpro_autoencoder"
     taxid_tsv_path = params.release_dir + "/taxid.tsv"
     interpro_tsv_path = params.release_dir + "/interpro.tsv"
+    swissprot_fasta = params.release_dir + "/sequences.swissprot.fasta"
+
+    parent_dir = file(params.release_dir).getParent()
+    create_caches(parent_dir)
 
     if (params.create_plm_embeddings != true) {
         print('Not creating PLM embeddings')
@@ -77,6 +181,25 @@ workflow {
         infer_interpro_autoencoder(
             interpro_autoencoder_model_path,
             interpro_tsv_path,
+        )
+    }
+
+    if (create_ankh_embeddings) {
+        infer_ankh_base(
+            swissprot_fasta,
+            create_caches.out.fastplms_cache,
+        )
+        infer_ankh_large(
+            swissprot_fasta,
+            create_caches.out.fastplms_cache,
+        )
+        infer_ankh2_large(
+            swissprot_fasta,
+            create_caches.out.fastplms_cache,
+        )
+        infer_ankh3_large(
+            swissprot_fasta,
+            create_caches.out.fastplms_cache,
         )
     }
 }

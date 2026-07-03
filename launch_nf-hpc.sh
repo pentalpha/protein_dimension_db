@@ -7,7 +7,7 @@
 #SBATCH --time=01:00:00
 
 eval "$(conda shell.bash hook)" # inclua esta linha antes executar o conda
-conda activate /home/pdaasobrinho/.conda/envs/nextflow
+conda activate /home/pdaasobrinho/.conda/envs/pytorch
 module load singularity/3.7.1
 
-nextflow -C nextflow-slurm.config run main-cafa6.nf -resume --release_dir /home/pdaasobrinho/data/dimension_db/cafa6
+nextflow -C nextflow-slurm.config run infer_embeddings.nf -resume --release_dir /home/pdaasobrinho/data/dimension_db/release_2
