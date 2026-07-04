@@ -150,6 +150,16 @@ process infer_ankh3_xl {
     fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_xl emb.ankh3_xl.parquet
     """
 }
+//TODO:
+//Synthyra/ESM2-650M
+//Synthyra/ESM2-3B
+//Synthyra/ESMplusplus_small
+//Synthyra/ESMplusplus_large
+//Synthyra/ESM3_small
+//Synthyra/Profluent-E1-300M
+//Synthyra/Profluent-E1-600M
+//Synthyra/DPLM2-650M
+//Synthyra/DPLM2-3B
 
 workflow {
     create_esm_embeddings = params.create_esm_embeddings
@@ -194,10 +204,6 @@ workflow {
             create_caches.out.fastplms_cache,
         )
         infer_ankh2_large(
-            swissprot_fasta,
-            create_caches.out.fastplms_cache,
-        )
-        infer_ankh3_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )

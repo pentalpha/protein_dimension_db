@@ -2,10 +2,13 @@
 import sys
 import os
 import time
+from glob import glob
+import uuid
 
 from transformers import AutoModel
 import polars as pl
 import torch
+from tqdm import tqdm
 
 original_setattr = type(torch._dynamo.config).__setattr__
 
@@ -41,81 +44,118 @@ Each chunk should be run with it's own max_len (actual max len in that chunk).
 nvidia3050_max_tokens = {
     "Synthyra/ANKH_base": 9000,
     "Synthyra/ANKH_large": 680,
+    "Synthyra/ANKH2_large": 680,
+    "Synthyra/ANKH3_large": 680,
+    "Synthyra/ANKH3_xl": 320,
     "default": 12000,
 }
 
 nvidiah100_max_tokens = {
-    "Synthyra/ANKH_base": 14000,
+    "Synthyra/ANKH_base": 18000,
     "Synthyra/ANKH_large": 14000,
+    "Synthyra/ANKH2_large": 14000,
+    "Synthyra/ANKH3_large": 14000,
+    "Synthyra/ANKH3_xl": 6000,
     "default": 12000,
 }
 
-default_max_tokens = nvidiah100_max_tokens
-
-fasta_path = sys.argv[1]
-cache_path = sys.argv[2]
-model_name = sys.argv[3]  # Synthyra/ANKH_base
-parquet_name = sys.argv[4]
-
-MAX_TOKENS_PER_BATCH = default_max_tokens.get(model_name, default_max_tokens["default"])
-N_PARTS = 1337
-print(f"Using model: {model_name}")
-print(f"MAX_TOKENS_PER_BATCH: {MAX_TOKENS_PER_BATCH}, N_PARTS: {N_PARTS}")
-
-fasta_part_paths = fasta_equal_split_by_len(fasta_path, N_PARTS)
-
-ids = []
-seqs = []
-
-model_safe_name = model_name.replace("/", "__").lower()
-save_path = cache_path + "/" + model_safe_name + ".pt"
-model = AutoModel.from_pretrained(model_name, trust_remote_code=True).to("cuda")
 poolings = ["mean", "std", "max"]
-embs = {p: [] for p in poolings}
-n_poolings = len(poolings)
 
-fasta_i = 0
-time_start = time.time()
-durations = []
+default_max_tokens = nvidiah100_max_tokens
+N_PARTS = 1337
+CACHE_DESIRED_N_TOKENS = 1800 * 300
+max_processing_time_secs = 60 * 25
+min_processing_time_secs = 60 * 6
 
-for fasta_part_path in reversed(fasta_part_paths):
-    print(f"Processing fasta part {fasta_i} out of {len(fasta_part_paths)}")
-    mean_duration = sum(durations) / len(durations) if fasta_i > 0 else 0
-    print(f"Mean duration: {mean_duration:.2f}s")
-    remaining = (len(fasta_part_paths) - fasta_i) * mean_duration
-    print(f"Remaining: {remaining / 60:.2f}min")
-    fasta_i += 1
 
-    part_time_start = time.time()
-    fasta_content = read_fasta(fasta_part_path)
-    max_len = max(len(seq) for _, seq in fasta_content)
-    if max_len > MAX_TOKENS_PER_BATCH:
-        print(
-            f"Max len in chunk ({max_len}) is greater than "
-            f"MAX_TOKENS_PER_BATCH ({MAX_TOKENS_PER_BATCH})"
+class EmbCache:
+    def __init__(self, cache_path, model_name):
+        self.cache_path = cache_path
+        self.model_name = model_name
+        self.model_safe_name = model_name.replace("/", "__").lower()
+        self.save_paths_expr_pq = cache_path + "/" + self.model_safe_name + ".*.parquet"
+
+    def list_caches(self):
+        pqts = glob(self.save_paths_expr_pq)
+        pqts = [p for p in pqts if os.path.exists(p.replace(".parquet", ".txt"))]
+        caches = [(p, p.replace(".parquet", ".txt")) for p in pqts]
+        return caches
+
+    def next_cache_name(self):
+        """index_name = 0
+        path_full = (
+            self.cache_path + "/" + self.model_safe_name + "." + str(index_name) + "."
         )
-        # truncate to max_len for this chunk if it exceeds the limit, however this will truncate the protein
-        max_len = MAX_TOKENS_PER_BATCH
-        # quit(1)
-    fasta_content_shortened = []
-    for seq_id, seq in fasta_content:
-        if len(seq) > max_len:
-            # first max_len tokens
-            seq = seq[:max_len]
-        fasta_content_shortened.append((seq_id, seq))
-    fasta_content = fasta_content_shortened
-    optimal_batch_len_float = MAX_TOKENS_PER_BATCH / max_len
+        while os.path.exists(path_full + ".txt") and os.path.exists(
+            path_full + ".parquet"
+        ):
+            index_name += 1
+            path_full = (
+                self.cache_path
+                + "/"
+                + self.model_safe_name
+                + "."
+                + str(index_name)
+                + "."
+            )"""
+        uid = uuid.uuid4().hex[:8]
+        path_base = f"{self.cache_path}/{self.model_safe_name}.{uid}"
+        return path_base + ".parquet", path_base + ".txt"
+
+    def list_embedded(self):
+        caches = self.list_caches()
+        embedded_seqs = set()
+        for pq_path, txt_path in caches:
+            with open(txt_path, "r") as f:
+                for line in f:
+                    protein_seq = line.strip()
+                    embedded_seqs.add(protein_seq)
+        return embedded_seqs
+
+    def list_non_embedded(self, fasta_path):
+        fasta_content = read_fasta(fasta_path)
+        embedded_seqs = self.list_embedded()
+        non_embedded_seqs = set()
+        embedded_count = 0
+        non_embedded_count = 0
+        for seq_id, seq in fasta_content:
+            if seq in embedded_seqs:
+                embedded_count += 1
+            else:
+                non_embedded_seqs.add(seq)
+                non_embedded_count += 1
+        non_embedded_seqs = list(non_embedded_seqs)
+        non_embedded_seqs.sort(key=len, reverse=True)
+        print(f"Embedded: {embedded_count}, Non-embedded: {non_embedded_count}")
+        perc_done = embedded_count / (embedded_count + non_embedded_count) * 100
+        print(f"Percentage done: {perc_done:.2f}%")
+        return non_embedded_seqs
+
+
+def embed_to_cache(
+    seqs: list,
+    model,
+    max_tokens_per_batch: int,
+    cache_pqt: str,
+    cache_txt: str,
+):
+    n_poolings = len(poolings)
+    time_start = time.time()
+
+    max_len = max(len(s) for s in seqs)
+
+    optimal_batch_len_float = max_tokens_per_batch / max_len
     processing_batch_size = max(int(optimal_batch_len_float), 1)
     print(f"Setting max len to actual max len in the dataset: {max_len}")
     print(f"Processing batch size: {processing_batch_size} ({optimal_batch_len_float})")
 
     embeddings = model.embed_dataset(
-        fasta_path=fasta_part_path,
+        sequences=seqs,
         batch_size=processing_batch_size,
         pooling_types=poolings,
         max_len=max_len,
-        save=True,
-        save_path=save_path,
+        save=False,
+        # save_path=save_path,
     )
 
     emb_example = next(iter(embeddings.values()))
@@ -131,8 +171,9 @@ for fasta_part_path in reversed(fasta_part_paths):
         pooling_starts[pooling_name] = (start, end)
         print(f"Pooling {poolings[pooling_i]} starts at {start} and ends at {end}")
 
-    for seq_id, seq in fasta_content:
-        emb = embeddings[seq]
+    seqs_embedded = []
+    embs = {p: [] for p in poolings}
+    for seq, emb in embeddings.items():
         # print(seq)
         # print(emb.shape)
         # print(emb[0].shape)
@@ -145,18 +186,114 @@ for fasta_part_path in reversed(fasta_part_paths):
             emb_np = concat_emb_np[start : end + 1]
             # print(pooling_name, emb_np.shape)
             embs[pooling_name].append(emb_np)
-        seqs.append(seq)
-        ids.append(seq_id)
+        seqs_embedded.append(seq)
 
-    part_duration = time.time() - part_time_start
-    durations.append(part_duration)
-    print(f"Part {fasta_i} took {part_duration} seconds")
+    df = pl.DataFrame({"seq": seqs_embedded, **embs})
+    df.write_parquet(cache_pqt)
+    with open(cache_txt, "w") as f:
+        for seq in seqs_embedded:
+            f.write(f"{seq}\n")
+    print(f"Saved cache to {cache_pqt} and {cache_txt}")
 
-df = pl.DataFrame({"id": ids, "seq": seqs, **embs})
-df.write_parquet(f"{parquet_name}")
+    duration = time.time() - time_start
+    print(f"Duration: {duration}")
 
-for fasta_part_path in fasta_part_paths:
-    os.remove(fasta_part_path)
+    return duration
 
-df = pl.read_parquet(f"{parquet_name}")
-print(df)
+
+if __name__ == "__main__":
+    fasta_path = sys.argv[1]
+    cache_path = sys.argv[2]
+    model_name = sys.argv[3]  # Synthyra/ANKH_base
+    parquet_name = sys.argv[4]
+    MAX_TOKENS_PER_BATCH = default_max_tokens.get(
+        model_name, default_max_tokens["default"]
+    )
+    print(f"MAX_TOKENS_PER_BATCH: {MAX_TOKENS_PER_BATCH}, N_PARTS: {N_PARTS}")
+
+    print(f"Using model: {model_name}")
+
+    model = AutoModel.from_pretrained(model_name, trust_remote_code=True).to("cuda")
+    cache = EmbCache(cache_path, model_name)
+    durations = []
+    non_embedded_seqs = cache.list_non_embedded(fasta_path)
+    while len(non_embedded_seqs) > 0:
+        next_to_embed = []
+        while sum([len(s) for s in next_to_embed]) < CACHE_DESIRED_N_TOKENS:
+            next_to_embed.append(non_embedded_seqs.pop(0))
+        next_parquet, next_txt = cache.next_cache_name()
+        try:
+            duration = embed_to_cache(
+                next_to_embed, model, MAX_TOKENS_PER_BATCH, next_parquet, next_txt
+            )
+        except Exception as e:
+            print(f"Error embedding sequences: {e}")
+            if os.path.exists(next_parquet):
+                os.remove(next_parquet)
+            if os.path.exists(next_txt):
+                os.remove(next_txt)
+            raise (e)
+
+        success = os.path.exists(next_parquet) and os.path.exists(next_txt)
+        if success:
+            if duration > max_processing_time_secs:
+                print(f"Slow batch! {duration}s > {max_processing_time_secs}s")
+                CACHE_DESIRED_N_TOKENS = int(CACHE_DESIRED_N_TOKENS * 0.6)
+                print(f"New CACHE_DESIRED_N_TOKENS: {CACHE_DESIRED_N_TOKENS}")
+            elif duration < min_processing_time_secs:
+                print(f"Fast batch! {duration}s < {min_processing_time_secs}s")
+                CACHE_DESIRED_N_TOKENS = int(CACHE_DESIRED_N_TOKENS * 1.5)
+                print(f"New CACHE_DESIRED_N_TOKENS: {CACHE_DESIRED_N_TOKENS}")
+            n_tokens_processed = sum([len(s) for s in next_to_embed])
+            print(f"Processed {n_tokens_processed} tokens in {duration} seconds")
+            tokens_per_sec = n_tokens_processed / duration
+            durations.append(tokens_per_sec)
+            last_durations = durations[-10:]
+            mean_tokens_per_sec = sum(last_durations) / len(last_durations)
+            non_embedded_seqs = cache.list_non_embedded(fasta_path)
+
+            remaining_tokens = sum([len(s) for s in non_embedded_seqs])
+            pred_total_time = remaining_tokens / mean_tokens_per_sec
+            pred_total_time_min = pred_total_time / 60
+
+            print(
+                f"Predicted remaining time: {pred_total_time_min:.2f}min ({remaining_tokens} tokens at {mean_tokens_per_sec:.2f} tokens/sec)"
+            )
+        else:
+            print("Error embedding sequences: cache files not found")
+
+    print("Reading original fasta file")
+    fasta_content = read_fasta(fasta_path)
+    ids = [seq_id for seq_id, _ in fasta_content]
+    seqs = [seq for _, seq in fasta_content]
+
+    seq_to_idx = {seq: i for i, seq in enumerate(seqs)}
+    n_seqs = len(seqs)
+
+    embs = {emb_name: [None for _ in range(n_seqs)] for emb_name in poolings}
+
+    all_cache_files = cache.list_caches()
+    print("Loading embeddings from cache files")
+    for txt_path, pq_path in tqdm(all_cache_files):
+        df = pl.read_parquet(pq_path)
+        for row in df.rows(named=True):
+            seq = row["seq"]
+            if seq in seq_to_idx:
+                idx = seq_to_idx[seq]
+                for emb_name in poolings:
+                    embs[emb_name][idx] = row[emb_name]
+
+    print("Checking for missing embeddings")
+    for emb_name in poolings:
+        n_missing = len([e for e in embs[emb_name] if e is None])
+        assert (
+            n_missing == 0
+        ), f"Missing embeddings for {n_missing} sequences for {emb_name}"
+
+    print("Writing final parquet file")
+    df = pl.DataFrame({"id": ids, "seq": seqs, **embs})
+    df.write_parquet(f"{parquet_name}")
+
+    print("Testing reading the final parquet:")
+    df = pl.read_parquet(f"{parquet_name}")
+    print(df)

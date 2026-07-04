@@ -3,8 +3,8 @@
 #SBATCH --partition=intel-128
 #SBATCH --mail-type=ALL
 #SBATCH --mem 5G
-#SBATCH --cpus-per-task=4        
-#SBATCH --time=01:00:00
+#SBATCH --cpus-per-task=6        
+#SBATCH --time=06:00:00
 
 eval "$(conda shell.bash hook)" # inclua esta linha antes executar o conda
 conda activate /home/pdaasobrinho/.conda/envs/pytorch
