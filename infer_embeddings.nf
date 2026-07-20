@@ -150,6 +150,41 @@ process infer_ankh3_xl {
     fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_xl emb.ankh3_xl.parquet
     """
 }
+
+process infer_pfe1_300 {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.e1_300.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/Profluent-E1-300M emb.e1_300.parquet
+    """
+}
+
+process infer_pfe1_600 {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.e1_600.parquet", emit: emb_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/Profluent-E1-600M emb.e1_600.parquet
+    """
+}
+
 //TODO:
 //Synthyra/ESM2-650M
 //Synthyra/ESM2-3B
@@ -208,4 +243,13 @@ workflow {
             create_caches.out.fastplms_cache,
         )
     }
+
+    infer_pfe1_300(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    infer_pfe1_600(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
 }

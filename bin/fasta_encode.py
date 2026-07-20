@@ -50,7 +50,7 @@ nvidia3050_max_tokens = {
     "default": 12000,
 }
 
-nvidiah100_max_tokens = {
+nvidiav100_max_tokens = {
     "Synthyra/ANKH_base": 18000,
     "Synthyra/ANKH_large": 14000,
     "Synthyra/ANKH2_large": 14000,
@@ -61,11 +61,11 @@ nvidiah100_max_tokens = {
 
 poolings = ["mean", "std", "max"]
 
-default_max_tokens = nvidiah100_max_tokens
+default_max_tokens = nvidiav100_max_tokens
 N_PARTS = 1337
 CACHE_DESIRED_N_TOKENS = 1800 * 300
 max_processing_time_secs = 60 * 25
-min_processing_time_secs = 60 * 6
+min_processing_time_secs = 60 * 10
 
 
 class EmbCache:
@@ -77,9 +77,21 @@ class EmbCache:
 
     def list_caches(self):
         pqts = glob(self.save_paths_expr_pq)
-        pqts = [p for p in pqts if os.path.exists(p.replace(".parquet", ".txt"))]
-        caches = [(p, p.replace(".parquet", ".txt")) for p in pqts]
-        return caches
+        valid_caches = []
+        for p in pqts:
+            txt_path = p.replace(".parquet", ".txt")
+            if os.path.exists(txt_path):
+                try:
+                    # Extremely fast integrity check (reads footer only)
+                    pl.scan_parquet(p)
+                    valid_caches.append((p, txt_path))
+                except Exception as e:
+                    print(f"⚠️ Corrupted cache detected: {p} - Error: {e}")
+                    print("Deleting broken files to trigger re-computation...")
+                    os.remove(p)
+                    if os.path.exists(txt_path):
+                        os.remove(txt_path)
+        return valid_caches
 
     def next_cache_name(self):
         """index_name = 0
@@ -219,7 +231,10 @@ if __name__ == "__main__":
     non_embedded_seqs = cache.list_non_embedded(fasta_path)
     while len(non_embedded_seqs) > 0:
         next_to_embed = []
-        while sum([len(s) for s in next_to_embed]) < CACHE_DESIRED_N_TOKENS:
+        while (
+            sum([len(s) for s in next_to_embed]) < CACHE_DESIRED_N_TOKENS
+            and len(non_embedded_seqs) > 0
+        ):
             next_to_embed.append(non_embedded_seqs.pop(0))
         next_parquet, next_txt = cache.next_cache_name()
         try:
@@ -267,33 +282,42 @@ if __name__ == "__main__":
     ids = [seq_id for seq_id, _ in fasta_content]
     seqs = [seq for _, seq in fasta_content]
 
-    seq_to_idx = {seq: i for i, seq in enumerate(seqs)}
-    n_seqs = len(seqs)
-
-    embs = {emb_name: [None for _ in range(n_seqs)] for emb_name in poolings}
+    # 1. Create a Polars DataFrame of the exact original FASTA order
+    # .with_row_index gives us an integer column we can use to restore the order later
+    df_fasta = pl.DataFrame({"id": ids, "seq": seqs}).with_row_index("original_order")
 
     all_cache_files = cache.list_caches()
-    print("Loading embeddings from cache files")
-    for txt_path, pq_path in tqdm(all_cache_files):
-        df = pl.read_parquet(pq_path)
-        for row in df.rows(named=True):
-            seq = row["seq"]
-            if seq in seq_to_idx:
-                idx = seq_to_idx[seq]
-                for emb_name in poolings:
-                    embs[emb_name][idx] = row[emb_name]
+    valid_pqs = [pq_path for pq_path, txt_path in all_cache_files]
 
-    print("Checking for missing embeddings")
-    for emb_name in poolings:
-        n_missing = len([e for e in embs[emb_name] if e is None])
-        assert (
-            n_missing == 0
-        ), f"Missing embeddings for {n_missing} sequences for {emb_name}"
+    print("Lazy loading and merging embeddings via Polars...")
 
-    print("Writing final parquet file")
-    df = pl.DataFrame({"id": ids, "seq": seqs, **embs})
-    df.write_parquet(f"{parquet_name}")
+    # 2. Lazily scan all parquet chunks simultaneously (virtually zero memory)
+    df_embs = pl.scan_parquet(valid_pqs)
+
+    # Deduplicate embeddings just in case a failed job left duplicate sequences
+    df_embs = df_embs.unique(subset=["seq"], keep="first")
+
+    # 3. Build the computation graph: Join the FASTA frame with the embeddings, then sort
+    df_final_lazy = (
+        df_fasta.lazy()
+        .join(df_embs, on="seq", how="left")
+        .sort("original_order")
+        .drop("original_order")
+    )
+
+    print("Executing join, sort, and collecting into memory...")
+    # 4. .collect() executes the highly optimized Rust code.
+    # This will use a fraction of the memory compared to native Python lists.
+    df_final = df_final_lazy.collect()
+
+    print("Checking for missing embeddings...")
+    # If a sequence from the FASTA wasn't found in the caches, the left-join will leave nulls
+    n_missing = df_final.filter(pl.col(poolings[0]).is_null()).height
+    assert n_missing == 0, f"Missing embeddings for {n_missing} sequences!"
+
+    print(f"Writing final parquet file: {parquet_name}")
+    df_final.write_parquet(parquet_name)
 
     print("Testing reading the final parquet:")
-    df = pl.read_parquet(f"{parquet_name}")
-    print(df)
+    df_test = pl.read_parquet(parquet_name)
+    print(df_test)

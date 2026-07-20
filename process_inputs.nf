@@ -169,16 +169,18 @@ process make_go_parquets {
     path go_basic
     path go_by_uniprot
     path sorted_ids
+    path derivated_negatives_path
 
     output:
     path "go.bp.parquet", emit: go_bp
     path "go.mf.parquet", emit: go_mf
     path "go.cc.parquet", emit: go_cc
     path "go.annot_counts.json", emit: go_annot_counts
+    path "go.redundancy_counts.json", emit: go_redundancy_counts
 
     script:
     """
-    go_filter_gaf.py ${gocheck_do_not_annotate} ${go_basic} ${go_by_uniprot} ${sorted_ids}
+    go_filter_gaf.py ${gocheck_do_not_annotate} ${go_basic} ${go_by_uniprot} ${sorted_ids} ${derivated_negatives_path}
     """
 }
 
@@ -236,6 +238,7 @@ params.max_protein_len = 1800
 params.max_tokens_for_interproscan = 200000
 params.evi_not_use_path = projectDir + '/evi_not_to_use.txt'
 params.others_dir = projectDir + '/others'
+params.derivated_negatives_path = projectDir + "/databases/warwick_negatives_2020/derived_negatives.tsv.gz"
 params.old_release_paths_str = ""
 
 params.create_taxon_profiles = false
@@ -336,5 +339,6 @@ workflow {
         go_basic_path,
         parse_goa.out.go_by_uniprot,
         filter_large_proteins.out.ids,
+        params.derivated_negatives_path,
     )
 }

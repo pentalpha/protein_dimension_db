@@ -1,8 +1,21 @@
 import json
 import networkx as nx
 import obonet
+from typing import List
 
 # from bioinfo_utils.util import go_not_use_path, go_basic_path
+
+GO_ROOTS = {
+    "MF": "GO:0003674",
+    "CC": "GO:0005575",
+    "BP": "GO:0008150",
+}
+
+NAMESPACES = {
+    "biological_process": "BP",
+    "molecular_function": "MF",
+    "cellular_component": "CC",
+}
 
 
 def gos_not_to_use(go_not_use_path):
@@ -67,7 +80,36 @@ def expand_go_set_down(goid: str, go_graph: nx.MultiDiGraph, goes_to_not_use: se
     return sorted(all_gos)
 
 
-from typing import List
+def list_ontology_members(go_obo_path):
+    """
+    [...]
+    [Term]
+    id: GO:0000001
+    name: mitochondrion inheritance
+    namespace: biological_process
+    def: [...]
+    """
+    go_lists = {namespace: set() for namespace in NAMESPACES.keys()}
+    go_alt_ids = {}
+
+    last_goid = None
+    for rawline in open(go_obo_path, "r"):
+        line = rawline.strip()
+        if line.startswith("id: ") and "GO:" in line:
+            last_goid = line.replace("id: ", "")
+        elif line.startswith("namespace: ") and last_goid:
+            namespace = line.replace("namespace: ", "")
+            if namespace != "external":
+                go_lists[namespace].add(last_goid)
+        elif line.startswith("alt_id: "):
+            alt_id = line.replace("alt_id: ", "")
+            go_alt_ids[alt_id] = last_goid
+
+    for namespace, ont in NAMESPACES.items():
+        go_lists[ont] = go_lists[namespace]
+        del go_lists[namespace]
+
+    return go_lists, go_alt_ids
 
 
 def expand_go_list(
