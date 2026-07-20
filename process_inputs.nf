@@ -224,7 +224,21 @@ process split_fasta {
 }
 
 
+process parse_deeploc {
+    publishDir params.release_dir, mode: 'copy'
 
+    input:
+    path deeploc_path
+    path deeploc_membrane_path
+
+    output:
+    path "deeploc.parquet", emit: deeploc_df
+
+    script:
+    """
+    parse_deeploc.py ${deeploc_path} ${deeploc_membrane_path} deeploc.parquet
+    """
+}
 
 params.mode = "release"
 //params.esm_script_path = "esm/scripts/extract.py"
@@ -239,6 +253,8 @@ params.max_tokens_for_interproscan = 200000
 params.evi_not_use_path = projectDir + '/evi_not_to_use.txt'
 params.others_dir = projectDir + '/others'
 params.derivated_negatives_path = projectDir + "/databases/warwick_negatives_2020/derived_negatives.tsv.gz"
+params.deeploc_a_path = projectDir + "/databases/odum_teufel_2024/Swissprot_Train_Validation_dataset.csv"
+params.deeploc_b_path = projectDir + "/databases/odum_teufel_2024/Swissprot_Membrane_Train_Validation_dataset.csv"
 params.old_release_paths_str = ""
 
 params.create_taxon_profiles = false
@@ -341,4 +357,8 @@ workflow {
         filter_large_proteins.out.ids,
         params.derivated_negatives_path,
     )
+
+    // Other annots
+
+    parse_deeploc(params.deeploc_a_path, params.deeploc_b_path)
 }
