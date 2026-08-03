@@ -234,22 +234,22 @@ workflow {
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
-        infer_ankh_large(
+        /*infer_ankh_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
         infer_ankh2_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
-        )
+        )*/
     }
 
-    infer_pfe1_300(
+    /*infer_pfe1_300(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
     infer_pfe1_600(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
-    )
+    )*/
 }

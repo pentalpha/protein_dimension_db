@@ -59,7 +59,7 @@ nvidiav100_max_tokens = {
     "default": 12000,
 }
 
-poolings = ["mean", "std", "max"]
+poolings = ["mean", "std", "max", "parti", "cls", "norm"]
 
 default_max_tokens = nvidiav100_max_tokens
 N_PARTS = 1337
