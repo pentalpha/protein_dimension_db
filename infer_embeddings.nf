@@ -67,7 +67,7 @@ process infer_interpro_autoencoder {
 }
 
 process infer_ankh_base {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:

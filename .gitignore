@@ -1,7 +1,9 @@
+test_input/sequences.swissprot.fasta
 test/*
 go.experimental.parquet
 *.sif
 *.stdout
+test_input/custom_plm_cache
 file_chunk.gz
 goa_uniprot_all.gaf.g*
 .snakemake/*
