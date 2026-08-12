@@ -2,6 +2,7 @@ from typing import List, Tuple
 import sys
 import os
 import time
+import gc
 
 import numpy as np
 import torch
@@ -57,22 +58,23 @@ def get_vram_gb() -> int:
 max_tokens_by_model = [
     {
         "VRAM": 6,
-        "Synthyra/ANKH_base": 400,
-        "ElnaggarLab/ankh-base": 9600,
-        "Synthyra/ANKH_large": 680,
-        "Synthyra/ANKH2_large": 680,
-        "Synthyra/ANKH3_large": 680,
-        "Synthyra/ANKH3_xl": 320,
-        "default": 600,
+        "Synthyra/ANKH_base": 9600,
+        "ElnaggarLab/ankh-base": 3800,
+        "Synthyra/ANKH_large": 3000,
+        "Synthyra/ANKH2_large": 3000,
+        "Synthyra/ANKH3_large": 3000,
+        "Synthyra/ANKH3_xl": 3000,
+        "default": 3000,
     },
     {
         "VRAM": 16,
-        "Synthyra/ANKH_base": 1800,
-        "Synthyra/ANKH_large": 14000,
-        "Synthyra/ANKH2_large": 14000,
-        "Synthyra/ANKH3_large": 14000,
+        "Synthyra/ANKH_base": 14000,
+        "ElnaggarLab/ankh-base": 10000,
+        "Synthyra/ANKH_large": 6000,
+        "Synthyra/ANKH2_large": 6000,
+        "Synthyra/ANKH3_large": 6000,
         "Synthyra/ANKH3_xl": 6000,
-        "default": 1800,
+        "default": 6000,
     }
 ]
 
@@ -99,6 +101,11 @@ def define_plm_class(model_name: str):
         raise ValueError(f"Unknown model name: {model_name}")
 
 AVAILABLE_MODELS = {
+    "Synthyra/ANKH_base": {"type": "ANKH"},
+    "Synthyra/ANKH_large": {"type": "ANKH"},
+    "Synthyra/ANKH2_large": {"type": "ANKH"},
+    "Synthyra/ANKH3_large": {"type": "ANKH"},
+    "Synthyra/ANKH3_xl": {"type": "ANKH"},
     "ElnaggarLab/ankh-base": {"type": "ANKH"},
     "ElnaggarLab/ankh-large": {"type": "ANKH"},
     "ElnaggarLab/ankh3-large": {"type": "ANKH"},
@@ -144,10 +151,14 @@ class PLMModel():
         for batch in to_iter:
             lens = [len(seq) for seq in batch]
             #print(lens)
-            full_batch = self.extract(batch)
+            full_batch, full_batch_attn = self.extract(batch)
             
             for p in poolings:
-                new_pooled = POOLERS[p](full_batch)
+                pool_func = POOLERS[p]
+                if p == 'parti':
+                    new_pooled = pool_func(full_batch, full_batch_attn)
+                else:
+                    new_pooled = pool_func(full_batch)
                 for emb_fixed_size in new_pooled:
                     embeddings[p].append(emb_fixed_size)
                 last_emb = new_pooled[-1]
@@ -156,8 +167,9 @@ class PLMModel():
                 tqdm_bar.update(1)
         return embeddings
 
-    def write_all_embeddings(self, fasta_path, parquet_path, poolings: List[str]):
-        print("Reading original fasta file")
+    def write_all_embeddings(self, fasta_path: str, output_prefix: str, 
+            poolings: List[str], allow_missing: bool = False):
+        print("Reading original fasta file...")
         fasta_content = read_fasta(fasta_path)
         ids = [seq_id for seq_id, _ in fasta_content]
         seqs = [seq for _, seq in fasta_content]
@@ -168,47 +180,61 @@ class PLMModel():
         all_cache_files = self.cache.list_caches()
         valid_pqs = [pq_path for pq_path, txt_path in all_cache_files]
 
-        print("Lazy loading and merging embeddings via Polars...")
+        #print("Lazy scanning base embeddings via Polars...")
+        #df_embs_base = pl.scan_parquet(valid_pqs)
 
-        # We must load "seq" to perform the join, plus whatever poolings were requested
-        columns_to_load = ["seq"] + poolings
+        # 2. Iterativamente constrói e salva UM arquivo parquet por pooling
+        for pooling in poolings:
+            target_parquet = f"{output_prefix}_{pooling}.parquet"
+            print(f"\n--- Iniciando o merge do pooling: [{pooling}] ---")
 
-        # 2. Lazily scan all parquet chunks simultaneously.
-        # .select() pushes the column filter down to the parquet reader, 
-        # meaning unrequested poolings are NEVER loaded into memory.
-        df_embs = pl.scan_parquet(valid_pqs).select(columns_to_load)
+            print("Lazy scanning base embeddings via Polars...")
+            #df_embs_base = pl.scan_parquet(valid_pqs)
+            paths_with_pooling = []
+            for p in valid_pqs:
+                col_list = pl.scan_parquet(p).collect_schema().names()
+                if pooling in col_list:
+                    paths_with_pooling.append(p)
+            
+            lfs = [
+                pl.scan_parquet(p).select(["seq", pooling]) 
+                for p in paths_with_pooling
+            ]
+            #df_embs_base = pl.scan_parquet(paths_with_pooling)
+            print(f"Found {len(paths_with_pooling)} parquet files for pooling {pooling}.")
+            print("Seleciona APENAS a sequência e este pooling específico")
+            df_embs = pl.concat(lfs, how="vertical")
+            df_embs = df_embs.unique(subset=["seq"], keep="first")
 
-        # Deduplicate embeddings just in case a failed job left duplicate sequences
-        df_embs = df_embs.unique(subset=["seq"], keep="first")
+            print("Build the computation graph")
+            df_final_lazy = (
+                df_fasta.lazy()
+                .join(df_embs, on="seq", how="left")
+                .sort("original_order")
+                .drop("original_order")
+            )
+            #print(df_final_lazy)
 
-        # 3. Build the computation graph: Join the FASTA frame with the embeddings, then sort
-        df_final_lazy = (
-            df_fasta.lazy()
-            .join(df_embs, on="seq", how="left")
-            .sort("original_order")
-            .drop("original_order")
-        )
-
-        print("Executing join, sort, and collecting into memory...")
-        # 4. .collect() executes the highly optimized Rust code.
-        df_final = df_final_lazy.collect()
-
-        print("Checking for missing embeddings...")
-        # If a sequence from the FASTA wasn't found in the caches, the left-join will leave nulls
-        n_missing = df_final.filter(pl.col(poolings[0]).is_null()).height
-        assert n_missing == 0, f"Missing embeddings for {n_missing} sequences!"
-
-        print(f"Writing final parquet file: {parquet_path}")
-        df_final.write_parquet(parquet_path)
-
-        print("Testing reading the final parquet:")
-        df_test = pl.read_parquet(parquet_path)
-        print(df_test)
+            try:
+                print(f"Streaming direto para o disco: {target_parquet}")
+                df_final_lazy.sink_parquet(target_parquet)
+            except Exception as e:
+                print(f"Erro ao processar o pooling {pooling}: {e}")
+            if not allow_missing:
+                print(f"Checando por sequências perdidas em {pooling}...")
+                missing_count = (
+                    pl.scan_parquet(target_parquet)
+                    .filter(pl.col(pooling).is_null())
+                    .select(pl.len())
+                    .collect()
+                    .item()
+                )
+                assert missing_count == 0, f"Missing embeddings for {missing_count} sequences in {pooling}!"
     
-    def embed_saving_progress(self, fasta_path: str, parquet_path, poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
+    def embed_saving_progress(self, fasta_path: str, output_prefix: str, poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
         if max_tokens_per_batch is None:
             max_tokens_per_batch = self.max_tokens
-        caching_batch_len = max_tokens_per_batch * 100
+        caching_batch_len = max_tokens_per_batch * 90
         not_embedded_seqs = self.cache.list_non_embedded(fasta_path)
         macro_batchs = batch_by_tokens(not_embedded_seqs, caching_batch_len, use_padding=False)
         small_batchs = [batch_by_tokens(seqs, max_tokens_per_batch, use_padding=True) 
@@ -216,6 +242,16 @@ class PLMModel():
         n_micro_batchs = [len(b2) for b2 in small_batchs]
         total_micro_batchs = sum(n_micro_batchs)
         bar = tqdm(total=total_micro_batchs, desc="Embedding sequences")
+
+        no_full = [p for p in poolings if p != "full"]
+        
+        # Salva o arquivo iterativo inicial
+        #try:
+        self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", no_full, allow_missing=True)
+        #except Exception as ex:
+        #    print(ex)
+        #    pass
+            
         for i, macro_batch in enumerate(macro_batchs):
             time_start = time.time()
             new_embeddings = self.embed(macro_batch, poolings=poolings, tqdm_bar=bar)
@@ -228,9 +264,8 @@ class PLMModel():
                     df_dict[p_name] = full_list
                 else:
                     df_dict[p_name] = np.asarray(new_embeddings[p_name])
-            '''print("Schema:")
-            for key, vals_list in df_dict.items():
-                print(f"{key}: {len(vals_list)} ({type(vals_list[0])})")'''
+            
+            print(f"Saving batch to {next_parquet}...")
             df = pl.DataFrame(df_dict)
             df.write_parquet(next_parquet)
             with open(next_txt, "w") as f:
@@ -239,5 +274,13 @@ class PLMModel():
             print(f"Saved cache to {next_parquet} and {next_txt}")
             duration = time.time() - time_start
             print(f"Duration: {duration}")
+            del df
+            del df_dict
+            del new_embeddings
+            gc.collect()
+            
+            # Atualiza os parquets separados a cada macro-batch
+            #self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", poolings, allow_missing=True)
 
-        self.write_all_embeddings(fasta_path, parquet_path, poolings)
+        # Escrita final garantindo que nada está faltando
+        self.write_all_embeddings(fasta_path, output_prefix, no_full)

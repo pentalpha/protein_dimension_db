@@ -79,7 +79,7 @@ process infer_ankh_base {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH_base emb.ankh_base.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh-base emb.ankh_base.parquet
     """
 }
 

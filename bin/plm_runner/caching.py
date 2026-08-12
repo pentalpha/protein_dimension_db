@@ -122,7 +122,7 @@ class EmbCache:
                 non_embedded_seqs.add(seq)
                 non_embedded_count += 1
         non_embedded_seqs = list(non_embedded_seqs)
-        non_embedded_seqs.sort(key=len, reverse=True)
+        non_embedded_seqs.sort(key=len, reverse=False)
         print(f"Embedded: {embedded_count}, Non-embedded: {non_embedded_count}")
         perc_done = embedded_count / (embedded_count + non_embedded_count) * 100
         print(f"Percentage done: {perc_done:.2f}%")
