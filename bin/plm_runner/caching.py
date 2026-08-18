@@ -99,19 +99,35 @@ class EmbCache:
         path_base = f"{self.cache_path}/{self.model_safe_name}.{uid}"
         return path_base + ".parquet", path_base + ".txt"
 
-    def list_embedded(self):
+    def list_embedded(self, poolings=['undefined']):
         caches = self.list_caches()
-        embedded_seqs = set()
+        embedded_seqs = {p: set() for p in poolings}
         for pq_path, txt_path in caches:
+            included_cols = pl.scan_parquet(pq_path).collect_schema().names()
+            protein_seqs = set()
             with open(txt_path, "r") as f:
                 for line in f:
                     protein_seq = line.strip()
-                    embedded_seqs.add(protein_seq)
-        return embedded_seqs
+                    protein_seqs.add(protein_seq)
+            common_poolings = set(included_cols).intersection(set(poolings))
+            if 'undefined' in poolings:
+                common_poolings = ['undefined']
+            for p in common_poolings:
+                embedded_seqs[p].update(protein_seqs)
+        for p, s in embedded_seqs.items():
+            print(f"Pool {p} has {len(s)} embedded sequences.")
+        pool_sets = list(embedded_seqs.values())
+        
+        with_all_poolings = pool_sets[0]
+        if len(pool_sets) > 1:
+            for i in range(1, len(pool_sets)):
+                with_all_poolings = with_all_poolings.intersection(pool_sets[i])
+        
+        return with_all_poolings
 
-    def list_non_embedded(self, fasta_path):
+    def list_non_embedded(self, fasta_path, poolings=['undefined']):
         fasta_content = read_fasta(fasta_path)
-        embedded_seqs = self.list_embedded()
+        embedded_seqs = self.list_embedded(poolings)
         non_embedded_seqs = set()
         embedded_count = 0
         non_embedded_count = 0
@@ -126,4 +142,4 @@ class EmbCache:
         print(f"Embedded: {embedded_count}, Non-embedded: {non_embedded_count}")
         perc_done = embedded_count / (embedded_count + non_embedded_count) * 100
         print(f"Percentage done: {perc_done:.2f}%")
-        return non_embedded_seqs
+        return non_embedded_seqs, embedded_seqs

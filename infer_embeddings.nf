@@ -79,7 +79,7 @@ process infer_ankh_base {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh-base emb.ankh_base.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh-base emb.ankh_base.parquet mean,max,softmax,std,norm,k4p_max,k8p_max,k16p_max,k32p_max,parti
     """
 }
 
@@ -163,8 +163,9 @@ process infer_pfe1_300 {
     path "emb.e1_300.parquet", emit: emb_pq
 
     script:
+    //fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh-base emb.ankh_base.parquet
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/Profluent-E1-300M emb.e1_300.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Profluent-Bio/E1-300m emb.e1_300.parquet
     """
 }
 
@@ -229,26 +230,26 @@ workflow {
         )
     }
 
-    if (create_ankh_embeddings) {
+    /*if (create_ankh_embeddings) {
         infer_ankh_base(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
-        /*infer_ankh_large(
+        infer_ankh_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
         infer_ankh2_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
-        )*/
-    }
+        )
+    }*/
 
-    /*infer_pfe1_300(
+    infer_pfe1_300(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
-    infer_pfe1_600(
+    /*infer_pfe1_600(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )*/

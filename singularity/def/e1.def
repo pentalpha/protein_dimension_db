@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: nvcr.io/nvidia/pytorch:26.07-py3
+From: python:3.12.14-trixie
 
 %post
     export DEBIAN_FRONTEND=noninteractive
@@ -13,18 +13,8 @@ From: nvcr.io/nvidia/pytorch:26.07-py3
     # Install cmake python package to fix potential python-wrapped cmake issues
     pip install cmake
 
-    git clone https://github.com/google/sentencepiece.git
-    cd sentencepiece && mkdir build && cd build && cmake .. \
-        && make -j $(nproc) && make install && ldconfig -v
-        
-    git clone https://github.com/Profluent-AI/E1.git
-    cd E1 && pip install -e . && cd ..
-
-    curl -LsSf https://hf.co/cli/install.sh | bash
-    pip install --no-cache-dir hf_transfer
-        biopython \
-        dataset \
-        datasets \
-        pandas \
-        sqlalchemy \
-        polars
+    pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+    cd / && git clone https://github.com/pentalpha/E1-eager_att && mv E1-eager_att E1
+    cd /E1 && pip3 install -e .
+    pip install hf_transfer
+    pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126

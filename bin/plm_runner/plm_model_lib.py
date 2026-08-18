@@ -169,24 +169,77 @@ class ProfluentE1Model(PLMModel):
         super().__init__(model_name, cache_path)
         
         self.model, self.batch_preparer = self.load_model_and_tokenizer(model_name)
+        self.single_special_tokens = set([0])
+        self.tuple_special_tokens = set([(1,6), (7,2)])
 
     def load_model_and_tokenizer(self, model_name):
         from E1.batch_preparer import E1BatchPreparer
         from E1.modeling import E1ForMaskedLM
 
-        model = E1ForMaskedLM.from_pretrained(model_name)
-        model.to(device=self.device)
-        model.eval()
-
+        #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = E1ForMaskedLM.from_pretrained("Profluent-Bio/E1-150m").to(self.device)
         batch_preparer = E1BatchPreparer()
+        model.eval()
         return model, batch_preparer
+    
+    def unpad(self, seq_original_lens, batch, embeddings_np, pooled_attention_np):
+
+        input_id_list = batch["input_ids"].cpu().tolist()
+        unpadded_embeddings = []
+        unpadded_attentions = []
+
+        for i in range(len(seq_original_lens)):
+            seq_ids = input_id_list[i]
+            residue_idx = []
+            
+            idx = 0
+            while idx < len(seq_ids):
+                # 1. Check for multi-token special boundaries (e.g., (1, 6) or (7, 2))
+                matched_tuple = False
+                for special_tuple in self.tuple_special_tokens:
+                    t_len = len(special_tuple)
+                    # Look ahead to see if the next tokens match the tuple exactly
+                    if idx + t_len <= len(seq_ids) and tuple(seq_ids[idx:idx+t_len]) == special_tuple:
+                        idx += t_len  # Skip over the entire boundary sequence
+                        matched_tuple = True
+                        break
+                        
+                if matched_tuple:
+                    continue
+                    
+                # 2. Check for single-token special characters (e.g., 0 for PAD)
+                if seq_ids[idx] in self.single_special_tokens:
+                    idx += 1
+                    continue
+                    
+                # 3. If it's not a special token, it's a valid biological residue!
+                residue_idx.append(idx)
+                idx += 1
+                
+            # Sanity check to ensure our mask perfectly matches the input sequence length
+            # Note: If your original sequence contains commas (which aren't tokenized), 
+            # seq_original_lens[i] might need to be len(seqs[i].replace(",", ""))
+            assert len(residue_idx) == seq_original_lens[i], f"Mask length mismatch at seq {i}: expected {seq_original_lens[i]}, got {len(residue_idx)}"
+            
+            # Slicing the 2D Embedding matrix (L, D)
+            valid_emb = embeddings_np[i, residue_idx, :]
+            
+            # Slicing the 2D Attention matrix (L, L) along both axes
+            valid_attn = pooled_attention_np[i][np.ix_(residue_idx, residue_idx)]
+            
+            unpadded_embeddings.append(valid_emb)
+            unpadded_attentions.append(valid_attn)
+            
+        # Return both for your downstream pipeline
+        return unpadded_embeddings, unpadded_attentions
+
     
     def extract(self, seqs: List[str]):
         bf16_supported = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
-        batch = self.batch_preparer.get_batch_kwargs(seqs, device="cuda:0")
-
         dtype = torch.bfloat16 if bf16_supported else torch.float32
-        with torch.autocast("cuda", dtype=dtype, enabled=True):
+        batch = self.batch_preparer.get_batch_kwargs(seqs, device=self.device)
+        
+        with torch.autocast(str(self.device), dtype=dtype, enabled=True):
             outputs = self.model(
                 input_ids=batch["input_ids"],
                 within_seq_position_ids=batch["within_seq_position_ids"],
@@ -194,29 +247,53 @@ class ProfluentE1Model(PLMModel):
                 sequence_ids=batch["sequence_ids"],
                 past_key_values=None,
                 use_cache=False,
-                output_attentions=False,
+                output_attentions=True,
                 output_hidden_states=False,
             )
-        
-        logits: torch.Tensor = outputs.logits  # (B, L, V)
+
         embeddings: torch.Tensor = outputs.embeddings  # (B, L, E)
+        embeddings = embeddings.detach().cpu().float().numpy()
+        pooled_attention = None
+    
+        # 1. Convert the tuple to a list so we can actively pop elements out of it
+        attentions_list = list(outputs.attentions)
+        
+        # 2. Delete the original tuple reference to allow Python's Garbage Collector to work
+        outputs.attentions = None 
+        
+        while len(attentions_list) > 0:
+            # pop(0) extracts the layer and removes it from the list
+            layer_attn = attentions_list.pop(0)
+            
+            # 3. Offload the tensor to CPU memory immediately
+            layer_attn_cpu = layer_attn.detach().cpu()
+            
+            # 4. Explicitly delete the GPU tensor reference to free up VRAM
+            del layer_attn 
+            
+            # 5. Now do the heavy FP32 casting and pooling safely on the CPU
+            layer_max = layer_attn_cpu.to(torch.float32).amax(dim=1) 
+            
+            # 6. Update the global running max (also on the CPU)
+            if pooled_attention is None:
+                pooled_attention = layer_max
+            else:
+                pooled_attention = torch.max(pooled_attention, layer_max)
+                
+        # pooled_attention is already a detached CPU tensor at this point
+        pooled_attention_np = pooled_attention.numpy()
 
-        print(logits)
-        print(embeddings)
+        seq_original_lens = [len(seq.replace(',', '')) for seq in seqs]
+        unpadded_embeddings, unpadded_attentions = self.unpad(seq_original_lens, batch, embeddings, pooled_attention_np)
 
-        embeddings = [emb.cpu().numpy()
-            for emb in embeddings]
-
-        last_emb = embeddings[-1]
-        print(f"Embeddings desc: shape={embeddings.shape}, dtype={embeddings.dtype}")
-        print(f"Last emb desc: shape={last_emb.shape}, dtype={last_emb.dtype}")
-
-        return embeddings, None
+        return unpadded_embeddings, unpadded_attentions
 
     
 def plm_master_loader(model_name, cache_path):
     plm_type = define_plm_class(model_name)
     if plm_type == "ANKH":
         return ANKHModel(model_name, cache_path)
+    elif plm_type == "PROFLUENT":
+        return ProfluentE1Model(model_name, cache_path)
     
     return None

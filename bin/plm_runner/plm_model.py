@@ -58,23 +58,29 @@ def get_vram_gb() -> int:
 max_tokens_by_model = [
     {
         "VRAM": 6,
+        "Profluent-Bio/E1-150m": 10000,
+        "Profluent-Bio/E1-300m": 1400,
+        "Profluent-Bio/E1-600m": 1800,
         "Synthyra/ANKH_base": 9600,
-        "ElnaggarLab/ankh-base": 3800,
+        "ElnaggarLab/ankh-base": 1000,
         "Synthyra/ANKH_large": 3000,
         "Synthyra/ANKH2_large": 3000,
         "Synthyra/ANKH3_large": 3000,
         "Synthyra/ANKH3_xl": 3000,
-        "default": 3000,
+        "default": 2500,
     },
     {
         "VRAM": 16,
+        "Profluent-Bio/E1-150m": 10000,
+        "Profluent-Bio/E1-300m": 14000,
+        "Profluent-Bio/E1-600m": 6000,
         "Synthyra/ANKH_base": 14000,
         "ElnaggarLab/ankh-base": 10000,
         "Synthyra/ANKH_large": 6000,
         "Synthyra/ANKH2_large": 6000,
         "Synthyra/ANKH3_large": 6000,
         "Synthyra/ANKH3_xl": 6000,
-        "default": 6000,
+        "default": 2500,
     }
 ]
 
@@ -109,7 +115,10 @@ AVAILABLE_MODELS = {
     "ElnaggarLab/ankh-base": {"type": "ANKH"},
     "ElnaggarLab/ankh-large": {"type": "ANKH"},
     "ElnaggarLab/ankh3-large": {"type": "ANKH"},
-    "ElnaggarLab/ankh3-xl": {"type": "ANKH"}
+    "ElnaggarLab/ankh3-xl": {"type": "ANKH"},
+    "Profluent-Bio/E1-150m": {"type": "PROFLUENT"},
+    "Profluent-Bio/E1-300m": {"type": "PROFLUENT"},
+    "Profluent-Bio/E1-600m": {"type": "PROFLUENT"},
 }
 
 class PLMModel():
@@ -151,7 +160,17 @@ class PLMModel():
         for batch in to_iter:
             lens = [len(seq) for seq in batch]
             #print(lens)
-            full_batch, full_batch_attn = self.extract(batch)
+            try:
+                full_batch, full_batch_attn = self.extract(batch)
+            except torch.OutOfMemoryError as err:
+                print(err)
+                print("Switching to per_sec because of OOM.")
+                full_batch = []
+                full_batch_attn = []
+                for seq in batch:
+                    new_batch, new_attn = self.extract([seq])
+                    full_batch.append(new_batch)
+                    full_batch_attn.append(new_attn)
             
             for p in poolings:
                 pool_func = POOLERS[p]
@@ -168,9 +187,12 @@ class PLMModel():
         return embeddings
 
     def write_all_embeddings(self, fasta_path: str, output_prefix: str, 
-            poolings: List[str], allow_missing: bool = False):
+            poolings: List[str], allow_missing: bool = False, subset_seq: set = None):
         print("Reading original fasta file...")
         fasta_content = read_fasta(fasta_path)
+        if subset_seq is not None:
+            fasta_content = [(seq_id, seq) 
+                for seq_id, seq in fasta_content if seq in subset_seq]
         ids = [seq_id for seq_id, _ in fasta_content]
         seqs = [seq for _, seq in fasta_content]
 
@@ -195,47 +217,47 @@ class PLMModel():
                 col_list = pl.scan_parquet(p).collect_schema().names()
                 if pooling in col_list:
                     paths_with_pooling.append(p)
-            
-            lfs = [
-                pl.scan_parquet(p).select(["seq", pooling]) 
-                for p in paths_with_pooling
-            ]
-            #df_embs_base = pl.scan_parquet(paths_with_pooling)
-            print(f"Found {len(paths_with_pooling)} parquet files for pooling {pooling}.")
-            print("Seleciona APENAS a sequência e este pooling específico")
-            df_embs = pl.concat(lfs, how="vertical")
-            df_embs = df_embs.unique(subset=["seq"], keep="first")
+            if len(paths_with_pooling) > 0:
+                lfs = [
+                    pl.scan_parquet(p).select(["seq", pooling]) 
+                    for p in paths_with_pooling
+                ]
+                #df_embs_base = pl.scan_parquet(paths_with_pooling)
+                print(f"Found {len(paths_with_pooling)} parquet files for pooling {pooling}.")
+                print("Seleciona APENAS a sequência e este pooling específico")
+                df_embs = pl.concat(lfs, how="vertical")
+                df_embs = df_embs.unique(subset=["seq"], keep="first")
 
-            print("Build the computation graph")
-            df_final_lazy = (
-                df_fasta.lazy()
-                .join(df_embs, on="seq", how="left")
-                .sort("original_order")
-                .drop("original_order")
-            )
-            #print(df_final_lazy)
-
-            try:
-                print(f"Streaming direto para o disco: {target_parquet}")
-                df_final_lazy.sink_parquet(target_parquet)
-            except Exception as e:
-                print(f"Erro ao processar o pooling {pooling}: {e}")
-            if not allow_missing:
-                print(f"Checando por sequências perdidas em {pooling}...")
-                missing_count = (
-                    pl.scan_parquet(target_parquet)
-                    .filter(pl.col(pooling).is_null())
-                    .select(pl.len())
-                    .collect()
-                    .item()
+                print("Build the computation graph")
+                df_final_lazy = (
+                    df_fasta.lazy()
+                    .join(df_embs, on="seq", how="left")
+                    .sort("original_order")
+                    .drop("original_order")
                 )
-                assert missing_count == 0, f"Missing embeddings for {missing_count} sequences in {pooling}!"
+                #print(df_final_lazy)
+
+                try:
+                    print(f"Streaming direto para o disco: {target_parquet}")
+                    df_final_lazy.sink_parquet(target_parquet)
+                except Exception as e:
+                    print(f"Erro ao processar o pooling {pooling}: {e}")
+                if not allow_missing:
+                    print(f"Checando por sequências perdidas em {pooling}...")
+                    missing_count = (
+                        pl.scan_parquet(target_parquet)
+                        .filter(pl.col(pooling).is_null())
+                        .select(pl.len())
+                        .collect()
+                        .item()
+                    )
+                    assert missing_count == 0, f"Missing embeddings for {missing_count} sequences in {pooling}!"
     
     def embed_saving_progress(self, fasta_path: str, output_prefix: str, poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
         if max_tokens_per_batch is None:
             max_tokens_per_batch = self.max_tokens
-        caching_batch_len = max_tokens_per_batch * 90
-        not_embedded_seqs = self.cache.list_non_embedded(fasta_path)
+        caching_batch_len = max_tokens_per_batch * 200
+        not_embedded_seqs, embedded_seqs = self.cache.list_non_embedded(fasta_path, poolings=poolings)
         macro_batchs = batch_by_tokens(not_embedded_seqs, caching_batch_len, use_padding=False)
         small_batchs = [batch_by_tokens(seqs, max_tokens_per_batch, use_padding=True) 
             for seqs in macro_batchs]
@@ -247,7 +269,8 @@ class PLMModel():
         
         # Salva o arquivo iterativo inicial
         #try:
-        self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", no_full, allow_missing=True)
+        self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", 
+            no_full, allow_missing=True, subset_seq = embedded_seqs)
         #except Exception as ex:
         #    print(ex)
         #    pass
