@@ -152,7 +152,7 @@ process infer_ankh3_xl {
 }
 
 process infer_pfe1_300 {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -230,20 +230,20 @@ workflow {
         )
     }
 
-    /*if (create_ankh_embeddings) {
+    if (create_ankh_embeddings) {
         infer_ankh_base(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
-        infer_ankh_large(
+        /*infer_ankh_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
         infer_ankh2_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
-        )
-    }*/
+        )*/
+    }
 
     infer_pfe1_300(
         swissprot_fasta,

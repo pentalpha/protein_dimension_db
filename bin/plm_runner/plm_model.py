@@ -57,12 +57,16 @@ def get_vram_gb() -> int:
 
 max_tokens_by_model = [
     {
+        "VRAM": 4,
+        "default": 600,
+    },
+    {
         "VRAM": 6,
         "Profluent-Bio/E1-150m": 10000,
-        "Profluent-Bio/E1-300m": 1400,
+        "Profluent-Bio/E1-300m": 8000,
         "Profluent-Bio/E1-600m": 1800,
-        "Synthyra/ANKH_base": 9600,
-        "ElnaggarLab/ankh-base": 1000,
+        "Synthyra/ANKH_base": 8000,
+        "ElnaggarLab/ankh-base": 8000,
         "Synthyra/ANKH_large": 3000,
         "Synthyra/ANKH2_large": 3000,
         "Synthyra/ANKH3_large": 3000,
@@ -72,10 +76,10 @@ max_tokens_by_model = [
     {
         "VRAM": 16,
         "Profluent-Bio/E1-150m": 10000,
-        "Profluent-Bio/E1-300m": 14000,
+        "Profluent-Bio/E1-300m": 8000,
         "Profluent-Bio/E1-600m": 6000,
-        "Synthyra/ANKH_base": 14000,
-        "ElnaggarLab/ankh-base": 10000,
+        "Synthyra/ANKH_base": 8000,
+        "ElnaggarLab/ankh-base": 8000,
         "Synthyra/ANKH_large": 6000,
         "Synthyra/ANKH2_large": 6000,
         "Synthyra/ANKH3_large": 6000,

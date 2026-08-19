@@ -14,7 +14,7 @@ if __name__ == "__main__":
     cache_path = sys.argv[2]
     model_name = sys.argv[3]  # Synthyra/ANKH_base
     parquet_name = sys.argv[4]
-    poolings_list = ','.split(sys.argv[5]) if len(sys.argv) > 5 else None
+    poolings_list = sys.argv[5].split(',') if len(sys.argv) > 5 else None
     if poolings_list is None:
         poolings_list = ["mean", "max", "std", "parti"]
     if not os.path.exists(cache_path):

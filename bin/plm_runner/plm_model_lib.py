@@ -32,7 +32,8 @@ class ANKHModel(PLMModel):
             tokenizer = AutoTokenizer.from_pretrained(model_name, token=self.token)
         model = T5EncoderModel.from_pretrained(
             model_name, output_attentions=False, token=self.token,
-            attn_implementation="eager"
+            attn_implementation="eager", 
+            #use_safetensors=True
         )
         model.to(device=self.device)
         model.eval()
