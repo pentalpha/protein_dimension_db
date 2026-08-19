@@ -84,7 +84,7 @@ process infer_ankh_base {
 }
 
 process infer_ankh_large {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -96,7 +96,7 @@ process infer_ankh_large {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH_large emb.ankh_large.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh-large emb.ankh_large.parquet
     """
 }
 
@@ -113,7 +113,7 @@ process infer_ankh2_large {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH2_large emb.ankh2_large.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh2-ext2 emb.ankh2_large.parquet
     """
 }
 
@@ -130,24 +130,7 @@ process infer_ankh3_large {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_large emb.ankh3_large.parquet
-    """
-}
-
-process infer_ankh3_xl {
-    label 'pytorch251'
-    publishDir params.release_dir, mode: 'copy'
-
-    input:
-    path fasta_seqs
-    path cache_dir
-
-    output:
-    path "emb.ankh3_xl.parquet", emit: emb_pq
-
-    script:
-    """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/ANKH3_xl emb.ankh3_xl.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh3-large emb.ankh3_large.parquet
     """
 }
 
@@ -170,7 +153,7 @@ process infer_pfe1_300 {
 }
 
 process infer_pfe1_600 {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -182,7 +165,7 @@ process infer_pfe1_600 {
 
     script:
     """
-    fasta_encode.py ${fasta_seqs} ${cache_dir} Synthyra/Profluent-E1-600M emb.e1_600.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Profluent-Bio/E1-600m emb.e1_600.parquet
     """
 }
 
@@ -192,10 +175,9 @@ process infer_pfe1_600 {
 //Synthyra/ESMplusplus_small
 //Synthyra/ESMplusplus_large
 //Synthyra/ESM3_small
-//Synthyra/Profluent-E1-300M
-//Synthyra/Profluent-E1-600M
-//Synthyra/DPLM2-650M
-//Synthyra/DPLM2-3B
+//DPLM2-650M
+//DPLM2-3B
+//Ankh3-XL?
 
 workflow {
     create_esm_embeddings = params.create_esm_embeddings
@@ -235,11 +217,15 @@ workflow {
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
-        /*infer_ankh_large(
+        infer_ankh_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )
-        infer_ankh2_large(
+        /*infer_ankh2_large(
+            swissprot_fasta,
+            create_caches.out.fastplms_cache,
+        )
+        infer_ankh3_large(
             swissprot_fasta,
             create_caches.out.fastplms_cache,
         )*/
@@ -249,8 +235,8 @@ workflow {
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
-    /*infer_pfe1_600(
+    infer_pfe1_600(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
-    )*/
+    )
 }
