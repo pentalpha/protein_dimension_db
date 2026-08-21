@@ -63,11 +63,11 @@ max_tokens_by_model = [
     {
         "VRAM": 6,
         "Profluent-Bio/E1-150m": 10000,
-        "Profluent-Bio/E1-300m": 8000,
+        "Profluent-Bio/E1-300m": 1800,
         "Profluent-Bio/E1-600m": 1800,
-        "Synthyra/ANKH_base": 8000,
-        "ElnaggarLab/ankh-base": 8000,
-        "Synthyra/ANKH_large": 3000,
+        "Synthyra/ANKH_base": 1800,
+        "ElnaggarLab/ankh-base": 1800,
+        "Synthyra/ANKH_large": 1800,
         "Synthyra/ANKH2_large": 3000,
         "Synthyra/ANKH3_large": 3000,
         "Synthyra/ANKH3_xl": 3000,
@@ -75,12 +75,12 @@ max_tokens_by_model = [
     },
     {
         "VRAM": 16,
-        "Profluent-Bio/E1-150m": 10000,
-        "Profluent-Bio/E1-300m": 8000,
-        "Profluent-Bio/E1-600m": 6000,
-        "Synthyra/ANKH_base": 8000,
-        "ElnaggarLab/ankh-base": 8000,
-        "Synthyra/ANKH_large": 6000,
+        "Profluent-Bio/E1-150m": 1800,
+        "Profluent-Bio/E1-300m": 1800,
+        "Profluent-Bio/E1-600m": 1800,
+        "Synthyra/ANKH_base": 1800,
+        "ElnaggarLab/ankh-base": 1800,
+        "Synthyra/ANKH_large": 1800,
         "Synthyra/ANKH2_large": 6000,
         "Synthyra/ANKH3_large": 6000,
         "Synthyra/ANKH3_xl": 6000,
@@ -210,8 +210,10 @@ class PLMModel():
         #df_embs_base = pl.scan_parquet(valid_pqs)
 
         # 2. Iterativamente constrói e salva UM arquivo parquet por pooling
+        resulting_parquets = []
         for pooling in poolings:
             target_parquet = f"{output_prefix}_{pooling}.parquet"
+            resulting_parquets.append(target_parquet)
             print(f"\n--- Iniciando o merge do pooling: [{pooling}] ---")
 
             print("Lazy scanning base embeddings via Polars...")
@@ -256,6 +258,8 @@ class PLMModel():
                         .item()
                     )
                     assert missing_count == 0, f"Missing embeddings for {missing_count} sequences in {pooling}!"
+        
+        return resulting_parquets
     
     def embed_saving_progress(self, fasta_path: str, output_prefix: str, poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
         if max_tokens_per_batch is None:
@@ -273,7 +277,7 @@ class PLMModel():
         
         # Salva o arquivo iterativo inicial
         #try:
-        self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", 
+        incomplete_parquets = self.write_all_embeddings(fasta_path, f"{output_prefix}_incomplete", 
             no_full, allow_missing=True, subset_seq = embedded_seqs)
         #except Exception as ex:
         #    print(ex)
@@ -311,3 +315,5 @@ class PLMModel():
 
         # Escrita final garantindo que nada está faltando
         self.write_all_embeddings(fasta_path, output_prefix, no_full)
+        for p in incomplete_parquets:
+            os.remove(p)
