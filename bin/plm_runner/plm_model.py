@@ -81,10 +81,10 @@ max_tokens_by_model = [
         "Synthyra/ANKH_base": 1800,
         "ElnaggarLab/ankh-base": 1800,
         "Synthyra/ANKH_large": 1800,
-        "Synthyra/ANKH2_large": 6000,
-        "Synthyra/ANKH3_large": 6000,
-        "Synthyra/ANKH3_xl": 6000,
-        "default": 2500,
+        "Synthyra/ANKH2_large": 1800,
+        "Synthyra/ANKH3_large": 1800,
+        "Synthyra/ANKH3_xl": 1800,
+        "default": 1800,
     }
 ]
 
@@ -118,6 +118,7 @@ AVAILABLE_MODELS = {
     "Synthyra/ANKH3_xl": {"type": "ANKH"},
     "ElnaggarLab/ankh-base": {"type": "ANKH"},
     "ElnaggarLab/ankh-large": {"type": "ANKH"},
+    "ElnaggarLab/ankh2-ext2": {"type": "ANKH"},
     "ElnaggarLab/ankh3-large": {"type": "ANKH"},
     "ElnaggarLab/ankh3-xl": {"type": "ANKH"},
     "Profluent-Bio/E1-150m": {"type": "PROFLUENT"},

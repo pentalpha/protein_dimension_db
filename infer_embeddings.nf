@@ -113,7 +113,7 @@ process infer_ankh_large {
 }
 
 process infer_ankh2_large {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:
@@ -133,7 +133,7 @@ process infer_ankh2_large {
 }
 
 process infer_ankh3_large {
-    label 'pytorch251'
+    label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
 
     input:
