@@ -1,0 +1,5 @@
+Bootstrap: docker
+From: python:3.12.13-bookworm
+
+%post 
+    pip install tqdm numpy polars requests ete3 pandas

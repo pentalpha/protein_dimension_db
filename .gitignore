@@ -1,6 +1,9 @@
+test_input/sequences.swissprot.fasta
 test/*
+go.experimental.parquet
 *.sif
 *.stdout
+test_input/custom_plm_cache
 file_chunk.gz
 goa_uniprot_all.gaf.g*
 .snakemake/*
@@ -40,6 +43,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+databases/cafa6/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

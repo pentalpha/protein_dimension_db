@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: python:3.13.2
+
+%post
+    pip install obonet numpy h5py polars tqdm obonet pyyaml networkx pandas
+    #micromamba install -c bioconda -c conda-forge -y -n base \
+    #    numpy h5py polars tqdm obonet pyyaml networkx python=3.13.0 hdf5 \
+    #     && micromamba clean --all --yes
+        

@@ -1,0 +1,7 @@
+Bootstrap: docker
+From: python:3.13.2
+
+%post
+    pip install obonet numpy h5py polars tqdm obonet pyyaml networkx pandas cmake scikit-learn imageio matplotlib
+    pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        

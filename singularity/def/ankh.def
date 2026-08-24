@@ -1,0 +1,36 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/pytorch:25.11-py3
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+
+    # Install dev packages to make sure that cmake will be available and any pip package can be build
+    apt update && apt install -y build-essential libssl-dev libffi-dev python3-dev cmake build-essential pkg-config libgoogle-perftools-dev
+
+    # Update pip
+    pip install --upgrade pip
+    
+    # Install cmake python package to fix potential python-wrapped cmake issues
+    pip install cmake
+
+    git clone https://github.com/google/sentencepiece.git
+    cd sentencepiece && mkdir build && cd build && cmake .. \
+        && make -j $(nproc) && make install && ldconfig -v
+
+    # Install Python dependencies from ankh_wsl.yml
+    # Excluding torch, torchvision, torchaudio, etc. as they are provided by the base image
+    pip install --no-cache-dir \
+        ankh \
+        biopython \
+        dataset \
+        datasets \
+        transformers \
+        huggingface-hub \
+        pandas \
+        alembic \
+        banal \
+        sqlalchemy \
+        xxhash \
+        yarl \
+        polars \
+        fair-esm==2.0.0
