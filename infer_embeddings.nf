@@ -192,14 +192,54 @@ process infer_pfe1_600 {
     """
 }
 
+process infer_esm2_150 {
+    label 'pytorchgpu_light'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.esm2_150_mean.parquet", emit: emb_mean_pq
+    path "emb.esm2_150_max.parquet", emit: emb_max_pq
+    path "emb.esm2_150_std.parquet", emit: emb_std_pq
+    path "emb.esm2_150_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} facebook/esm2_t30_150M_UR50D emb.esm2_150.parquet
+    """
+}
+
+process infer_esm2_650 {
+    label 'pytorchgpu_light'
+    publishDir params.release_dir, mode: 'copy'
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.esm2_650_mean.parquet", emit: emb_mean_pq
+    path "emb.esm2_650_max.parquet", emit: emb_max_pq
+    path "emb.esm2_650_std.parquet", emit: emb_std_pq
+    path "emb.esm2_650_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} facebook/esm2_t33_650M_UR50D emb.esm2_650.parquet
+    """
+}
+
 //TODO:
-//Synthyra/ESM2-650M
 //Synthyra/ESM2-3B
 //Synthyra/ESMplusplus_small
 //Synthyra/ESMplusplus_large
 //Synthyra/ESM3_small
-//DPLM2-650M
-//DPLM2-3B
+//https://huggingface.co/AI4PD/ProtGPT3-1.3B
+//https://huggingface.co/flair-bio/amplify-350m
+//https://huggingface.co/hugohrban/progen2-medium
 //Ankh3-XL?
 
 workflow {
@@ -259,6 +299,15 @@ workflow {
         create_caches.out.fastplms_cache,
     )
     infer_pfe1_600(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+
+    infer_esm2_150(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    infer_esm2_650(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )

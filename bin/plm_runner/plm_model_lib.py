@@ -4,11 +4,9 @@ import numpy as np
 import torch
 from transformers import (
     T5EncoderModel,
-    #T5ForConditionalGeneration,
     AutoTokenizer,
-    #TFT5EncoderModel,
-    #TFT5ForConditionalGeneration,
     T5Tokenizer,
+    AutoModelForMaskedLM,
 )
 
 from plm_runner.plm_model import PLMModel, define_plm_class
@@ -155,11 +153,6 @@ class ANKHModel(PLMModel):
             # Return both for your downstream pipeline
             return unpadded_embeddings, unpadded_attentions
 
-class ESMModel(PLMModel):
-    def __init__(self, model_name: str, cache_path):
-        super().__init__(model_name, cache_path)
-        pass
-
 class DPLMModel(PLMModel):
     def __init__(self, model_name: str, cache_path):
         super().__init__(model_name, cache_path)
@@ -289,6 +282,108 @@ class ProfluentE1Model(PLMModel):
 
         return unpadded_embeddings, unpadded_attentions
 
+class ESMModel(PLMModel):
+    def __init__(self, model_name: str, cache_path):
+        super().__init__(model_name, cache_path)
+        self.model, self.tokenizer = self.load_model_and_tokenizer(model_name)
+        # Cache the special tokens (e.g. 0=<cls>, 1=<pad>, 2=<eos>, 3=<unk>, 32=<mask>)
+        self.special_token_ids = set(self.tokenizer.all_special_ids)
+
+    def load_model_and_tokenizer(self, model_name: str) -> Tuple[torch.nn.Module, AutoTokenizer]:
+        """Downloads and returns the ESM model and its tokenizer"""
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            token=self.token
+        )
+        
+        # Using AutoModelForMaskedLM as requested for future-proofing
+        model = AutoModelForMaskedLM.from_pretrained(
+            model_name,
+            attn_implementation="eager",
+            token=self.token
+        )
+        
+        model.to(device=self.device)
+        model.eval()
+        
+        return model, tokenizer
+
+    def extract(self, seqs: List[str]):
+        # Calculate expected biological length (handle potential commas)
+        seq_original_lens = [len(seq.replace(',', '')) for seq in seqs]
+        
+        # Precision setup
+        bf16_supported = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
+        dtype = torch.bfloat16 if bf16_supported else torch.float16
+        
+        # Tokenize
+        tokenized = self.tokenizer(seqs, return_tensors="pt", padding=True)
+        input_ids = tokenized["input_ids"].to(self.device)
+        attention_mask = tokenized["attention_mask"].to(self.device)
+        
+        with torch.no_grad(), torch.autocast(str(self.device), dtype=dtype, enabled=True):
+            outputs = self.model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                output_attentions=True,
+                output_hidden_states=True  # Required because we are using AutoModelForMaskedLM
+            )
+
+        # 1. Embeddings -> FP32 -> NumPy
+        # We grab the last layer from the hidden_states tuple
+        embeddings_np = outputs.hidden_states[-1].cpu().to(torch.float32).numpy()
+
+        # 2. Attention -> Max Pooling (Memory-efficient approach)
+        pooled_attention = None
+        attentions_list = list(outputs.attentions)
+        outputs.attentions = None  # Free up tuple reference for the garbage collector
+        
+        while len(attentions_list) > 0:
+            # Pop layer and move to CPU immediately to save VRAM
+            layer_attn = attentions_list.pop(0)
+            layer_attn_cpu = layer_attn.detach().cpu()
+            del layer_attn
+            
+            # Pool across heads (dim=1)
+            layer_max = layer_attn_cpu.to(torch.float32).amax(dim=1) 
+            
+            # Update global running max
+            if pooled_attention is None:
+                pooled_attention = layer_max
+            else:
+                pooled_attention = torch.max(pooled_attention, layer_max)
+                
+        pooled_attention_np = pooled_attention.numpy()
+
+        # 3. Unpad down to valid biological residues
+        unpadded_embeddings = []
+        unpadded_attentions = []
+        input_id_list = input_ids.cpu().tolist()
+
+        for i in range(len(seqs)):
+            # Dynamically construct the biological residue mask
+            # This ignores 0=<cls>, 1=<pad>, 2=<eos> automatically
+            residue_idx = [
+                idx for idx, token_id in enumerate(input_id_list[i]) 
+                if token_id not in self.special_token_ids
+            ]
+            
+            # Sanity check
+            assert len(residue_idx) == seq_original_lens[i], (
+                f"Mask length mismatch at seq {i}: expected {seq_original_lens[i]}, "
+                f"got {len(residue_idx)}"
+            )
+            
+            # Slicing the 2D Embedding matrix (L, D)
+            valid_emb = embeddings_np[i, residue_idx, :]
+            
+            # Slicing the 2D Attention matrix (L, L) along both axes
+            valid_attn = pooled_attention_np[i][np.ix_(residue_idx, residue_idx)]
+            
+            unpadded_embeddings.append(valid_emb)
+            unpadded_attentions.append(valid_attn)
+
+        return unpadded_embeddings, unpadded_attentions
     
 def plm_master_loader(model_name, cache_path):
     plm_type = define_plm_class(model_name)
@@ -296,5 +391,7 @@ def plm_master_loader(model_name, cache_path):
         return ANKHModel(model_name, cache_path)
     elif plm_type == "PROFLUENT":
         return ProfluentE1Model(model_name, cache_path)
+    elif plm_type == "ESM":
+        return ESMModel(model_name, cache_path)
     
     return None

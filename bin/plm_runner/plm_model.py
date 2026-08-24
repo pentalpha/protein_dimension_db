@@ -124,6 +124,12 @@ AVAILABLE_MODELS = {
     "Profluent-Bio/E1-150m": {"type": "PROFLUENT"},
     "Profluent-Bio/E1-300m": {"type": "PROFLUENT"},
     "Profluent-Bio/E1-600m": {"type": "PROFLUENT"},
+    "facebook/esm2_t6_8M_UR50D": {"type": "ESM"},
+    "facebook/esm2_t12_35M_UR50D": {"type": "ESM"},
+    "facebook/esm2_t30_150M_UR50D": {"type": "ESM"},
+    "facebook/esm2_t33_650M_UR50D": {"type": "ESM"},
+    "facebook/esm2_t36_3B_UR50D": {"type": "ESM"},
+    "facebook/esm2_t48_15B_UR50D": {"type": "ESM"},
 }
 
 class PLMModel():
