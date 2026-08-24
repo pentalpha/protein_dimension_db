@@ -10,24 +10,24 @@ Proteins are sorted by length. All files contain the same sequence of proteins, 
 
 Several models are used to create computational descriptions (embeddings) of the Swiss-Prot proteins:
 
-|                                          Model 🤖                                         | Vector Length 📏 | File Size | Download Links (By Pooling Method) 🔗 |
-:--------------------------------------------------------------------------------------:|:------------:|:------------:|:------------:|
-ElnaggarLab/ankh-base |      768     | 1.4G to 3G | [Mean](), [Parti](), [Max](), [STD]()  |
-ElnaggarLab/ankh-large |      1536     | 2.7G to 6G | [Mean](), [Parti](), [Max](), [STD]()  |
-ElnaggarLab/ankh2-ext2 |      1536     | 3.4G | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-ElnaggarLab/ankh3-large |      1536     | 3.4G | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-facebook/esm2_t30_150M_UR50D | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-| facebook/esm2_t33_650M_UR50D |      1280     | 2.8G | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-|     facebook/esm2_t36_3B_UR50D | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-biohub/ESMC-300M | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-biohub/ESMC-600M | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-biohub/esm3-sm-open-v1 | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-Profluent-Bio/E1-300m | 768 | 587M to 3G | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-Profluent-Bio/E1-600m | 768 | 587M to 3G | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-flair-bio/amplify-350m | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-hugohrban/progen2-medium | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-oriel9p/protsent-esm2-150M | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
-AI4PD/ProtGPT3-1.3B | X | XG | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+|                                          Model 🤖                                         | Vector Length 📏 | Download Links (By Pooling Method) 🔗 |
+:--------------------------------------------------------------------------------------:|:------------:|:------------:|
+ElnaggarLab/ankh-base |      768     | [Mean (1.4G)](), [Parti (3G)](), [Max](), [STD]()  |
+ElnaggarLab/ankh-large |      1536     | [Mean (2.7G)](), [Parti (6G)](), [Max](), [STD]()  |
+ElnaggarLab/ankh2-ext2 |      1536     | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+ElnaggarLab/ankh3-large |      1536     | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+facebook/esm2_t30_150M_UR50D | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+| facebook/esm2_t33_650M_UR50D |      1280     | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+|     facebook/esm2_t36_3B_UR50D | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+biohub/ESMC-300M | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+biohub/ESMC-600M | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+biohub/esm3-sm-open-v1 | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+Profluent-Bio/E1-300m | 768 | [Mean (537M)](), [Parti (3G)]( ), [Max](), [STD]()  |
+Profluent-Bio/E1-600m | 768 | [Mean (587M)](), [Parti (3G)]( ), [Max](), [STD]()  |
+flair-bio/amplify-350m | X | [Mean ()]( ), [Parti ()]( ), [Max](), [STD]()  |
+hugohrban/progen2-medium | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+oriel9p/protsent-esm2-150M | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
+AI4PD/ProtGPT3-1.3B | X | [Mean]( ), [Parti]( ), [Max](), [STD]()  |
 
 ### Autoencoder Embeddings and One-hot Encodings 🔢
 
@@ -39,15 +39,6 @@ Numerical representations of the NCBI taxon IDs and InterproScan categories of e
 | TaxID Autoencoder | Encoding of the top 6006 most common Taxonomic IDs in SwissProt proteins |      32      |    [Embeddings (5M)](), [Model (181M)]()   |
 |    onehot.taxa_256.parquet   |                                  Taxa One-Hot Encoding                                 |      256      |    [Encodings (3.8MB)](), [Taxon IDs (2.2K)]()   |
 |    onehot.taxa_128.parquet   |                                  Taxa One-Hot Encoding                                 |      128      |    [Encodings (3.2MB)](), [Taxon IDs (1.1K)]()   |
-
-
-### Uniprot/Swiss-Prot 🔬
-
-|           Name          |                  Content                  | Download Links 🔗 |
-|:-----------------------:|:-----------------------------------------:|:-------------:|
-|         ids.txt         |           Uniprot Accession IDs           |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/ids.txt)       |
-| sequences.swissprot.fasta | Aminoacid sequences of SwissProt proteins |       [201M]()       |
-| taxid.tsv               | NCBI taxon ID of each protein             |       [UFRN](https://ucrania.imd.ufrn.br/~pitagoras/protein_dimension_db/release_1/taxid.tsv)       |
 
 ### Protein Annotations 📚
 
@@ -72,13 +63,24 @@ DeepLoc annotation columns (subcellular locations and membrane protein types) fr
 
 
 |            Name           |        Content       | Download Links 🔗 |
-|:-------------------------:|:--------------------:|:-------------:|
-| go.expanded.tsv.gz        | Simplified version of GOA. Columns: Uniprot ID, GO ID, Evidence Code, Taxon ID and Ontology |  [25M]()       |
-| go.mf.parquet | Molecular Functions |       [14M]()       |
-| go.bp.parquet | Biological Processes |       [21M]()       |
-| go.cc.parquet | Cellular Components  |       [9.9M]()       |
-| deeploc.parquet | Subcellular Locations (DeepLoc dataset) | [173KB]()
-| interpro.tsv | InterproScan categories of SwissProt proteins | [27M]()
+|:-:|:-:|:-:|
+| go.expanded.tsv.gz        | Simplified version of GOA. Columns: Uniprot ID, GO ID, Evidence Code, Taxon ID and Ontology |  [25M]() |
+| go.mf.parquet | Molecular Functions | [14M]() |
+| go.bp.parquet | Biological Processes | [21M]() |
+| go.cc.parquet | Cellular Components  | [9.9M]() |
+| deeploc.parquet | Subcellular Locations (DeepLoc dataset) | [173KB]() |
+| interpro.tsv | InterproScan categories of SwissProt proteins | [27M]() |
+| taxid.tsv | Taxonomic ID of each protein in SwissProt. Columns: uniprot_id, taxid, lineage | [46M]() |
+
+### Uniprot/Swiss-Prot 🔬
+
+|           Name          |                  Content                  | Download Links 🔗 |
+|:-----------------------:|:-----------------------------------------:|:-------------:|
+|         ids.txt         |           Uniprot Accession IDs           |       [10K]()       |
+| sequences.swissprot.fasta | Aminoacid sequences of SwissProt proteins |       [201M]()       |
+
+
+
 ### Others
 
 |            Name           |        Content       | Download Links 🔗 |
