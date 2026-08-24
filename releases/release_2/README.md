@@ -2,7 +2,7 @@
 
 Scientific data lake with PLM embeddings, GO annotations and taxonomy representations for all proteins in Uniprot/Swiss-Prot
 
-## Current Release (2)
+## Release 2
 
 Proteins are sorted by length. All files contain the same sequence of proteins, to make joins and merge operations easier.
 
@@ -86,31 +86,6 @@ DeepLoc annotation columns (subcellular locations and membrane protein types) fr
 | taxallnomy.parquet | Parent TaxonIDs in Taxallnomy for each NCBI taxon ID |       [306M]()       |
 | taxid.obo | NCBI taxonomy graph in OBO format |       [2.0M]()       |
 | interpro.obo | Interpro categories graph in OBO format | [4.1M]() |
-
-
-## Citation
-
-Please cite the following work:
-
-Bibtext:
-```bibtex
-@inproceedings{AlvesSobrinho2025ProteinDimensionDB,
-  author       = {Pit{\'{a}}goras de Azevedo Alves Sobrinho and Tetsu Sakamoto and Wilfredo Blanco Figuerola},
-  title        = {Protein Dimension DB: A Unified Protein Repository for Representation Learning and Functional Analysis},
-  booktitle    = {BioInformatics: 21st Brazilian Congress, X-Meeting 2025, João Pessoa, Brazil, June 3–6, 2025, Proceedings},
-  series       = {Lecture Notes in Computer Science},
-  volume       = {16037},
-  year         = {2025},
-  editor       = {Marcio Dorn and Fabricio Martins Lopes},
-  publisher    = {Springer Cham},
-  isbn         = {978-3-032-09335-6},
-  eisbn        = {978-3-032-09336-3},
-  address      = {Cham, Switzerland}
-}
-```
-
-APA reference:
-> Alves Sobrinho, P. de A., Sakamoto, T., & Blanco Figuerola, W. (2025). Protein Dimension DB: A unified protein repository for representation learning and functional analysis. BioInformatics: 21st Brazilian Congress, X-Meeting 2025, João Pessoa, Brazil, June 3–6, 2025, Proceedings (Lecture Notes in Computer Science, Vol. 16037). Springer Cham.
 
 ## References
 

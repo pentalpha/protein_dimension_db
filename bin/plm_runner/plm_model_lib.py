@@ -13,6 +13,93 @@ from plm_runner.plm_model import PLMModel, define_plm_class
 
 BF16_SUPPORT = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
 
+def extract_contacts_from_heads(attention_heads: np.ndarray) -> np.ndarray:
+    """
+    Applies Symmetrization and APC to a 3D array of attention heads (Heads, L, L),
+    then averages them to produce a single structural contact map.
+    """
+    # 1. Symmetrize all heads simultaneously
+    # transpose(0, 2, 1) swaps the L x L dimensions for each head
+    sym_attn = 0.5 * (attention_heads + attention_heads.transpose(0, 2, 1))
+    
+    # 2. Calculate marginal sums per head
+    row_sum = sym_attn.sum(axis=2, keepdims=True)  # (Heads, L, 1)
+    col_sum = sym_attn.sum(axis=1, keepdims=True)  # (Heads, 1, L)
+    total_sum = sym_attn.sum(axis=(1, 2), keepdims=True)  # (Heads, 1, 1)
+    
+    # Prevent division by zero
+    total_sum[total_sum == 0] = 1e-9
+    
+    # 3. Calculate and subtract APC background noise per head
+    # Matrix multiplication handles the (L, 1) @ (1, L) -> (L, L) broadcast per head
+    apc_correction = (row_sum @ col_sum) / total_sum
+    apc_attn = sym_attn - apc_correction
+    
+    # 4. Average across all heads to get the consensus map
+    final_map = apc_attn.mean(axis=0)
+    
+    # 5. Zero the diagonal (residues are in contact with themselves)
+    np.fill_diagonal(final_map, 0)
+    
+    return final_map
+
+def compute_layer_apc_sum(layer_heads: np.ndarray) -> np.ndarray:
+    """
+    Computes Symmetrized APC for the heads in a single layer and returns their sum.
+    Args:
+        layer_heads: Array of shape (Heads_in_layer, L, L) for a single sequence.
+    Returns:
+        Array of shape (L, L) representing the sum of APC maps for this layer.
+    """
+    # 1. Symmetrize heads
+    sym_heads = 0.5 * (layer_heads + layer_heads.transpose(0, 2, 1))
+    
+    # 2. Marginal sums
+    row_sum = sym_heads.sum(axis=2, keepdims=True)      # (H, L, 1)
+    col_sum = sym_heads.sum(axis=1, keepdims=True)      # (H, 1, L)
+    total_sum = sym_heads.sum(axis=(1, 2), keepdims=True) # (H, 1, 1)
+    
+    total_sum[total_sum == 0] = 1e-9
+    
+    # 3. APC correction
+    apc = sym_heads - ((row_sum @ col_sum) / total_sum)
+    
+    # 4. Return the sum across heads for this layer
+    return apc.sum(axis=0)
+
+def compute_clean_apc(input_ids_list, special_token_ids, seqs, outputs):
+    seq_original_lens = [len(s) for s in seqs]
+    residue_indices = [
+        [idx for idx, token_id in enumerate(input_ids_list[i]) if token_id not in special_token_ids]
+        for i in range(len(seqs))
+    ]
+    running_apc_sums = [np.zeros((l, l), dtype=np.float32) for l in seq_original_lens]
+    total_heads = 0
+    attentions_list = list(outputs.attentions)
+    outputs.attentions = None  # Free original tuple reference for GC
+
+    while len(attentions_list) > 0:
+        layer_attn = attentions_list.pop(0)  # Shape: (B, H, L_padded, L_padded)
+        total_heads += layer_attn.shape[1]
+        
+        # --- Stream APC (Per-Sequence Unpadded) ---
+        layer_attn_cpu = layer_attn.detach().cpu().to(torch.float32).numpy()
+        for i, r_idx in enumerate(residue_indices):
+            # Slice unpadded residues for this sequence and layer: (H, L_i, L_i)
+            valid_heads = layer_attn_cpu[i][:, r_idx, :][:, :, r_idx]
+            running_apc_sums[i] += compute_layer_apc_sum(valid_heads)
+        
+        del layer_attn  # Instantly free VRAM for this layer
+    
+    contacts = []
+    for i in range(len(seqs)):
+        r_idx = residue_indices[i]
+        final_contact_map = running_apc_sums[i] / total_heads
+        np.fill_diagonal(final_contact_map, 0)
+        contacts.append(final_contact_map)
+    
+    return contacts
+
 class ANKHModel(PLMModel):
     def __init__(self, model_name: str, cache_path):
         super().__init__(model_name, cache_path)
@@ -76,7 +163,7 @@ class ANKHModel(PLMModel):
                 padding_size = len2 - len1'''
             return embeddings
     
-    def extract(self, seqs: List[str]):
+    def extract(self, seqs: List[str], contact_maps = False):
         seq_words = [list(seq) for seq in seqs]
         seq_original_lens = [len(seq) for seq in seqs]
         
@@ -151,7 +238,12 @@ class ANKHModel(PLMModel):
                 unpadded_attentions.append(valid_attn)
                 
             # Return both for your downstream pipeline
-            return unpadded_embeddings, unpadded_attentions
+            if contact_maps:
+                contacts = compute_clean_apc(input_ids_list, self.special_token_ids, seqs, outputs)
+
+                return unpadded_embeddings, unpadded_attentions, contacts
+            else:
+                return unpadded_embeddings, unpadded_attentions
 
 class DPLMModel(PLMModel):
     def __init__(self, model_name: str, cache_path):

@@ -233,14 +233,14 @@ process infer_esm2_650 {
 }
 
 //TODO:
-//Synthyra/ESM2-3B
-//Synthyra/ESMplusplus_small
-//Synthyra/ESMplusplus_large
-//Synthyra/ESM3_small
-//https://huggingface.co/AI4PD/ProtGPT3-1.3B
+//https://huggingface.co/facebook/esm2_t36_3B_UR50D
+//https://huggingface.co/biohub/ESMC-300M
+//https://huggingface.co/biohub/ESMC-600M
+//https://huggingface.co/biohub/esm3-sm-open-v1
 //https://huggingface.co/flair-bio/amplify-350m
 //https://huggingface.co/hugohrban/progen2-medium
-//Ankh3-XL?
+//https://huggingface.co/oriel9p/protsent-esm2-150M
+//https://huggingface.co/AI4PD/ProtGPT3-1.3B
 
 workflow {
     create_esm_embeddings = params.create_esm_embeddings
