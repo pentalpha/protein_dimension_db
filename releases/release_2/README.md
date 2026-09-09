@@ -97,4 +97,4 @@ negative annotations", Bioinformatics, 36, 2020, i210–i218,
 
 [2] Marius Thrane Ødum, Felix Teufel, Vineet Thumuluri, et al. "DeepLoc 2.1: multi-label membrane protein type prediction using protein language models", Nucleic Acids Research, Volume 52, Issue W1, 5 July 2024, Pages W215–W220, [doi: 10.1093/nar/gkae237](https://academic.oup.com/nar/article/52/W1/W215/7642068);
 
-[3] Tetsu Sakamoto and Miguel Ortega. "Taxallnomy Database", Laboratório de Biodados, UFMG. [URL](http://bioinfo.icb.ufmg.br/taxallnomy/);
+[3] Sakamoto, T., & Ortega, J. M. (2021). Taxallnomy: an extension of NCBI Taxonomy that produces a hierarchically complete taxonomic tree. BMC bioinformatics, 22(1), 388. [URL](http://bioinfo.icb.ufmg.br/taxallnomy/);

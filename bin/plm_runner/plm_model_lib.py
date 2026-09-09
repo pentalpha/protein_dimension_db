@@ -1,3 +1,4 @@
+from huggingface_hub import repocard_data
 from typing import List, Tuple
 
 import numpy as np
@@ -8,6 +9,7 @@ from transformers import (
     T5Tokenizer,
     AutoModelForMaskedLM,
 )
+import re
 
 from plm_runner.plm_model import PLMModel, define_plm_class
 
@@ -245,11 +247,6 @@ class ANKHModel(PLMModel):
             else:
                 return unpadded_embeddings, unpadded_attentions
 
-class DPLMModel(PLMModel):
-    def __init__(self, model_name: str, cache_path):
-        super().__init__(model_name, cache_path)
-        pass
-
 class ProfluentE1Model(PLMModel):
     def __init__(self, model_name: str, cache_path):
         super().__init__(model_name, cache_path)
@@ -263,7 +260,7 @@ class ProfluentE1Model(PLMModel):
         from E1.modeling import E1ForMaskedLM
 
         #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = E1ForMaskedLM.from_pretrained("Profluent-Bio/E1-150m").to(self.device)
+        model = E1ForMaskedLM.from_pretrained(model_name).to(self.device)
         batch_preparer = E1BatchPreparer()
         model.eval()
         return model, batch_preparer
@@ -374,25 +371,34 @@ class ProfluentE1Model(PLMModel):
 
         return unpadded_embeddings, unpadded_attentions
 
-class ESMModel(PLMModel):
+class GenericHFPLM(PLMModel):
     def __init__(self, model_name: str, cache_path):
         super().__init__(model_name, cache_path)
+        self.use_custom_code = self.model_type in ["AMPLIFY"]
         self.model, self.tokenizer = self.load_model_and_tokenizer(model_name)
         # Cache the special tokens (e.g. 0=<cls>, 1=<pad>, 2=<eos>, 3=<unk>, 32=<mask>)
         self.special_token_ids = set(self.tokenizer.all_special_ids)
+        if self.model_type in ["AMPLIFY"]:
+            self.ambiguous_ids = self.tokenizer.ambiguous_token_ids
+            self.expr = "[XBOUZJ]"
+        else:
+            self.ambiguous_ids = []
+            self.expr = ''
 
     def load_model_and_tokenizer(self, model_name: str) -> Tuple[torch.nn.Module, AutoTokenizer]:
         """Downloads and returns the ESM model and its tokenizer"""
         tokenizer = AutoTokenizer.from_pretrained(
             model_name,
-            token=self.token
+            token=self.token,
+            trust_remote_code=self.use_custom_code
         )
         
         # Using AutoModelForMaskedLM as requested for future-proofing
         model = AutoModelForMaskedLM.from_pretrained(
             model_name,
             attn_implementation="eager",
-            token=self.token
+            token=self.token,
+            trust_remote_code=self.use_custom_code
         )
         
         model.to(device=self.device)
@@ -400,8 +406,17 @@ class ESMModel(PLMModel):
         
         return model, tokenizer
 
-    def extract(self, seqs: List[str]):
+    def extract(self, seqs_original: List[str]):
         # Calculate expected biological length (handle potential commas)
+        if self.model_type in ['AMPLIFY']:
+            if self.tokenizer.remove_ambiguous:
+                seqs = [re.sub(self.expr, '', seq.replace('<unk>', '')) 
+                        for seq in seqs_original]
+            else:
+                seqs = seqs_original
+        else:
+            seqs = seqs_original
+        
         seq_original_lens = [len(seq.replace(',', '')) for seq in seqs]
         
         # Precision setup
@@ -459,9 +474,41 @@ class ESMModel(PLMModel):
                 idx for idx, token_id in enumerate(input_id_list[i]) 
                 if token_id not in self.special_token_ids
             ]
+
+            correct_lens = len(residue_idx) == seq_original_lens[i]
+
+            if not correct_lens:
+                print("Mismatch details:")
+                print(f"Original sequence: {seqs_original[i]}")
+                print(f"Sequence after processing: {seqs[i]}")
+                print(f"Expected length: {seq_original_lens[i]}")
+                print(f"Actual length: {len(residue_idx)}")
+                print(f"Input IDs: {input_id_list[i]}")
+                print(f"Special token IDs: {self.special_token_ids}")
+
+                print(f"Ambiguous IDs: {self.ambiguous_ids}")
+                print(f"Ambiguous IDs expression: {self.expr}")
+
+                # get three other 'i's and show their input_id_list
+                others= []
+                for j in range(min(len(seqs), 4)):
+                    if j == i:
+                        continue
+                    elif j < len(seqs):
+                        others.append(j)
+                print(f"Other Input IDs: {others}")
+                for j in others:
+                    residue_idx_j = [
+                        idx for idx, token_id in enumerate(input_id_list[j]) 
+                        if token_id not in self.special_token_ids
+                    ]
+                    print(f"\nSequence: {seqs[j]}")
+                    print(f"Expected length: {seq_original_lens[j]}")
+                    print(f"Actual length: {len(residue_idx_j)}")
+                    print(f"Input IDs: {input_id_list[j]}")
             
             # Sanity check
-            assert len(residue_idx) == seq_original_lens[i], (
+            assert correct_lens, (
                 f"Mask length mismatch at seq {i}: expected {seq_original_lens[i]}, "
                 f"got {len(residue_idx)}"
             )
@@ -476,7 +523,7 @@ class ESMModel(PLMModel):
             unpadded_attentions.append(valid_attn)
 
         return unpadded_embeddings, unpadded_attentions
-    
+
 def plm_master_loader(model_name, cache_path):
     plm_type = define_plm_class(model_name)
     if plm_type == "ANKH":
@@ -484,6 +531,10 @@ def plm_master_loader(model_name, cache_path):
     elif plm_type == "PROFLUENT":
         return ProfluentE1Model(model_name, cache_path)
     elif plm_type == "ESM":
-        return ESMModel(model_name, cache_path)
+        return GenericHFPLM(model_name, cache_path)
+    elif plm_type == "AMPLIFY":
+        return GenericHFPLM(model_name, cache_path)
+    else:
+        return GenericHFPLM(model_name, cache_path)
     
     return None

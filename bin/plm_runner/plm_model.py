@@ -107,6 +107,8 @@ def define_plm_class(model_name: str):
         return "DPLM"
     elif "profluent" in n:
         return "PROFLUENT"
+    elif "amplify" in n:
+        return "AMPLIFY"
     else:
         raise ValueError(f"Unknown model name: {model_name}")
 
@@ -130,6 +132,12 @@ AVAILABLE_MODELS = {
     "facebook/esm2_t33_650M_UR50D": {"type": "ESM"},
     "facebook/esm2_t36_3B_UR50D": {"type": "ESM"},
     "facebook/esm2_t48_15B_UR50D": {"type": "ESM"},
+    "biohub/ESMC-300M": {"type": "ESM"},
+    "biohub/ESMC-600M": {"type": "ESM"},
+    "biohub/ESMC-300M-hf": {"type": "ESM"},
+    "biohub/ESMC-600M-hf": {"type": "ESM"},
+    "flair-bio/amplify-120m": {"type": "ESM"},
+    "flair-bio/amplify-350m": {"type": "ESM"},
 }
 
 class PLMModel():

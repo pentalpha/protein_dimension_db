@@ -15,7 +15,7 @@ params.create_taxon_profiles = true
 params.create_plm_embeddings = true
 params.create_esm_embeddings = true
 params.create_ankh_embeddings = true
-params.create_autoencoder_embeddings = true
+params.create_autoencoder_embeddings = false
 //params.basic_env_container = "singularity_images/basic_env.sif"
 //params.env2_container = "singularity_images/env2.sif"
 
@@ -35,6 +35,7 @@ process create_caches {
 process infer_taxid_autoencoder {
     label 'pytorchcpu'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/taxid_autoencoder"
 
     input:
     path model_path
@@ -52,6 +53,7 @@ process infer_taxid_autoencoder {
 process infer_interpro_autoencoder {
     label 'pytorchcpu'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/interpro_autoencoder"
 
     input:
     path model_path
@@ -69,6 +71,7 @@ process infer_interpro_autoencoder {
 process infer_ankh_base {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/ankh_base"
 
     input:
     path fasta_seqs
@@ -95,6 +98,7 @@ process infer_ankh_base {
 process infer_ankh_large {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/ankh_large"
 
     input:
     path fasta_seqs
@@ -115,6 +119,7 @@ process infer_ankh_large {
 process infer_ankh2_large {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/ankh2_large"
 
     input:
     path fasta_seqs
@@ -135,6 +140,7 @@ process infer_ankh2_large {
 process infer_ankh3_large {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/ankh3_large"
 
     input:
     path fasta_seqs
@@ -152,9 +158,31 @@ process infer_ankh3_large {
     """
 }
 
+process infer_pfe1_150 {
+    label 'pytorchgpu_light'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/pfe1_150"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.e1_150_mean.parquet", emit: emb_mean_pq
+    path "emb.e1_150_max.parquet", emit: emb_max_pq
+    path "emb.e1_150_std.parquet", emit: emb_std_pq
+    path "emb.e1_150_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} Profluent-Bio/E1-150m emb.e1_150.parquet
+    """
+}
+
 process infer_pfe1_300 {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/pfe1_300"
 
     input:
     path fasta_seqs
@@ -173,8 +201,9 @@ process infer_pfe1_300 {
 }
 
 process infer_pfe1_600 {
-    label 'pytorchgpu_light'
+    label 'pytorch251'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/pfe1_600"
 
     input:
     path fasta_seqs
@@ -195,6 +224,7 @@ process infer_pfe1_600 {
 process infer_esm2_150 {
     label 'pytorchgpu_light'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/esm2_150"
 
     input:
     path fasta_seqs
@@ -213,8 +243,9 @@ process infer_esm2_150 {
 }
 
 process infer_esm2_650 {
-    label 'pytorchgpu_light'
+    label 'pytorch251'
     publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/esm2_650"
 
     input:
     path fasta_seqs
@@ -232,15 +263,119 @@ process infer_esm2_650 {
     """
 }
 
+process infer_esmc_300 {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/esmc_300"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.esmc_300_mean.parquet", emit: emb_mean_pq
+    path "emb.esmc_300_max.parquet", emit: emb_max_pq
+    path "emb.esmc_300_std.parquet", emit: emb_std_pq
+    path "emb.esmc_300_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} biohub/ESMC-300M-hf emb.esmc_300.parquet
+    """
+}
+
+process infer_esmc_600 {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/esmc_600"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.esmc_600_mean.parquet", emit: emb_mean_pq
+    path "emb.esmc_600_max.parquet", emit: emb_max_pq
+    path "emb.esmc_600_std.parquet", emit: emb_std_pq
+    path "emb.esmc_600_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} biohub/ESMC-600M-hf emb.esmc_600.parquet
+    """
+}
+
+process infer_esm2_3000 {
+    label 'pytorch251'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/esm2_3000"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.esm2_3000_mean.parquet", emit: emb_mean_pq
+    path "emb.esm2_3000_max.parquet", emit: emb_max_pq
+    path "emb.esm2_3000_std.parquet", emit: emb_std_pq
+    path "emb.esm2_3000_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} facebook/esm2_t36_3B_UR50D emb.esm2_3000.parquet
+    """
+}
+
+process infer_amp_120 {
+    label 'pytorchgpu_light'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/amplify_120"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.amplify_120_mean.parquet", emit: emb_mean_pq
+    path "emb.amplify_120_max.parquet", emit: emb_max_pq
+    path "emb.amplify_120_std.parquet", emit: emb_std_pq
+    path "emb.amplify_120_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} flair-bio/amplify-120m emb.amplify_120.parquet
+    """
+}
+
+process infer_amp_350 {
+    label 'pytorchgpu_light'
+    publishDir params.release_dir, mode: 'copy'
+    storeDir "${params.raw_data_dir}/amplify_350"
+
+    input:
+    path fasta_seqs
+    path cache_dir
+
+    output:
+    path "emb.amplify_350_mean.parquet", emit: emb_mean_pq
+    path "emb.amplify_350_max.parquet", emit: emb_max_pq
+    path "emb.amplify_350_std.parquet", emit: emb_std_pq
+    path "emb.amplify_350_parti.parquet", emit: emb_parti_pq
+
+    script:
+    """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} flair-bio/amplify-350m emb.amplify_350.parquet
+    """
+}
+
 //TODO:
-//https://huggingface.co/facebook/esm2_t36_3B_UR50D
 //https://huggingface.co/biohub/ESMC-300M
 //https://huggingface.co/biohub/ESMC-600M
-//https://huggingface.co/biohub/esm3-sm-open-v1
+//https://huggingface.co/flair-bio/amplify-120m
 //https://huggingface.co/flair-bio/amplify-350m
-//https://huggingface.co/hugohrban/progen2-medium
+//https://huggingface.co/hugohrban/progen2-small
+//https://huggingface.co/hugohrban/progen2-medium (or -base?)
 //https://huggingface.co/oriel9p/protsent-esm2-150M
-//https://huggingface.co/AI4PD/ProtGPT3-1.3B
 
 workflow {
     create_esm_embeddings = params.create_esm_embeddings
@@ -264,7 +399,7 @@ workflow {
 
     print(params)
 
-    if (create_autoencoder_embeddings) {
+    /*if (create_autoencoder_embeddings) {
         infer_taxid_autoencoder(
             taxid_autoencoder_model_path,
             taxid_tsv_path,
@@ -311,4 +446,29 @@ workflow {
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
+    infer_esmc_300(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    */
+    infer_pfe1_150(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    infer_esmc_600(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    infer_amp_120(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    infer_amp_350(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
+    /*infer_esm2_3000(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )*/
 }
