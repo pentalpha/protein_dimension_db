@@ -22,6 +22,12 @@ if __name__ == "__main__":
     
     print(f"Using model: {model_name}")
 
-    model = plm_master_loader(model_name, cache_path)
+    if ':[' in model_name:
+        prefix = '[' + model_name.split(':[')[-1]
+        model_name = model_name.replace(':'+prefix, "")
+    else:
+        prefix = None
+    
+    model = plm_master_loader(model_name, cache_path, prefix=prefix)
     model.embed_saving_progress(fasta_path, parquet_name.replace('.parquet', ''), 
         poolings_list)

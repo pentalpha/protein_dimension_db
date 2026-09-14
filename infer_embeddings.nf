@@ -151,9 +151,19 @@ process infer_ankh3_large {
     path "emb.ankh3_large_max.parquet", emit: emb_max_pq
     path "emb.ankh3_large_std.parquet", emit: emb_std_pq
     path "emb.ankh3_large_parti.parquet", emit: emb_parti_pq
+    path "emb.ankh3_large_nlu_mean.parquet", emit: emb_nlu_mean_pq
+    path "emb.ankh3_large_nlu_max.parquet", emit: emb_nlu_max_pq
+    path "emb.ankh3_large_nlu_std.parquet", emit: emb_nlu_std_pq
+    path "emb.ankh3_large_nlu_parti.parquet", emit: emb_nlu_parti_pq
+    path "emb.ankh3_large_s2s_mean.parquet", emit: emb_s2s_mean_pq
+    path "emb.ankh3_large_s2s_max.parquet", emit: emb_s2s_max_pq
+    path "emb.ankh3_large_s2s_std.parquet", emit: emb_s2s_std_pq
+    path "emb.ankh3_large_s2s_parti.parquet", emit: emb_s2s_parti_pq
 
     script:
     """
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh3-large:[NLU] emb.ankh3_large_nlu.parquet
+    fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh3-large:[S2S] emb.ankh3_large_s2s.parquet
     fasta_encode.py ${fasta_seqs} ${cache_dir} ElnaggarLab/ankh3-large emb.ankh3_large.parquet
     """
 }
@@ -369,10 +379,6 @@ process infer_amp_350 {
 }
 
 //TODO:
-//https://huggingface.co/biohub/ESMC-300M
-//https://huggingface.co/biohub/ESMC-600M
-//https://huggingface.co/flair-bio/amplify-120m
-//https://huggingface.co/flair-bio/amplify-350m
 //https://huggingface.co/hugohrban/progen2-small
 //https://huggingface.co/hugohrban/progen2-medium (or -base?)
 //https://huggingface.co/oriel9p/protsent-esm2-150M
@@ -450,7 +456,7 @@ workflow {
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
-    */
+    
     infer_pfe1_150(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
@@ -467,8 +473,12 @@ workflow {
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )
-    /*infer_esm2_3000(
+    infer_esm2_3000(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )*/
+    infer_ankh3_large(
+        swissprot_fasta,
+        create_caches.out.fastplms_cache,
+    )
 }

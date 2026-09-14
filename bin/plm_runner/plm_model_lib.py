@@ -103,8 +103,8 @@ def compute_clean_apc(input_ids_list, special_token_ids, seqs, outputs):
     return contacts
 
 class ANKHModel(PLMModel):
-    def __init__(self, model_name: str, cache_path):
-        super().__init__(model_name, cache_path)
+    def __init__(self, model_name: str, cache_path, prefix: str = None):
+        super().__init__(model_name, cache_path, prefix=prefix)
         self.model, self.tokenizer = self.load_model_and_tokenizer(model_name)
 
     def load_model_and_tokenizer(self, model_name: str) -> Tuple[T5EncoderModel, AutoTokenizer]:
@@ -165,9 +165,12 @@ class ANKHModel(PLMModel):
                 padding_size = len2 - len1'''
             return embeddings
     
-    def extract(self, seqs: List[str], contact_maps = False):
+    def extract(self, seqs: List[str], contact_maps = False, prefix: str = None):
         seq_words = [list(seq) for seq in seqs]
         seq_original_lens = [len(seq) for seq in seqs]
+        
+        if prefix is not None:
+            seq_words = [prefix + seq for seq in seq_words]
         
         # Check for bfloat16 support dynamically (assumes BF16_SUPPORT is defined in your env)
         bf16_supported = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
@@ -248,8 +251,8 @@ class ANKHModel(PLMModel):
                 return unpadded_embeddings, unpadded_attentions
 
 class ProfluentE1Model(PLMModel):
-    def __init__(self, model_name: str, cache_path):
-        super().__init__(model_name, cache_path)
+    def __init__(self, model_name: str, cache_path, prefix: str = None):
+        super().__init__(model_name, cache_path, prefix=prefix)
         
         self.model, self.batch_preparer = self.load_model_and_tokenizer(model_name)
         self.single_special_tokens = set([0])
@@ -317,7 +320,7 @@ class ProfluentE1Model(PLMModel):
         return unpadded_embeddings, unpadded_attentions
 
     
-    def extract(self, seqs: List[str]):
+    def extract(self, seqs: List[str], prefix: str = None):
         bf16_supported = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
         dtype = torch.bfloat16 if bf16_supported else torch.float32
         batch = self.batch_preparer.get_batch_kwargs(seqs, device=self.device)
@@ -372,8 +375,8 @@ class ProfluentE1Model(PLMModel):
         return unpadded_embeddings, unpadded_attentions
 
 class GenericHFPLM(PLMModel):
-    def __init__(self, model_name: str, cache_path):
-        super().__init__(model_name, cache_path)
+    def __init__(self, model_name: str, cache_path, prefix: str = None):
+        super().__init__(model_name, cache_path, prefix=prefix)
         self.use_custom_code = self.model_type in ["AMPLIFY"]
         self.model, self.tokenizer = self.load_model_and_tokenizer(model_name)
         # Cache the special tokens (e.g. 0=<cls>, 1=<pad>, 2=<eos>, 3=<unk>, 32=<mask>)
@@ -406,7 +409,7 @@ class GenericHFPLM(PLMModel):
         
         return model, tokenizer
 
-    def extract(self, seqs_original: List[str]):
+    def extract(self, seqs_original: List[str], prefix: str = None):
         # Calculate expected biological length (handle potential commas)
         if self.model_type in ['AMPLIFY']:
             if self.tokenizer.remove_ambiguous:
@@ -524,10 +527,10 @@ class GenericHFPLM(PLMModel):
 
         return unpadded_embeddings, unpadded_attentions
 
-def plm_master_loader(model_name, cache_path):
+def plm_master_loader(model_name, cache_path, prefix: str = None):
     plm_type = define_plm_class(model_name)
     if plm_type == "ANKH":
-        return ANKHModel(model_name, cache_path)
+        return ANKHModel(model_name, cache_path, prefix=prefix)
     elif plm_type == "PROFLUENT":
         return ProfluentE1Model(model_name, cache_path)
     elif plm_type == "ESM":

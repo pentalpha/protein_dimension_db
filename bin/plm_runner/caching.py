@@ -52,10 +52,12 @@ class FastaDataset(Dataset):
         return self.sequences[index]
 
 class EmbCache:
-    def __init__(self, cache_path, model_name, full=False):
+    def __init__(self, cache_path, model_name, full=False, prefix: str = None):
         self.cache_path = cache_path
         self.model_name = model_name
         self.model_safe_name = model_name.replace("/", "__").lower()
+        if prefix is not None:
+            self.model_safe_name += '_' + prefix
         if full:
             self.model_safe_name += ".full"
         self.save_paths_expr_pq = cache_path + "/" + self.model_safe_name + ".*.parquet"

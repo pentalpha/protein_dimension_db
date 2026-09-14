@@ -141,7 +141,7 @@ AVAILABLE_MODELS = {
 }
 
 class PLMModel():
-    def __init__(self, model_name: str, cache_path: str):
+    def __init__(self, model_name: str, cache_path: str, prefix: str = None):
         self.model_name = model_name
         self.token = None
         if 'HFTOKEN' in os.environ:
@@ -151,7 +151,7 @@ class PLMModel():
             raise ValueError(f"Invalid model name: {model_name}. Valid models are: {list(AVAILABLE_MODELS.keys())}")
         self.model_type = define_plm_class(model_name)
         self.device = get_device()
-        self.cache = EmbCache(cache_path, model_name)
+        self.cache = EmbCache(cache_path, model_name, prefix=prefix)
         self.max_tokens_dict = get_max_tokens_dict()
         if model_name in self.max_tokens_dict:
             self.max_tokens = self.max_tokens_dict[model_name]
@@ -160,7 +160,7 @@ class PLMModel():
 
         print(f"Using max_tokens: {self.max_tokens} for model: {model_name}")
 
-    def extract(self, seqs: List[str]):
+    def extract(self, seqs: List[str], prefix: str = None):
         raise NotImplementedError("Please use the specific model class for embedding.")
         
     def embed(self, seqs, 
@@ -180,7 +180,7 @@ class PLMModel():
             lens = [len(seq) for seq in batch]
             #print(lens)
             try:
-                full_batch, full_batch_attn = self.extract(batch)
+                full_batch, full_batch_attn = self.extract(batch, prefix=self.prefix)
             except torch.OutOfMemoryError as err:
                 print(err)
                 print("Switching to per_sec because of OOM.")
@@ -276,7 +276,9 @@ class PLMModel():
         
         return resulting_parquets
     
-    def embed_saving_progress(self, fasta_path: str, output_prefix: str, poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
+    def embed_saving_progress(self, fasta_path: str, output_prefix: str, 
+            poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None,
+            prefix: str = None):
         if max_tokens_per_batch is None:
             max_tokens_per_batch = self.max_tokens
         caching_batch_len = max_tokens_per_batch * 200
@@ -300,7 +302,7 @@ class PLMModel():
             
         for i, macro_batch in enumerate(macro_batchs):
             time_start = time.time()
-            new_embeddings = self.embed(macro_batch, poolings=poolings, tqdm_bar=bar)
+            new_embeddings = self.embed(macro_batch, poolings=poolings, tqdm_bar=bar, prefix=prefix)
             next_parquet, next_txt = self.cache.next_cache_name()
             df_dict = {"seq": macro_batch}
             for p_name in poolings:
