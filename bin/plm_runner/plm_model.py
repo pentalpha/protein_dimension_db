@@ -80,6 +80,7 @@ max_tokens_by_model = [
         "Profluent-Bio/E1-600m": 1800,
         "Synthyra/ANKH_base": 1800,
         "ElnaggarLab/ankh-base": 1800,
+        "ElnaggarLab/ankh3-large": 1800,
         "Synthyra/ANKH_large": 1800,
         "Synthyra/ANKH2_large": 1800,
         "Synthyra/ANKH3_large": 1800,
@@ -152,6 +153,7 @@ class PLMModel():
         self.model_type = define_plm_class(model_name)
         self.device = get_device()
         self.cache = EmbCache(cache_path, model_name, prefix=prefix)
+        self.prefix = prefix
         self.max_tokens_dict = get_max_tokens_dict()
         if model_name in self.max_tokens_dict:
             self.max_tokens = self.max_tokens_dict[model_name]
@@ -235,12 +237,12 @@ class PLMModel():
             #df_embs_base = pl.scan_parquet(valid_pqs)
             paths_with_pooling = []
             for p in valid_pqs:
-                col_list = pl.scan_parquet(p).collect_schema().names()
+                col_list = pl.scan_parquet(p, glob=False).collect_schema().names()
                 if pooling in col_list:
                     paths_with_pooling.append(p)
             if len(paths_with_pooling) > 0:
                 lfs = [
-                    pl.scan_parquet(p).select(["seq", pooling]) 
+                    pl.scan_parquet(p, glob=False).select(["seq", pooling]) 
                     for p in paths_with_pooling
                 ]
                 #df_embs_base = pl.scan_parquet(paths_with_pooling)
@@ -266,7 +268,7 @@ class PLMModel():
                 if not allow_missing:
                     print(f"Checando por sequências perdidas em {pooling}...")
                     missing_count = (
-                        pl.scan_parquet(target_parquet)
+                        pl.scan_parquet(target_parquet, glob=False)
                         .filter(pl.col(pooling).is_null())
                         .select(pl.len())
                         .collect()
@@ -277,8 +279,7 @@ class PLMModel():
         return resulting_parquets
     
     def embed_saving_progress(self, fasta_path: str, output_prefix: str, 
-            poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None,
-            prefix: str = None):
+            poolings: List[str] = list(POOLERS.keys()), max_tokens_per_batch = None):
         if max_tokens_per_batch is None:
             max_tokens_per_batch = self.max_tokens
         caching_batch_len = max_tokens_per_batch * 200
@@ -302,7 +303,7 @@ class PLMModel():
             
         for i, macro_batch in enumerate(macro_batchs):
             time_start = time.time()
-            new_embeddings = self.embed(macro_batch, poolings=poolings, tqdm_bar=bar, prefix=prefix)
+            new_embeddings = self.embed(macro_batch, poolings=poolings, tqdm_bar=bar)
             next_parquet, next_txt = self.cache.next_cache_name()
             df_dict = {"seq": macro_batch}
             for p_name in poolings:

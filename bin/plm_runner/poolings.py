@@ -122,7 +122,7 @@ def _pagerank(
 
 def parti_pooling(
     emb_list: List[np.ndarray],
-    attn_list: List[np.ndarray], # Now required by your pipeline
+    attn_list: List[np.ndarray],
     damping: float = 0.85,
 ) -> np.ndarray:
     """
@@ -133,16 +133,30 @@ def parti_pooling(
 
     results = []
 
-    for X, A in zip(emb_list, attn_list):
-        if X.shape[0] == 0:
-            continue
-            
-        # Get PageRank importances
-        weights = _pagerank(A, damping=damping)
+    try:
+        for X, A in zip(emb_list, attn_list):
+            if X.shape[0] == 0:
+                continue
+                
+            # Get PageRank importances
+            weights = _pagerank(A, damping=damping)
 
-        # Weighted sum: weights @ X creates a (D,) vector by broadcasting
-        pooled = weights @ X
-        results.append(pooled)
+            # Weighted sum: weights @ X creates a (D,) vector by broadcasting
+            pooled = weights @ X
+            results.append(pooled)
+    
+    except AttributeError as err:
+        #log details to adress list in emb_list
+        n_embs = len(emb_list)
+        n_attrs = len(attn_list)
+
+        types = [str(type(emb)) for emb in emb_list]
+        attn_types = [str(type(attn)) for attn in attn_list]
+
+        print(f"Embeddings ({n_embs}) types: {types}")
+        print(f"Attention ({n_attrs}) types: {attn_types}")
+
+        raise err
 
     return np.vstack(results)
 

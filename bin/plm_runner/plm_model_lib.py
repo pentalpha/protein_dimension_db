@@ -165,12 +165,13 @@ class ANKHModel(PLMModel):
                 padding_size = len2 - len1'''
             return embeddings
     
-    def extract(self, seqs: List[str], contact_maps = False, prefix: str = None):
-        seq_words = [list(seq) for seq in seqs]
-        seq_original_lens = [len(seq) for seq in seqs]
+    def extract(self, seqs_original: List[str], contact_maps = False, prefix: str = None):
+        special_tokens = set([x for x in self.special_token_ids] + [4,5,6])
+        seq_words = [list(seq) for seq in seqs_original]
+        seq_original_lens = [len(seq) for seq in seq_words]
         
         if prefix is not None:
-            seq_words = [prefix + seq for seq in seq_words]
+            seq_words = [[prefix] + seq for seq in seq_words]
         
         # Check for bfloat16 support dynamically (assumes BF16_SUPPORT is defined in your env)
         bf16_supported = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
@@ -222,16 +223,44 @@ class ANKHModel(PLMModel):
             # Move input_ids to CPU list to check against special tokens
             input_ids_list = input_ids.cpu().tolist()
             
-            for i in range(len(seqs)):
+            for i in range(len(seqs_original)):
                 # Dynamically construct the biological residue mask!
                 # This ignores [CLS], [EOS], and [PAD] automatically.
                 residue_idx = [
                     idx for idx, token_id in enumerate(input_ids_list[i]) 
-                    if token_id not in self.special_token_ids
+                    if token_id not in special_tokens
                 ]
                 
-                # Sanity check to ensure our mask perfectly matches the input sequence length
-                assert len(residue_idx) == seq_original_lens[i], f"Mask length mismatch at seq {i}"
+                correct_lens = len(residue_idx) == seq_original_lens[i]
+
+                if not correct_lens:
+                    print("Mismatch details:")
+                    print(f"Original sequence: {seqs_original[i]}")
+                    print(f"Sequence after processing: {seq_words[i]}")
+                    print(f"Expected length: {seq_original_lens[i]}")
+                    print(f"Actual length: {len(residue_idx)}")
+                    print(f"Input IDs: {input_ids_list[i]}")
+                    print(f"Special token IDs: {self.special_token_ids} {special_tokens}")
+
+                    # get three other 'i's and show their input_id_list
+                    others= []
+                    for j in range(min(len(seqs_original), 4)):
+                        if j == i:
+                            continue
+                        elif j < len(seqs_original):
+                            others.append(j)
+                    print(f"Other Input IDs: {others}")
+                    for j in others:
+                        residue_idx_j = [
+                            idx for idx, token_id in enumerate(input_ids_list[j]) 
+                            if token_id not in special_tokens
+                        ]
+                        print(f"\nSequence: {seqs_original[j]}")
+                        print(f"Expected length: {seq_original_lens[j]}")
+                        print(f"Actual length: {len(residue_idx_j)}")
+                        print(f"Input IDs: {input_ids_list[j]}")
+                
+                assert correct_lens, f"Mask length mismatch at seq {i}"
                 
                 # Slicing the 2D Embedding matrix (L, D)
                 valid_emb = embeddings_np[i, residue_idx, :]
@@ -244,7 +273,7 @@ class ANKHModel(PLMModel):
                 
             # Return both for your downstream pipeline
             if contact_maps:
-                contacts = compute_clean_apc(input_ids_list, self.special_token_ids, seqs, outputs)
+                contacts = compute_clean_apc(input_ids_list, self.special_token_ids, seqs_original, outputs)
 
                 return unpadded_embeddings, unpadded_attentions, contacts
             else:

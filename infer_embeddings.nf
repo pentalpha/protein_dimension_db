@@ -405,7 +405,7 @@ workflow {
 
     print(params)
 
-    /*if (create_autoencoder_embeddings) {
+    if (create_autoencoder_embeddings) {
         infer_taxid_autoencoder(
             taxid_autoencoder_model_path,
             taxid_tsv_path,
@@ -474,10 +474,6 @@ workflow {
         create_caches.out.fastplms_cache,
     )
     infer_esm2_3000(
-        swissprot_fasta,
-        create_caches.out.fastplms_cache,
-    )*/
-    infer_ankh3_large(
         swissprot_fasta,
         create_caches.out.fastplms_cache,
     )

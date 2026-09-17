@@ -56,13 +56,18 @@ class EmbCache:
         self.cache_path = cache_path
         self.model_name = model_name
         self.model_safe_name = model_name.replace("/", "__").lower()
-        if prefix is not None:
+        if prefix is None:
+            if full:
+                self.model_safe_name += ".full"
+            self.save_paths_expr_pq = cache_path + "/" + self.model_safe_name + ".*.parquet"
+        else:
+            prefix_clean = prefix.rstrip("]").lstrip("[")
+            self.save_paths_expr_pq = cache_path + "/" + self.model_safe_name + f"*{prefix_clean}*.parquet"
             self.model_safe_name += '_' + prefix
-        if full:
-            self.model_safe_name += ".full"
-        self.save_paths_expr_pq = cache_path + "/" + self.model_safe_name + ".*.parquet"
+            
 
     def list_caches(self):
+        print("Scanning for", self.save_paths_expr_pq)
         pqts = glob(self.save_paths_expr_pq)
         valid_caches = []
         for p in pqts:
@@ -70,7 +75,7 @@ class EmbCache:
             if os.path.exists(txt_path):
                 try:
                     # Extremely fast integrity check (reads footer only)
-                    pl.scan_parquet(p)
+                    pl.scan_parquet(p, glob=False)
                     valid_caches.append((p, txt_path))
                 except Exception as e:
                     print(f"⚠️ Corrupted cache detected: {p} - Error: {e}")
@@ -78,6 +83,7 @@ class EmbCache:
                     os.remove(p)
                     if os.path.exists(txt_path):
                         os.remove(txt_path)
+        print("Found", len(valid_caches), "valid caches.")
         return valid_caches
 
     def next_cache_name(self):
@@ -105,7 +111,8 @@ class EmbCache:
         caches = self.list_caches()
         embedded_seqs = {p: set() for p in poolings}
         for pq_path, txt_path in caches:
-            included_cols = pl.scan_parquet(pq_path).collect_schema().names()
+            print("Loading", pq_path)
+            included_cols = pl.scan_parquet(pq_path, glob=False).collect_schema().names()
             protein_seqs = set()
             with open(txt_path, "r") as f:
                 for line in f:
